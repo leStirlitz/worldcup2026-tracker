@@ -183,7 +183,7 @@
         "awayTeam": { "code": "CPV", "name": "Cape Verde", "flag": "🇨🇻" },
         "homeScore": null,
         "awayScore": null,
-        "status": "scheduled",
+        "status": "live",
         "winner": null
       },
       {
