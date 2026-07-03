@@ -84,6 +84,18 @@
     .match.completed { border-color: #22c55e; }
     .match.live { border-color: #ef4444; animation: pulse 2s infinite; }
     .match.upcoming { border-color: #4a5568; opacity: 0.8; }
+    .match.today { 
+      border-color: #f59e0b; 
+      border-width: 2px;
+      opacity: 1;
+      background: linear-gradient(135deg, #2d3748 0%, #3d2f1e 100%);
+      animation: glowToday 2s ease-in-out infinite;
+    }
+    
+    @keyframes glowToday {
+      0%, 100% { box-shadow: 0 0 5px rgba(245, 158, 11, 0.3); }
+      50% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.6); }
+    }
     
     @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); } 50% { box-shadow: 0 0 0 8px rgba(239,68,68,0); } }
     
@@ -688,6 +700,7 @@
 
   <div class="legend">
     <div class="legend-item"><div class="legend-dot completed"></div> Completed</div>
+    <div class="legend-item"><div class="legend-dot" style="background: #f59e0b;"></div> Today</div>
     <div class="legend-item"><div class="legend-dot upcoming"></div> Upcoming</div>
   </div>
 
@@ -1439,6 +1452,32 @@
       // Add active to clicked button
       event.target.classList.add('active');
     }
+
+    // Auto-highlight today's matches
+    function highlightTodayMatches() {
+      const now = new Date();
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const todayStr = months[now.getMonth()] + ' ' + now.getDate();
+      
+      document.querySelectorAll('.match-info').forEach(info => {
+        const text = info.textContent;
+        // Extract date like "Jul 3" or "Jun 28"
+        const match = text.match(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d+)/);
+        if (match) {
+          const matchDate = match[1] + ' ' + parseInt(match[2]);
+          if (matchDate === todayStr) {
+            const matchEl = info.closest('.match');
+            if (matchEl && !matchEl.classList.contains('completed')) {
+              matchEl.classList.remove('upcoming');
+              matchEl.classList.add('today');
+            }
+          }
+        }
+      });
+    }
+
+    // Run on page load
+    highlightTodayMatches();
   </script>
 </body>
 </html>
