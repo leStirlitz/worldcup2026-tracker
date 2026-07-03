@@ -125,12 +125,13 @@ jobs:
 
                 // Update HTML - search for exact team name ending with </span>
                 // Pattern matches: TeamName</span><span class="score">X</span>
+                // Note: there's a space before team name after the flag
                 const homeRegex = new RegExp(
-                  '(>' + escapeRegex(homeName) + '</span><span class="score">)[^<]*(</span>)',
+                  '(>\\s*' + escapeRegex(homeName) + '</span><span class="score">)[^<]*(</span>)',
                   'g'
                 );
                 const awayRegex = new RegExp(
-                  '(>' + escapeRegex(awayName) + '</span><span class="score">)[^<]*(</span>)',
+                  '(>\\s*' + escapeRegex(awayName) + '</span><span class="score">)[^<]*(</span>)',
                   'g'
                 );
 
