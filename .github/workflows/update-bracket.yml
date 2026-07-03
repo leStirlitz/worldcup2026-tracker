@@ -213,15 +213,31 @@ jobs:
                 }
 
                 // Update HTML - find and replace score
-                // Look for the match with these team names
+                // Look for EXACT team names (not partial matches like "Australia/EGY")
+                // Pattern: team name followed by </span> then score, must be exact match
                 const searchPattern1 = new RegExp(
-                  `(${escapeRegex(normalizedHome)}.*?<span class="score">)-(<\\/span>.*?${escapeRegex(normalizedAway)}.*?<span class="score">)-(<\\/span>)`,
-                  's'
+                  `(<span class="flag">[^<]+<\\/span>\\s*${escapeRegex(normalizedHome)}<\\/span><span class="score">)-(<\\/span>)` +
+                  `([\\s\\S]*?)` +
+                  `(<span class="flag">[^<]+<\\/span>\\s*${escapeRegex(normalizedAway)}<\\/span><span class="score">)-(<\\/span>)`,
+                  'g'
+                );
+                
+                // Also try reversed order (away team listed first in HTML)
+                const searchPattern2 = new RegExp(
+                  `(<span class="flag">[^<]+<\\/span>\\s*${escapeRegex(normalizedAway)}<\\/span><span class="score">)-(<\\/span>)` +
+                  `([\\s\\S]*?)` +
+                  `(<span class="flag">[^<]+<\\/span>\\s*${escapeRegex(normalizedHome)}<\\/span><span class="score">)-(<\\/span>)`,
+                  'g'
                 );
                 
                 if (searchPattern1.test(html)) {
-                  html = html.replace(searchPattern1, `$1${homeScore}$2${awayScore}$3`);
-                  console.log(`  -> Updated HTML scores`);
+                  html = html.replace(searchPattern1, `$1${homeScore}$2$3$4${awayScore}$5`);
+                  console.log(`  -> Updated HTML scores (pattern 1)`);
+                } else if (searchPattern2.test(html)) {
+                  html = html.replace(searchPattern2, `$1${awayScore}$2$3$4${homeScore}$5`);
+                  console.log(`  -> Updated HTML scores (pattern 2)`);
+                } else {
+                  console.log(`  -> Could not find match in HTML for ${normalizedHome} vs ${normalizedAway}`);
                 }
               }
             }
