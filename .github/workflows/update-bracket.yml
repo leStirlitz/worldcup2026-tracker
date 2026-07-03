@@ -176,7 +176,14 @@ jobs:
               // Only process matches that are in progress or finished
               if (statusType === 'STATUS_IN_PROGRESS' || 
                   statusType === 'STATUS_HALFTIME' ||
-                  statusType === 'STATUS_FINAL') {
+                  statusType === 'STATUS_OVERTIME' ||
+                  statusType === 'STATUS_FIRST_HALF' ||
+                  statusType === 'STATUS_SECOND_HALF' ||
+                  statusType === 'STATUS_END_PERIOD' ||
+                  statusType === 'STATUS_FULL_TIME' ||
+                  statusType === 'STATUS_FINAL' ||
+                  statusType === 'STATUS_FINAL_AET' ||
+                  statusType === 'STATUS_FINAL_PEN') {
                 
                 const normalizedHome = normalizeName(homeName);
                 const normalizedAway = normalizeName(awayName);
@@ -258,4 +265,3 @@ jobs:
           git config --local user.name "GitHub Action"
           git add -A
           git diff --quiet && git diff --staged --quiet || (git commit -m "🏆 Auto-update: $(TZ='Europe/Paris' date '+%Y-%m-%d %H:%M CET')" && git push)
-
