@@ -2,10 +2,9 @@ name: Update World Cup Bracket
 
 on:
   schedule:
-    # Run every 10 minutes during match times (June 11 - July 19, 2026)
-    - cron: '*/10 10-23 * 6-7 *'  # 10:00-23:00 UTC, June-July
-    - cron: '*/10 0-6 * 6-7 *'    # 00:00-06:00 UTC, June-July (late matches)
-  workflow_dispatch:  # Manual trigger
+    - cron: '*/10 10-23 * 6-7 *'
+    - cron: '*/10 0-6 * 6-7 *'
+  workflow_dispatch:
 
 jobs:
   update-bracket:
@@ -14,124 +13,53 @@ jobs:
       contents: write
     
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
       
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '20'
       
-      - name: Fetch ESPN data and update bracket
+      - name: Fetch ESPN and update scores
         run: |
-          node << 'SCRIPT'
+          node << 'EOF'
           const fs = require('fs');
           const https = require('https');
 
-          // Team name mapping: ESPN name -> our HTML name
           const ESPN_TO_HTML = {
             'United States': 'USA',
-            'Korea Republic': 'South Korea', 
-            'Côte d\'Ivoire': 'Ivory Coast',
+            'Korea Republic': 'South Korea',
+            "Côte d'Ivoire": 'Ivory Coast',
             'Bosnia-Herzegovina': 'Bosnia',
             'Bosnia and Herzegovina': 'Bosnia',
             'Congo DR': 'DR Congo',
-            'Cabo Verde': 'Cape Verde',
-            'Iran': 'Iran'
+            'Cabo Verde': 'Cape Verde'
           };
 
-          // Team code to flag emoji
-          const FLAGS = {
-            'USA': '🇺🇸', 'CAN': '🇨🇦', 'MEX': '🇲🇽', 'ARG': '🇦🇷', 'BRA': '🇧🇷',
-            'FRA': '🇫🇷', 'GER': '🇩🇪', 'ENG': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'ESP': '🇪🇸', 'POR': '🇵🇹',
-            'NED': '🇳🇱', 'BEL': '🇧🇪', 'SUI': '🇨🇭', 'AUT': '🇦🇹', 'CRO': '🇭🇷',
-            'NOR': '🇳🇴', 'SWE': '🇸🇪', 'MAR': '🇲🇦', 'SEN': '🇸🇳', 'EGY': '🇪🇬',
-            'ALG': '🇩🇿', 'GHA': '🇬🇭', 'CIV': '🇨🇮', 'RSA': '🇿🇦', 'COD': '🇨🇩',
-            'JPN': '🇯🇵', 'AUS': '🇦🇺', 'ECU': '🇪🇨', 'COL': '🇨🇴', 'PAR': '🇵🇾',
-            'CPV': '🇨🇻', 'BIH': '🇧🇦', 'TUR': '🇹🇷'
-          };
-
-          // Fetch ESPN World Cup scoreboard
           function fetchESPN() {
             return new Promise((resolve, reject) => {
               https.get('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard', (res) => {
                 let data = '';
                 res.on('data', chunk => data += chunk);
-                res.on('end', () => {
-                  try {
-                    resolve(JSON.parse(data));
-                  } catch(e) {
-                    reject(e);
-                  }
-                });
+                res.on('end', () => resolve(JSON.parse(data)));
               }).on('error', reject);
             });
           }
 
-          // Normalize team name from ESPN
-          function normalizeName(espnName) {
-            return ESPN_TO_HTML[espnName] || espnName;
-          }
-
-          // Update a match in the HTML
-          function updateMatchInHTML(html, homeTeam, awayTeam, homeScore, awayScore, status, notes) {
-            const homeName = normalizeName(homeTeam);
-            const awayName = normalizeName(awayTeam);
-            
-            // Find the match block by looking for both team names
-            // Match pattern: team names within same match div
-            const matchPatterns = [
-              // Pattern 1: home team followed by away team (standard order)
-              new RegExp(
-                `(<div class="match[^"]*">\\s*` +
-                `<div class="team[^"]*"><span class="team-name"><span class="flag">[^<]+</span>\\s*${escapeRegex(homeName)}</span><span class="score">)[^<]*(</span></div>\\s*` +
-                `<div class="team[^"]*"><span class="team-name"><span class="flag">[^<]+</span>\\s*${escapeRegex(awayName)}</span><span class="score">)[^<]*(</span></div>)`,
-                'g'
-              ),
-              // Pattern 2: away team might be listed first (reverse check)
-              new RegExp(
-                `(<div class="match[^"]*">\\s*` +
-                `<div class="team[^"]*"><span class="team-name"><span class="flag">[^<]+</span>\\s*${escapeRegex(awayName)}</span><span class="score">)[^<]*(</span></div>\\s*` +
-                `<div class="team[^"]*"><span class="team-name"><span class="flag">[^<]+</span>\\s*${escapeRegex(homeName)}</span><span class="score">)[^<]*(</span></div>)`,
-                'g'
-              )
-            ];
-
-            let updated = false;
-            
-            for (const pattern of matchPatterns) {
-              if (pattern.test(html)) {
-                const isReversed = matchPatterns.indexOf(pattern) === 1;
-                const score1 = isReversed ? awayScore : homeScore;
-                const score2 = isReversed ? homeScore : awayScore;
-                
-                // Determine winner/loser classes
-                let class1 = '', class2 = '';
-                if (status === 'completed' && score1 !== null && score2 !== null) {
-                  if (parseInt(score1) > parseInt(score2)) {
-                    class1 = ' winner';
-                    class2 = ' loser';
-                  } else if (parseInt(score2) > parseInt(score1)) {
-                    class1 = ' loser';
-                    class2 = ' winner';
-                  }
-                }
-                
-                // Build replacement - this is simplified, actual implementation needs more work
-                console.log(`Found match: ${homeName} vs ${awayName}, Score: ${homeScore}-${awayScore}, Status: ${status}`);
-                updated = true;
-                break;
-              }
-            }
-            
-            return { html, updated };
+          function normalizeName(name) {
+            return ESPN_TO_HTML[name] || name;
           }
 
           function escapeRegex(str) {
             return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
           }
 
-          // Main function
+          const LIVE_STATUSES = [
+            'STATUS_IN_PROGRESS', 'STATUS_HALFTIME', 'STATUS_OVERTIME',
+            'STATUS_FIRST_HALF', 'STATUS_SECOND_HALF', 'STATUS_END_PERIOD',
+            'STATUS_END_OF_EXTRATIME', 'STATUS_FULL_TIME', 'STATUS_FINAL',
+            'STATUS_FINAL_AET', 'STATUS_FINAL_PEN', 'STATUS_SHOOTOUT'
+          ];
+
           async function main() {
             console.log('Fetching ESPN World Cup data...');
             
@@ -139,152 +67,109 @@ jobs:
             try {
               espnData = await fetchESPN();
             } catch(e) {
-              console.log('Failed to fetch ESPN data:', e.message);
-              process.exit(0);
+              console.log('Failed to fetch ESPN:', e.message);
+              return;
             }
 
             if (!espnData.events || espnData.events.length === 0) {
-              console.log('No events found in ESPN data');
-              process.exit(0);
+              console.log('No events found');
+              return;
             }
 
-            console.log(`Found ${espnData.events.length} events`);
+            console.log('Found ' + espnData.events.length + ' events');
 
-            // Read current HTML
             let html = fs.readFileSync('index.html', 'utf8');
             let matchesJson = JSON.parse(fs.readFileSync('data/matches.json', 'utf8'));
             let anyUpdates = false;
 
-            // Process each match from ESPN
             for (const event of espnData.events) {
-              const competition = event.competitions?.[0];
-              if (!competition) continue;
+              const comp = event.competitions && event.competitions[0];
+              if (!comp) continue;
 
-              const statusType = competition.status?.type?.name;
-              const homeTeamData = competition.competitors?.find(c => c.homeAway === 'home');
-              const awayTeamData = competition.competitors?.find(c => c.homeAway === 'away');
+              const status = comp.status && comp.status.type && comp.status.type.name;
+              const home = comp.competitors && comp.competitors.find(c => c.homeAway === 'home');
+              const away = comp.competitors && comp.competitors.find(c => c.homeAway === 'away');
 
-              if (!homeTeamData || !awayTeamData) continue;
+              if (!home || !away) continue;
 
-              const homeName = homeTeamData.team?.displayName || homeTeamData.team?.name;
-              const awayName = awayTeamData.team?.displayName || awayTeamData.team?.name;
-              const homeScore = homeTeamData.score;
-              const awayScore = awayTeamData.score;
+              const homeName = normalizeName(home.team.displayName || home.team.name);
+              const awayName = normalizeName(away.team.displayName || away.team.name);
+              const homeScore = home.score;
+              const awayScore = away.score;
 
-              console.log(`ESPN: ${homeName} ${homeScore} - ${awayScore} ${awayName} [${statusType}]`);
+              console.log('ESPN: ' + homeName + ' ' + homeScore + ' - ' + awayScore + ' ' + awayName + ' [' + status + ']');
 
-              // Only process matches that are in progress or finished
-              if (statusType === 'STATUS_IN_PROGRESS' || 
-                  statusType === 'STATUS_HALFTIME' ||
-                  statusType === 'STATUS_OVERTIME' ||
-                  statusType === 'STATUS_FIRST_HALF' ||
-                  statusType === 'STATUS_SECOND_HALF' ||
-                  statusType === 'STATUS_END_PERIOD' ||
-                  statusType === 'STATUS_FULL_TIME' ||
-                  statusType === 'STATUS_FINAL' ||
-                  statusType === 'STATUS_FINAL_AET' ||
-                  statusType === 'STATUS_FINAL_PEN') {
-                
-                const normalizedHome = normalizeName(homeName);
-                const normalizedAway = normalizeName(awayName);
-                
+              if (LIVE_STATUSES.includes(status)) {
                 // Update matches.json
-                for (const round of Object.values(matchesJson.matches)) {
+                for (const roundKey of Object.keys(matchesJson.matches)) {
+                  const round = matchesJson.matches[roundKey];
                   for (const match of round) {
                     if (match.homeTeam && match.awayTeam) {
-                      if ((match.homeTeam.name === normalizedHome && match.awayTeam.name === normalizedAway) ||
-                          (match.homeTeam.name === normalizedAway && match.awayTeam.name === normalizedHome)) {
+                      const matchHome = match.homeTeam.name;
+                      const matchAway = match.awayTeam.name;
+                      
+                      if ((matchHome === homeName && matchAway === awayName) ||
+                          (matchHome === awayName && matchAway === homeName)) {
                         
-                        const isReversed = match.homeTeam.name === normalizedAway;
-                        match.homeScore = isReversed ? parseInt(awayScore) : parseInt(homeScore);
-                        match.awayScore = isReversed ? parseInt(homeScore) : parseInt(awayScore);
-                        match.status = statusType === 'STATUS_FINAL' ? 'completed' : 'live';
-                        
-                        if (statusType === 'STATUS_FINAL') {
-                          match.winner = match.homeScore > match.awayScore ? 'home' : 
-                                        match.awayScore > match.homeScore ? 'away' : 'draw';
-                        }
+                        const reversed = matchHome === awayName;
+                        match.homeScore = reversed ? parseInt(awayScore) : parseInt(homeScore);
+                        match.awayScore = reversed ? parseInt(homeScore) : parseInt(awayScore);
+                        match.status = status.includes('FINAL') ? 'completed' : 'live';
                         
                         anyUpdates = true;
-                        console.log(`  -> Updated match ${match.id}: ${match.homeScore}-${match.awayScore}`);
+                        console.log('  -> Updated JSON: ' + match.id);
                       }
                     }
                   }
                 }
 
-                // Update HTML - find and replace score using simpler approach
-                // Search for exact pattern: flag emoji + space + TeamName</span><span class="score">-</span>
-                // This ensures we match "Australia" but not "Australia/EGY"
-                
-                // Build search patterns for home and away teams
-                const homePattern = new RegExp(
-                  `(>\\s*${escapeRegex(normalizedHome)}</span><span class="score">)[^<]*(</span>)`,
+                // Update HTML - search for exact team name ending with </span>
+                // Pattern matches: TeamName</span><span class="score">X</span>
+                const homeRegex = new RegExp(
+                  '(>' + escapeRegex(homeName) + '</span><span class="score">)[^<]*(</span>)',
                   'g'
                 );
-                const awayPattern = new RegExp(
-                  `(>\\s*${escapeRegex(normalizedAway)}</span><span class="score">)[^<]*(</span>)`,
+                const awayRegex = new RegExp(
+                  '(>' + escapeRegex(awayName) + '</span><span class="score">)[^<]*(</span>)',
                   'g'
                 );
+
+                const beforeLen = html.length;
+                html = html.replace(homeRegex, '$1' + homeScore + '$2');
+                html = html.replace(awayRegex, '$1' + awayScore + '$2');
                 
-                let homeUpdated = false;
-                let awayUpdated = false;
-                
-                // Update home team score
-                if (homePattern.test(html)) {
-                  html = html.replace(homePattern, `$1${homeScore}$2`);
-                  homeUpdated = true;
-                }
-                
-                // Update away team score  
-                if (awayPattern.test(html)) {
-                  html = html.replace(awayPattern, `$1${awayScore}$2`);
-                  awayUpdated = true;
-                }
-                
-                if (homeUpdated || awayUpdated) {
-                  console.log(`  -> Updated HTML: ${normalizedHome}=${homeUpdated?homeScore:'FAILED'}, ${normalizedAway}=${awayUpdated?awayScore:'FAILED'}`);
-                } else {
-                  console.log(`  -> Could not find match in HTML for ${normalizedHome} vs ${normalizedAway}`);
+                if (html.length !== beforeLen || html.includes(homeScore) || html.includes(awayScore)) {
+                  console.log('  -> Updated HTML scores');
+                  anyUpdates = true;
                 }
               }
             }
 
             if (anyUpdates) {
-              // Update timestamp
               const now = new Date();
-              const cetOptions = { 
+              const timeStr = now.toLocaleString('en-GB', {
                 timeZone: 'Europe/Paris',
-                month: 'long', day: 'numeric', year: 'numeric',
-                hour: '2-digit', minute: '2-digit', hour12: false
-              };
-              const cetTime = now.toLocaleString('en-US', cetOptions).replace(',', '') + ' CET';
+                day: 'numeric', month: 'long', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+              }) + ' CET';
               
-              html = html.replace(
-                /Last updated:.*?(?=<|$)/,
-                `Last updated: ${cetTime} - Auto-updated`
-              );
-
+              html = html.replace(/Last updated:.*?(?=<)/g, 'Last updated: ' + timeStr + ' - Auto-updated');
               matchesJson.lastUpdated = now.toISOString();
 
-              // Write files
               fs.writeFileSync('index.html', html);
               fs.writeFileSync('data/matches.json', JSON.stringify(matchesJson, null, 2));
-              
               console.log('Files updated successfully');
             } else {
               console.log('No updates needed');
             }
           }
 
-          main().catch(e => {
-            console.error('Error:', e);
-            process.exit(1);
-          });
-          SCRIPT
+          main().catch(e => console.error('Error:', e));
+          EOF
       
-      - name: Commit and push if changes
+      - name: Commit and push
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
           git add -A
           git diff --quiet && git diff --staged --quiet || (git commit -m "🏆 Auto-update: $(TZ='Europe/Paris' date '+%Y-%m-%d %H:%M CET')" && git push)
