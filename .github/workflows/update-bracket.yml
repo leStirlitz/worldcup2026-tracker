@@ -35,6 +35,13 @@ jobs:
             'Cabo Verde': 'Cape Verde'
           };
 
+          // R16 placeholder mappings - which R32 match feeds which R16 slot
+          const R16_MAPPINGS = {
+            'Argentina/CV': { r32Home: 'Argentina', r32Away: 'Cape Verde' },
+            'Australia/EGY': { r32Home: 'Australia', r32Away: 'Egypt' },
+            'Colombia/GHA': { r32Home: 'Colombia', r32Away: 'Ghana' }
+          };
+
           function fetchESPN() {
             return new Promise((resolve, reject) => {
               https.get('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard', (res) => {
@@ -56,8 +63,11 @@ jobs:
           const LIVE_STATUSES = [
             'STATUS_IN_PROGRESS', 'STATUS_HALFTIME', 'STATUS_OVERTIME',
             'STATUS_FIRST_HALF', 'STATUS_SECOND_HALF', 'STATUS_END_PERIOD',
-            'STATUS_END_OF_EXTRATIME', 'STATUS_FULL_TIME', 'STATUS_FINAL',
-            'STATUS_FINAL_AET', 'STATUS_FINAL_PEN', 'STATUS_SHOOTOUT'
+            'STATUS_END_OF_EXTRATIME', 'STATUS_SHOOTOUT'
+          ];
+
+          const FINAL_STATUSES = [
+            'STATUS_FULL_TIME', 'STATUS_FINAL', 'STATUS_FINAL_AET', 'STATUS_FINAL_PEN'
           ];
 
           async function main() {
@@ -96,10 +106,27 @@ jobs:
               const awayName = normalizeName(away.team.displayName || away.team.name);
               const homeScore = home.score;
               const awayScore = away.score;
+              const homeWinner = home.winner;
+              const awayWinner = away.winner;
 
               console.log('ESPN: ' + homeName + ' ' + homeScore + ' - ' + awayScore + ' ' + awayName + ' [' + status + ']');
+              if (homeWinner !== undefined) {
+                console.log('  Winner: ' + (homeWinner ? homeName : awayWinner ? awayName : 'draw/pending'));
+              }
 
-              if (LIVE_STATUSES.includes(status)) {
+              const isLive = LIVE_STATUSES.includes(status);
+              const isFinal = FINAL_STATUSES.includes(status);
+
+              if (isLive || isFinal) {
+                // Determine winner
+                let winnerName = null;
+                if (isFinal) {
+                  if (homeWinner) winnerName = homeName;
+                  else if (awayWinner) winnerName = awayName;
+                  else if (parseInt(homeScore) > parseInt(awayScore)) winnerName = homeName;
+                  else if (parseInt(awayScore) > parseInt(homeScore)) winnerName = awayName;
+                }
+
                 // Update matches.json
                 for (const roundKey of Object.keys(matchesJson.matches)) {
                   const round = matchesJson.matches[roundKey];
@@ -114,7 +141,10 @@ jobs:
                         const reversed = matchHome === awayName;
                         match.homeScore = reversed ? parseInt(awayScore) : parseInt(homeScore);
                         match.awayScore = reversed ? parseInt(homeScore) : parseInt(awayScore);
-                        match.status = status.includes('FINAL') ? 'completed' : 'live';
+                        match.status = isFinal ? 'completed' : 'live';
+                        if (winnerName) {
+                          match.winner = winnerName === matchHome ? 'home' : 'away';
+                        }
                         
                         anyUpdates = true;
                         console.log('  -> Updated JSON: ' + match.id);
@@ -123,9 +153,19 @@ jobs:
                   }
                 }
 
-                // Update HTML - search for exact team name ending with </span>
-                // Pattern matches: TeamName</span><span class="score">X</span>
-                // Note: there's a space before team name after the flag
+                // Build score display (with penalties if applicable)
+                let homeDisplay = homeScore;
+                let awayDisplay = awayScore;
+                if (status === 'STATUS_FINAL_PEN') {
+                  // Try to get penalty scores from the event details
+                  const detail = comp.status && comp.status.type && comp.status.detail;
+                  if (detail && detail.includes('(')) {
+                    // Format like "1-1 (4-3 PEN)"
+                    console.log('  Penalty detail: ' + detail);
+                  }
+                }
+
+                // Update HTML scores
                 const homeRegex = new RegExp(
                   '(>\\s*' + escapeRegex(homeName) + '</span><span class="score">)[^<]*(</span>)',
                   'g'
@@ -135,14 +175,63 @@ jobs:
                   'g'
                 );
 
-                const beforeLen = html.length;
-                html = html.replace(homeRegex, '$1' + homeScore + '$2');
-                html = html.replace(awayRegex, '$1' + awayScore + '$2');
-                
-                if (html.length !== beforeLen || html.includes(homeScore) || html.includes(awayScore)) {
-                  console.log('  -> Updated HTML scores');
-                  anyUpdates = true;
+                html = html.replace(homeRegex, '$1' + homeDisplay + '$2');
+                html = html.replace(awayRegex, '$1' + awayDisplay + '$2');
+
+                // Update match status class (upcoming -> live or completed)
+                // Find the match div containing both team names and update its class
+                const matchDivRegex = new RegExp(
+                  '(<div class="match )([^"]*)(">\\s*' +
+                  '<div class="team[^"]*">.*?' + escapeRegex(homeName) + '.*?</div>\\s*' +
+                  '<div class="team[^"]*">.*?' + escapeRegex(awayName) + '.*?</div>)',
+                  'gs'
+                );
+                const matchDivRegex2 = new RegExp(
+                  '(<div class="match )([^"]*)(">\\s*' +
+                  '<div class="team[^"]*">.*?' + escapeRegex(awayName) + '.*?</div>\\s*' +
+                  '<div class="team[^"]*">.*?' + escapeRegex(homeName) + '.*?</div>)',
+                  'gs'
+                );
+
+                const newClass = isFinal ? 'completed' : 'live';
+                html = html.replace(matchDivRegex, '$1' + newClass + '$3');
+                html = html.replace(matchDivRegex2, '$1' + newClass + '$3');
+
+                // Update winner/loser classes on team divs
+                if (isFinal && winnerName) {
+                  const loserName = winnerName === homeName ? awayName : homeName;
+                  
+                  // Add winner class
+                  const winnerTeamRegex = new RegExp(
+                    '(<div class="team)([^"]*)(">\\s*<span class="team-name">.*?' + escapeRegex(winnerName) + '</span>)',
+                    'g'
+                  );
+                  html = html.replace(winnerTeamRegex, '$1 winner$3');
+                  
+                  // Add loser class
+                  const loserTeamRegex = new RegExp(
+                    '(<div class="team)([^"]*)(">\\s*<span class="team-name">.*?' + escapeRegex(loserName) + '</span>)',
+                    'g'
+                  );
+                  html = html.replace(loserTeamRegex, '$1 loser$3');
+                  
+                  console.log('  -> Updated winner/loser styling');
+
+                  // Update R16 placeholders with winner
+                  for (const [placeholder, teams] of Object.entries(R16_MAPPINGS)) {
+                    if ((teams.r32Home === homeName && teams.r32Away === awayName) ||
+                        (teams.r32Home === awayName && teams.r32Away === homeName)) {
+                      
+                      // Replace placeholder with winner name
+                      const placeholderRegex = new RegExp(escapeRegex(placeholder), 'g');
+                      html = html.replace(placeholderRegex, winnerName);
+                      console.log('  -> Updated R16: ' + placeholder + ' -> ' + winnerName);
+                    }
+                  }
                 }
+
+                console.log('  -> Updated HTML');
+                anyUpdates = true;
               }
             }
 
