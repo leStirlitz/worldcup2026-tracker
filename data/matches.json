@@ -103,7 +103,7 @@
         "date": "2026-07-01",
         "time": "21:00",
         "venue": "Atlanta",
-        "homeTeam": { "code": "ENG", "name": "England", "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
+        "homeTeam": { "code": "ENG", "name": "England", "flag": "ENG" },
         "awayTeam": { "code": "COD", "name": "DR Congo", "flag": "🇨🇩" },
         "homeScore": 2,
         "awayScore": 1,
@@ -254,7 +254,7 @@
         "time": "21:00",
         "venue": "Mexico City",
         "homeTeam": { "code": "MEX", "name": "Mexico", "flag": "🇲🇽" },
-        "awayTeam": { "code": "ENG", "name": "England", "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
+        "awayTeam": { "code": "ENG", "name": "England", "flag": "ENG" },
         "homeScore": null,
         "awayScore": null,
         "status": "scheduled",
@@ -326,8 +326,11 @@
   "espnTeamMapping": {
     "United States": "USA",
     "Korea Republic": "South Korea",
-    "Côte d'Ivoire": "Ivory Coast",
+    "Cote d'Ivoire": "Ivory Coast",
     "Bosnia-Herzegovina": "Bosnia",
     "Bosnia and Herzegovina": "Bosnia",
     "Republic of Ireland": "Ireland",
     "Congo DR": "DR Congo",
+    "Cabo Verde": "Cape Verde"
+  }
+}
