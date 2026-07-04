@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: '20'
       
-      - name: Fetch ESPN and update matches.json
+      - name: Fetch ESPN and update data
         run: |
           node << 'EOF'
           const fs = require('fs');
@@ -47,12 +47,18 @@ jobs:
             'STATUS_OVERTIME', 'STATUS_END_OF_EXTRATIME'
           ];
 
-          function fetchESPN() {
+          function fetchJson(url) {
             return new Promise((resolve, reject) => {
-              https.get('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard', (res) => {
+              https.get(url, (res) => {
                 let data = '';
                 res.on('data', chunk => data += chunk);
-                res.on('end', () => resolve(JSON.parse(data)));
+                res.on('end', () => {
+                  try {
+                    resolve(JSON.parse(data));
+                  } catch (e) {
+                    reject(new Error('Failed to parse JSON: ' + e.message));
+                  }
+                });
               }).on('error', reject);
             });
           }
@@ -61,25 +67,24 @@ jobs:
             return ESPN_TO_JSON[name] || name;
           }
 
-          async function main() {
-            console.log('Fetching ESPN World Cup data...');
+          // Update match scores from ESPN scoreboard
+          async function updateMatches(matchesJson) {
+            console.log('Fetching ESPN World Cup scoreboard...');
             
             let espnData;
             try {
-              espnData = await fetchESPN();
+              espnData = await fetchJson('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard');
             } catch(e) {
-              console.log('Failed to fetch ESPN:', e.message);
-              return;
+              console.log('Failed to fetch ESPN scoreboard:', e.message);
+              return false;
             }
 
             if (!espnData.events || espnData.events.length === 0) {
               console.log('No events found');
-              return;
+              return false;
             }
 
             console.log('Found ' + espnData.events.length + ' events');
-
-            let matchesJson = JSON.parse(fs.readFileSync('data/matches.json', 'utf8'));
             let anyUpdates = false;
 
             for (const event of espnData.events) {
@@ -109,40 +114,29 @@ jobs:
                 continue;
               }
 
-              // Find matching match in JSON by team names (exact match by ID)
+              // Find matching match in JSON
               let foundMatch = null;
-              let foundRound = null;
-
               for (const [roundKey, roundMatches] of Object.entries(matchesJson.matches)) {
                 for (const match of roundMatches) {
                   if (!match.homeTeam || !match.awayTeam) continue;
                   
-                  // Match by both team names (in either order)
                   const jsonHome = match.homeTeam.name;
                   const jsonAway = match.awayTeam.name;
                   
                   if ((jsonHome === espnHomeName && jsonAway === espnAwayName) ||
                       (jsonHome === espnAwayName && jsonAway === espnHomeName)) {
                     
-                    // Only update if not already completed with different score
-                    // This prevents updating wrong matches with same teams
-                    if (match.status === 'completed' && 
-                        match.homeScore !== null && 
-                        match.awayScore !== null) {
-                      // Already completed - verify it's the same match
+                    if (match.status === 'completed' && match.homeScore !== null) {
                       const reversed = jsonHome === espnAwayName;
                       const expectedHome = reversed ? awayScore : homeScore;
                       const expectedAway = reversed ? homeScore : awayScore;
                       
                       if (match.homeScore !== expectedHome || match.awayScore !== expectedAway) {
-                        // Different scores - this might be a different match (same teams different round)
-                        console.log('  -> Skipping ' + match.id + ' (already completed with different score)');
                         continue;
                       }
                     }
                     
                     foundMatch = match;
-                    foundRound = roundKey;
                     break;
                   }
                 }
@@ -150,18 +144,14 @@ jobs:
               }
 
               if (!foundMatch) {
-                console.log('  -> No matching match found in JSON');
+                console.log('  -> No matching match found');
                 continue;
               }
 
-              // Determine if teams are reversed (ESPN home != JSON home)
               const reversed = foundMatch.homeTeam.name === espnAwayName;
-              
-              // Update scores
               const newHomeScore = reversed ? awayScore : homeScore;
               const newAwayScore = reversed ? homeScore : awayScore;
               
-              // Check if update is needed
               const needsUpdate = foundMatch.homeScore !== newHomeScore ||
                                   foundMatch.awayScore !== newAwayScore ||
                                   (isLive && foundMatch.status !== 'live') ||
@@ -172,12 +162,10 @@ jobs:
                 continue;
               }
 
-              // Apply updates
               foundMatch.homeScore = newHomeScore;
               foundMatch.awayScore = newAwayScore;
               foundMatch.status = isFinal ? 'completed' : 'live';
 
-              // Determine winner
               if (isFinal) {
                 if (reversed) {
                   foundMatch.winner = awayWinner ? 'home' : homeWinner ? 'away' : null;
@@ -185,33 +173,213 @@ jobs:
                   foundMatch.winner = homeWinner ? 'home' : awayWinner ? 'away' : null;
                 }
                 
-                // Fallback: determine by score if winner flags not set
                 if (!foundMatch.winner && newHomeScore !== newAwayScore) {
                   foundMatch.winner = newHomeScore > newAwayScore ? 'home' : 'away';
                 }
               }
 
-              // Handle penalties
               if (status === 'STATUS_FINAL_PEN') {
-                // Try to extract penalty scores
-                const detail = comp.status && comp.status.type && comp.status.detail;
-                console.log('  -> Penalty match, detail: ' + detail);
                 foundMatch.notes = 'PKs';
-                // Penalty scores would need to be extracted from detail or shootout data
-              } else if (status === 'STATUS_FINAL_AET' || status === 'STATUS_OVERTIME' || status === 'STATUS_END_OF_EXTRATIME') {
+              } else if (status === 'STATUS_FINAL_AET' || status === 'STATUS_OVERTIME') {
                 foundMatch.notes = 'AET';
               }
 
-              console.log('  -> Updated ' + foundMatch.id + ': ' + newHomeScore + '-' + newAwayScore + ' (' + foundMatch.status + ')');
+              console.log('  -> Updated ' + foundMatch.id + ': ' + newHomeScore + '-' + newAwayScore);
               anyUpdates = true;
             }
 
-            if (anyUpdates) {
-              matchesJson.lastUpdated = new Date().toISOString();
-              fs.writeFileSync('data/matches.json', JSON.stringify(matchesJson, null, 2));
-              console.log('matches.json updated successfully');
+            return anyUpdates;
+          }
+
+          // Update player stats from ESPN leaders API
+          async function updateStats(statsJson) {
+            console.log('\nFetching ESPN World Cup leaders...');
+            
+            let leadersData;
+            try {
+              leadersData = await fetchJson('https://site.api.espn.com/apis/v2/sports/soccer/fifa.world/leaders');
+            } catch(e) {
+              console.log('Failed to fetch ESPN leaders:', e.message);
+              return false;
+            }
+
+            if (!leadersData.leaders || leadersData.leaders.length === 0) {
+              console.log('No leaders data found');
+              return false;
+            }
+
+            console.log('Found leaders data');
+            let anyUpdates = false;
+
+            // Find goals category
+            const goalsLeaders = leadersData.leaders.find(l => 
+              l.name === 'goals' || l.displayName === 'Goals' || l.abbreviation === 'G'
+            );
+            
+            // Find assists category
+            const assistsLeaders = leadersData.leaders.find(l => 
+              l.name === 'assists' || l.displayName === 'Assists' || l.abbreviation === 'A'
+            );
+
+            if (goalsLeaders && goalsLeaders.leaders) {
+              console.log('Processing ' + goalsLeaders.leaders.length + ' goal scorers');
+              
+              const newGoldenBoot = [];
+              let rank = 0;
+              let lastGoals = -1;
+              
+              for (let i = 0; i < Math.min(goalsLeaders.leaders.length, 20); i++) {
+                const leader = goalsLeaders.leaders[i];
+                const athlete = leader.athlete;
+                const stats = leader.statistics || {};
+                
+                if (!athlete) continue;
+                
+                const goals = parseInt(leader.value || stats.goals || 0);
+                const assists = parseInt(stats.assists || 0);
+                const played = parseInt(stats.gamesPlayed || stats.appearances || 0);
+                
+                // Calculate rank (same goals = same rank)
+                if (goals !== lastGoals) {
+                  rank = i + 1;
+                  lastGoals = goals;
+                }
+                
+                const teamName = athlete.team ? (athlete.team.displayName || athlete.team.name) : 'Unknown';
+                const teamCode = athlete.team ? (athlete.team.abbreviation || '') : '';
+                
+                newGoldenBoot.push({
+                  rank: rank,
+                  name: athlete.displayName || athlete.fullName,
+                  country: normalizeName(teamName),
+                  countryCode: teamCode,
+                  flag: teamCode,
+                  club: '', // ESPN doesn't provide club info in this endpoint
+                  played: played,
+                  goals: goals,
+                  assists: assists
+                });
+              }
+              
+              if (newGoldenBoot.length > 0) {
+                // Preserve club info from existing data
+                for (const newPlayer of newGoldenBoot) {
+                  const existing = statsJson.goldenBoot.find(p => 
+                    p.name.toLowerCase() === newPlayer.name.toLowerCase() ||
+                    p.name.includes(newPlayer.name.split(' ').pop())
+                  );
+                  if (existing && existing.club) {
+                    newPlayer.club = existing.club;
+                  }
+                }
+                
+                statsJson.goldenBoot = newGoldenBoot;
+                anyUpdates = true;
+                console.log('Updated Golden Boot with ' + newGoldenBoot.length + ' players');
+              }
+            }
+
+            if (assistsLeaders && assistsLeaders.leaders) {
+              console.log('Processing ' + assistsLeaders.leaders.length + ' assist providers');
+              
+              const newAssists = [];
+              let rank = 0;
+              let lastAssists = -1;
+              
+              for (let i = 0; i < Math.min(assistsLeaders.leaders.length, 15); i++) {
+                const leader = assistsLeaders.leaders[i];
+                const athlete = leader.athlete;
+                const stats = leader.statistics || {};
+                
+                if (!athlete) continue;
+                
+                const assists = parseInt(leader.value || stats.assists || 0);
+                const goals = parseInt(stats.goals || 0);
+                const played = parseInt(stats.gamesPlayed || stats.appearances || 0);
+                
+                if (assists !== lastAssists) {
+                  rank = i + 1;
+                  lastAssists = assists;
+                }
+                
+                const teamName = athlete.team ? (athlete.team.displayName || athlete.team.name) : 'Unknown';
+                const teamCode = athlete.team ? (athlete.team.abbreviation || '') : '';
+                
+                newAssists.push({
+                  rank: rank,
+                  name: athlete.displayName || athlete.fullName,
+                  country: normalizeName(teamName),
+                  countryCode: teamCode,
+                  flag: teamCode,
+                  club: '',
+                  played: played,
+                  assists: assists,
+                  goals: goals
+                });
+              }
+              
+              if (newAssists.length > 0) {
+                // Preserve club info
+                for (const newPlayer of newAssists) {
+                  const existing = statsJson.assists.find(p => 
+                    p.name.toLowerCase() === newPlayer.name.toLowerCase() ||
+                    p.name.includes(newPlayer.name.split(' ').pop())
+                  );
+                  if (existing && existing.club) {
+                    newPlayer.club = existing.club;
+                  }
+                }
+                
+                statsJson.assists = newAssists;
+                anyUpdates = true;
+                console.log('Updated Assists with ' + newAssists.length + ' players');
+              }
+            }
+
+            // Update star players from the combined data
+            if (anyUpdates && statsJson.goldenBoot.length > 0) {
+              const starNames = ['Messi', 'Mbappe', 'Mbappé', 'Ronaldo', 'Haaland', 'Vinicius', 'Kane', 'Bellingham', 'Yamal'];
+              
+              for (const star of statsJson.starPlayers) {
+                const goldenBootEntry = statsJson.goldenBoot.find(p => 
+                  starNames.some(n => p.name.includes(n) && star.name.includes(n))
+                );
+                
+                if (goldenBootEntry) {
+                  star.played = goldenBootEntry.played;
+                  star.goals = goldenBootEntry.goals;
+                  star.assists = goldenBootEntry.assists;
+                }
+              }
+              console.log('Updated star players');
+            }
+
+            return anyUpdates;
+          }
+
+          async function main() {
+            let matchesJson = JSON.parse(fs.readFileSync('data/matches.json', 'utf8'));
+            let statsJson = JSON.parse(fs.readFileSync('data/stats.json', 'utf8'));
+            
+            const matchesUpdated = await updateMatches(matchesJson);
+            const statsUpdated = await updateStats(statsJson);
+
+            if (matchesUpdated || statsUpdated) {
+              const now = new Date().toISOString();
+              
+              if (matchesUpdated) {
+                matchesJson.lastUpdated = now;
+                fs.writeFileSync('data/matches.json', JSON.stringify(matchesJson, null, 2));
+                console.log('\nmatches.json updated');
+              }
+              
+              if (statsUpdated) {
+                statsJson.lastUpdated = now;
+                fs.writeFileSync('data/stats.json', JSON.stringify(statsJson, null, 2));
+                console.log('stats.json updated');
+              }
             } else {
-              console.log('No updates needed');
+              console.log('\nNo updates needed');
             }
           }
 
@@ -222,5 +390,5 @@ jobs:
         run: |
           git config user.email "action@github.com"
           git config user.name "GitHub Action"
-          git add data/matches.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update scores: $(TZ='Europe/Paris' date '+%Y-%m-%d %H:%M CET')" && git push)
+          git add data/matches.json data/stats.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update: $(TZ='Europe/Paris' date '+%Y-%m-%d %H:%M CET')" && git push)
