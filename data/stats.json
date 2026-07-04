@@ -11,7 +11,7 @@
   },
   "goldenBoot": [
     { "rank": 1, "name": "Kylian Mbappe", "country": "France", "countryCode": "FRA", "flag": "FR", "club": "Real Madrid", "played": 4, "goals": 6, "assists": 2 },
-    { "rank": 1, "name": "Lionel Messi", "country": "Argentina", "countryCode": "ARG", "flag": "AR", "club": "Inter Miami", "played": 3, "goals": 6, "assists": 1 },
+    { "rank": 1, "name": "Lionel Messi", "country": "Argentina", "countryCode": "ARG", "flag": "AR", "club": "Inter Miami", "played": 4, "goals": 7, "assists": 1 },
     { "rank": 3, "name": "Erling Haaland", "country": "Norway", "countryCode": "NOR", "flag": "NO", "club": "Man City", "played": 4, "goals": 5, "assists": 1 },
     { "rank": 3, "name": "Harry Kane", "country": "England", "countryCode": "ENG", "flag": "ENG", "club": "Bayern Munich", "played": 4, "goals": 5, "assists": 0 },
     { "rank": 5, "name": "Ousmane Dembele", "country": "France", "countryCode": "FRA", "flag": "FR", "club": "PSG", "played": 4, "goals": 4, "assists": 2 },
@@ -22,7 +22,7 @@
     { "rank": 9, "name": "Cristiano Ronaldo", "country": "Portugal", "countryCode": "POR", "flag": "PT", "club": "Al Nassr", "played": 4, "goals": 3, "assists": 0 },
     { "rank": 9, "name": "Julian Quinones", "country": "Mexico", "countryCode": "MEX", "flag": "MX", "club": "Club America", "played": 4, "goals": 3, "assists": 1 },
     { "rank": 9, "name": "Cody Gakpo", "country": "Netherlands", "countryCode": "NED", "flag": "NL", "club": "Liverpool", "played": 4, "goals": 3, "assists": 1 },
-    { "rank": 9, "name": "Folarin Balogun", "country": "USA", "countryCode": "USA", "flag": "US", "club": "Monaco", "played": 3, "goals": 3, "assists": 0 },
+    { "rank": 9, "name": "Folarin Balogun", "country": "USA", "countryCode": "USA", "flag": "US", "club": "Monaco", "played": 4, "goals": 3, "assists": 0 },
     { "rank": 9, "name": "Johan Manzambi", "country": "Switzerland", "countryCode": "SUI", "flag": "CH", "club": "Young Boys", "played": 4, "goals": 3, "assists": 2 },
     { "rank": 9, "name": "Jonathan David", "country": "Canada", "countryCode": "CAN", "flag": "CA", "club": "Lille", "played": 4, "goals": 3, "assists": 0 }
   ],
@@ -39,7 +39,7 @@
     { "rank": 7, "name": "Bukayo Saka", "country": "England", "countryCode": "ENG", "flag": "ENG", "club": "Arsenal", "played": 4, "assists": 2, "goals": 1 }
   ],
   "starPlayers": [
-    { "name": "Messi", "country": "Argentina", "flag": "AR", "played": 4, "goals": 6, "assists": 1, "status": "R16 Jul 7", "statusColor": "#f59e0b" },
+    { "name": "Messi", "country": "Argentina", "flag": "AR", "played": 4, "goals": 7, "assists": 1, "status": "R16 Jul 7", "statusColor": "#f59e0b" },
     { "name": "Mbappe", "country": "France", "flag": "FR", "played": 4, "goals": 6, "assists": 2, "status": "R16 Jul 4", "statusColor": "#f59e0b" },
     { "name": "Ronaldo", "country": "Portugal", "flag": "PT", "played": 4, "goals": 3, "assists": 0, "status": "R16 Jul 6", "statusColor": "#f59e0b" },
     { "name": "Haaland", "country": "Norway", "flag": "NO", "played": 4, "goals": 5, "assists": 1, "status": "R16 Jul 5", "statusColor": "#f59e0b" },
@@ -55,7 +55,7 @@
     { "rank": 4, "name": "Luka Modric", "country": "Croatia", "flag": "HR", "position": "MF", "matches": 4, "totalKm": 46.4, "avgKm": 11.60 },
     { "rank": 5, "name": "Declan Rice", "country": "England", "flag": "ENG", "position": "MF", "matches": 4, "totalKm": 45.9, "avgKm": 11.48 },
     { "rank": 6, "name": "Ime Okon", "country": "South Africa", "flag": "ZA", "position": "MF", "matches": 4, "totalKm": 39.6, "avgKm": 9.90 },
-    { "rank": 618, "name": "Lionel Messi", "country": "Argentina", "flag": "AR", "position": "FW", "matches": 3, "totalKm": 24.3, "avgKm": 8.10, "highlight": true }
+    { "rank": 618, "name": "Lionel Messi", "country": "Argentina", "flag": "AR", "position": "FW", "matches": 4, "totalKm": 32.4, "avgKm": 8.10, "highlight": true }
   ],
   "redCards": [
     { "match": "MEX vs RSA", "homeFlag": "MX", "awayFlag": "ZA", "player": "Sithole", "playerFlag": "ZA", "minute": "38'", "reason": "DOGSO - Last defender foul" },
