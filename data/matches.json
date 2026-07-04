@@ -206,10 +206,10 @@
         "venue": "Kansas City",
         "homeTeam": { "code": "COL", "name": "Colombia", "flag": "🇨🇴" },
         "awayTeam": { "code": "GHA", "name": "Ghana", "flag": "🇬🇭" },
-        "homeScore": null,
-        "awayScore": null,
-        "status": "scheduled",
-        "winner": null
+        "homeScore": 1,
+        "awayScore": 0,
+        "status": "completed",
+        "winner": "home"
       }
     ],
     "r16": [
@@ -303,10 +303,10 @@
         "time": "21:00",
         "venue": "Vancouver",
         "homeTeam": { "code": "SUI", "name": "Switzerland", "flag": "🇨🇭" },
-        "awayTeamSource": "r32_16",
+        "awayTeam": { "code": "COL", "name": "Colombia", "flag": "🇨🇴" },
         "homeScore": null,
         "awayScore": null,
-        "status": "pending",
+        "status": "scheduled",
         "winner": null
       }
     ],
