@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-04T20:11:56.890Z",
+  "lastUpdated": "2026-07-04T21:16:04.327Z",
   "tournament": {
     "name": "FIFA World Cup 2026",
     "stage": "Round of 32",
@@ -376,9 +376,9 @@
           "name": "France",
           "flag": "🇫🇷"
         },
-        "homeScore": null,
-        "awayScore": null,
-        "status": "scheduled",
+        "homeScore": 0,
+        "awayScore": 0,
+        "status": "live",
         "winner": null
       },
       {
