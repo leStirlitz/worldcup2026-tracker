@@ -19,13 +19,14 @@ jobs:
         with:
           node-version: '20'
       
-      - name: Fetch ESPN and update scores
+      - name: Fetch ESPN and update matches.json
         run: |
           node << 'EOF'
           const fs = require('fs');
           const https = require('https');
 
-          const ESPN_TO_HTML = {
+          // Team name normalization from ESPN to our JSON format
+          const ESPN_TO_JSON = {
             'United States': 'USA',
             'Korea Republic': 'South Korea',
             "Côte d'Ivoire": 'Ivory Coast',
@@ -35,12 +36,16 @@ jobs:
             'Cabo Verde': 'Cape Verde'
           };
 
-          // R16 placeholder mappings - which R32 match feeds which R16 slot
-          const R16_MAPPINGS = {
-            'Argentina/CV': { r32Home: 'Argentina', r32Away: 'Cape Verde' },
-            'Australia/EGY': { r32Home: 'Australia', r32Away: 'Egypt' },
-            'Colombia/GHA': { r32Home: 'Colombia', r32Away: 'Ghana' }
-          };
+          const LIVE_STATUSES = [
+            'STATUS_IN_PROGRESS', 'STATUS_HALFTIME',
+            'STATUS_FIRST_HALF', 'STATUS_SECOND_HALF', 'STATUS_END_PERIOD',
+            'STATUS_SHOOTOUT'
+          ];
+
+          const FINAL_STATUSES = [
+            'STATUS_FULL_TIME', 'STATUS_FINAL', 'STATUS_FINAL_AET', 'STATUS_FINAL_PEN',
+            'STATUS_OVERTIME', 'STATUS_END_OF_EXTRATIME'
+          ];
 
           function fetchESPN() {
             return new Promise((resolve, reject) => {
@@ -53,23 +58,8 @@ jobs:
           }
 
           function normalizeName(name) {
-            return ESPN_TO_HTML[name] || name;
+            return ESPN_TO_JSON[name] || name;
           }
-
-          function escapeRegex(str) {
-            return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          }
-
-          const LIVE_STATUSES = [
-            'STATUS_IN_PROGRESS', 'STATUS_HALFTIME',
-            'STATUS_FIRST_HALF', 'STATUS_SECOND_HALF', 'STATUS_END_PERIOD',
-            'STATUS_SHOOTOUT'
-          ];
-
-          const FINAL_STATUSES = [
-            'STATUS_FULL_TIME', 'STATUS_FINAL', 'STATUS_FINAL_AET', 'STATUS_FINAL_PEN',
-            'STATUS_OVERTIME', 'STATUS_END_OF_EXTRATIME'
-          ];
 
           async function main() {
             console.log('Fetching ESPN World Cup data...');
@@ -89,7 +79,6 @@ jobs:
 
             console.log('Found ' + espnData.events.length + ' events');
 
-            let html = fs.readFileSync('index.html', 'utf8');
             let matchesJson = JSON.parse(fs.readFileSync('data/matches.json', 'utf8'));
             let anyUpdates = false;
 
@@ -103,153 +92,124 @@ jobs:
 
               if (!home || !away) continue;
 
-              const homeName = normalizeName(home.team.displayName || home.team.name);
-              const awayName = normalizeName(away.team.displayName || away.team.name);
-              const homeScore = home.score;
-              const awayScore = away.score;
+              const espnHomeName = normalizeName(home.team.displayName || home.team.name);
+              const espnAwayName = normalizeName(away.team.displayName || away.team.name);
+              const homeScore = parseInt(home.score) || 0;
+              const awayScore = parseInt(away.score) || 0;
               const homeWinner = home.winner;
               const awayWinner = away.winner;
 
-              console.log('ESPN: ' + homeName + ' ' + homeScore + ' - ' + awayScore + ' ' + awayName + ' [' + status + ']');
-              if (homeWinner !== undefined) {
-                console.log('  Winner: ' + (homeWinner ? homeName : awayWinner ? awayName : 'draw/pending'));
-              }
+              console.log('ESPN: ' + espnHomeName + ' ' + homeScore + ' - ' + awayScore + ' ' + espnAwayName + ' [' + status + ']');
 
               const isLive = LIVE_STATUSES.includes(status);
               const isFinal = FINAL_STATUSES.includes(status);
 
-              if (isLive || isFinal) {
-                // Determine winner
-                let winnerName = null;
-                if (isFinal) {
-                  if (homeWinner) winnerName = homeName;
-                  else if (awayWinner) winnerName = awayName;
-                  else if (parseInt(homeScore) > parseInt(awayScore)) winnerName = homeName;
-                  else if (parseInt(awayScore) > parseInt(homeScore)) winnerName = awayName;
-                }
+              if (!isLive && !isFinal) {
+                console.log('  -> Skipping (not live/final)');
+                continue;
+              }
 
-                // Update matches.json
-                for (const roundKey of Object.keys(matchesJson.matches)) {
-                  const round = matchesJson.matches[roundKey];
-                  for (const match of round) {
-                    if (match.homeTeam && match.awayTeam) {
-                      const matchHome = match.homeTeam.name;
-                      const matchAway = match.awayTeam.name;
+              // Find matching match in JSON by team names (exact match by ID)
+              let foundMatch = null;
+              let foundRound = null;
+
+              for (const [roundKey, roundMatches] of Object.entries(matchesJson.matches)) {
+                for (const match of roundMatches) {
+                  if (!match.homeTeam || !match.awayTeam) continue;
+                  
+                  // Match by both team names (in either order)
+                  const jsonHome = match.homeTeam.name;
+                  const jsonAway = match.awayTeam.name;
+                  
+                  if ((jsonHome === espnHomeName && jsonAway === espnAwayName) ||
+                      (jsonHome === espnAwayName && jsonAway === espnHomeName)) {
+                    
+                    // Only update if not already completed with different score
+                    // This prevents updating wrong matches with same teams
+                    if (match.status === 'completed' && 
+                        match.homeScore !== null && 
+                        match.awayScore !== null) {
+                      // Already completed - verify it's the same match
+                      const reversed = jsonHome === espnAwayName;
+                      const expectedHome = reversed ? awayScore : homeScore;
+                      const expectedAway = reversed ? homeScore : awayScore;
                       
-                      if ((matchHome === homeName && matchAway === awayName) ||
-                          (matchHome === awayName && matchAway === homeName)) {
-                        
-                        const reversed = matchHome === awayName;
-                        match.homeScore = reversed ? parseInt(awayScore) : parseInt(homeScore);
-                        match.awayScore = reversed ? parseInt(homeScore) : parseInt(awayScore);
-                        match.status = isFinal ? 'completed' : 'live';
-                        if (winnerName) {
-                          match.winner = winnerName === matchHome ? 'home' : 'away';
-                        }
-                        
-                        anyUpdates = true;
-                        console.log('  -> Updated JSON: ' + match.id);
+                      if (match.homeScore !== expectedHome || match.awayScore !== expectedAway) {
+                        // Different scores - this might be a different match (same teams different round)
+                        console.log('  -> Skipping ' + match.id + ' (already completed with different score)');
+                        continue;
                       }
                     }
+                    
+                    foundMatch = match;
+                    foundRound = roundKey;
+                    break;
                   }
                 }
-
-                // Build score display (with penalties if applicable)
-                let homeDisplay = homeScore;
-                let awayDisplay = awayScore;
-                if (status === 'STATUS_FINAL_PEN') {
-                  // Try to get penalty scores from the event details
-                  const detail = comp.status && comp.status.type && comp.status.detail;
-                  if (detail && detail.includes('(')) {
-                    // Format like "1-1 (4-3 PEN)"
-                    console.log('  Penalty detail: ' + detail);
-                  }
-                }
-
-                // Update HTML scores
-                const homeRegex = new RegExp(
-                  '(>\\s*' + escapeRegex(homeName) + '</span><span class="score">)[^<]*(</span>)',
-                  'g'
-                );
-                const awayRegex = new RegExp(
-                  '(>\\s*' + escapeRegex(awayName) + '</span><span class="score">)[^<]*(</span>)',
-                  'g'
-                );
-
-                html = html.replace(homeRegex, '$1' + homeDisplay + '$2');
-                html = html.replace(awayRegex, '$1' + awayDisplay + '$2');
-
-                // Update match status class (upcoming -> live or completed)
-                // Find the match div containing both team names and update its class
-                const matchDivRegex = new RegExp(
-                  '(<div class="match )([^"]*)(">\\s*' +
-                  '<div class="team[^"]*">.*?' + escapeRegex(homeName) + '.*?</div>\\s*' +
-                  '<div class="team[^"]*">.*?' + escapeRegex(awayName) + '.*?</div>)',
-                  'gs'
-                );
-                const matchDivRegex2 = new RegExp(
-                  '(<div class="match )([^"]*)(">\\s*' +
-                  '<div class="team[^"]*">.*?' + escapeRegex(awayName) + '.*?</div>\\s*' +
-                  '<div class="team[^"]*">.*?' + escapeRegex(homeName) + '.*?</div>)',
-                  'gs'
-                );
-
-                const newClass = isFinal ? 'completed' : 'live';
-                html = html.replace(matchDivRegex, '$1' + newClass + '$3');
-                html = html.replace(matchDivRegex2, '$1' + newClass + '$3');
-
-                // Update winner/loser classes on team divs
-                if (isFinal && winnerName) {
-                  const loserName = winnerName === homeName ? awayName : homeName;
-                  
-                  // Add winner class
-                  const winnerTeamRegex = new RegExp(
-                    '(<div class="team)([^"]*)(">\\s*<span class="team-name">.*?' + escapeRegex(winnerName) + '</span>)',
-                    'g'
-                  );
-                  html = html.replace(winnerTeamRegex, '$1 winner$3');
-                  
-                  // Add loser class
-                  const loserTeamRegex = new RegExp(
-                    '(<div class="team)([^"]*)(">\\s*<span class="team-name">.*?' + escapeRegex(loserName) + '</span>)',
-                    'g'
-                  );
-                  html = html.replace(loserTeamRegex, '$1 loser$3');
-                  
-                  console.log('  -> Updated winner/loser styling');
-
-                  // Update R16 placeholders with winner
-                  for (const [placeholder, teams] of Object.entries(R16_MAPPINGS)) {
-                    if ((teams.r32Home === homeName && teams.r32Away === awayName) ||
-                        (teams.r32Home === awayName && teams.r32Away === homeName)) {
-                      
-                      // Replace placeholder with winner name
-                      const placeholderRegex = new RegExp(escapeRegex(placeholder), 'g');
-                      html = html.replace(placeholderRegex, winnerName);
-                      console.log('  -> Updated R16: ' + placeholder + ' -> ' + winnerName);
-                    }
-                  }
-                }
-
-                console.log('  -> Updated HTML');
-                anyUpdates = true;
+                if (foundMatch) break;
               }
+
+              if (!foundMatch) {
+                console.log('  -> No matching match found in JSON');
+                continue;
+              }
+
+              // Determine if teams are reversed (ESPN home != JSON home)
+              const reversed = foundMatch.homeTeam.name === espnAwayName;
+              
+              // Update scores
+              const newHomeScore = reversed ? awayScore : homeScore;
+              const newAwayScore = reversed ? homeScore : awayScore;
+              
+              // Check if update is needed
+              const needsUpdate = foundMatch.homeScore !== newHomeScore ||
+                                  foundMatch.awayScore !== newAwayScore ||
+                                  (isLive && foundMatch.status !== 'live') ||
+                                  (isFinal && foundMatch.status !== 'completed');
+
+              if (!needsUpdate) {
+                console.log('  -> No update needed for ' + foundMatch.id);
+                continue;
+              }
+
+              // Apply updates
+              foundMatch.homeScore = newHomeScore;
+              foundMatch.awayScore = newAwayScore;
+              foundMatch.status = isFinal ? 'completed' : 'live';
+
+              // Determine winner
+              if (isFinal) {
+                if (reversed) {
+                  foundMatch.winner = awayWinner ? 'home' : homeWinner ? 'away' : null;
+                } else {
+                  foundMatch.winner = homeWinner ? 'home' : awayWinner ? 'away' : null;
+                }
+                
+                // Fallback: determine by score if winner flags not set
+                if (!foundMatch.winner && newHomeScore !== newAwayScore) {
+                  foundMatch.winner = newHomeScore > newAwayScore ? 'home' : 'away';
+                }
+              }
+
+              // Handle penalties
+              if (status === 'STATUS_FINAL_PEN') {
+                // Try to extract penalty scores
+                const detail = comp.status && comp.status.type && comp.status.detail;
+                console.log('  -> Penalty match, detail: ' + detail);
+                foundMatch.notes = 'PKs';
+                // Penalty scores would need to be extracted from detail or shootout data
+              } else if (status === 'STATUS_FINAL_AET' || status === 'STATUS_OVERTIME' || status === 'STATUS_END_OF_EXTRATIME') {
+                foundMatch.notes = 'AET';
+              }
+
+              console.log('  -> Updated ' + foundMatch.id + ': ' + newHomeScore + '-' + newAwayScore + ' (' + foundMatch.status + ')');
+              anyUpdates = true;
             }
 
             if (anyUpdates) {
-              const now = new Date();
-              const timeStr = now.toLocaleString('en-GB', {
-                timeZone: 'Europe/Paris',
-                day: 'numeric', month: 'long', year: 'numeric',
-                hour: '2-digit', minute: '2-digit'
-              }) + ' CET';
-              
-              html = html.replace(/Last updated:.*?(?=<)/g, 'Last updated: ' + timeStr + ' - Auto-updated');
-              matchesJson.lastUpdated = now.toISOString();
-
-              fs.writeFileSync('index.html', html);
+              matchesJson.lastUpdated = new Date().toISOString();
               fs.writeFileSync('data/matches.json', JSON.stringify(matchesJson, null, 2));
-              console.log('Files updated successfully');
+              console.log('matches.json updated successfully');
             } else {
               console.log('No updates needed');
             }
@@ -262,5 +222,5 @@ jobs:
         run: |
           git config user.email "action@github.com"
           git config user.name "GitHub Action"
-          git add -A
-          git diff --quiet && git diff --staged --quiet || (git commit -m "🏆 Auto-update: $(TZ='Europe/Paris' date '+%Y-%m-%d %H:%M CET')" && git push)
+          git add data/matches.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update scores: $(TZ='Europe/Paris' date '+%Y-%m-%d %H:%M CET')" && git push)
