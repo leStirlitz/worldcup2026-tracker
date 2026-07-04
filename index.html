@@ -1305,7 +1305,7 @@
         const goalClass = p.goals >= 4 ? 'stat-highlight' : '';
         html += `<tr>
           <td class="rank ${rankClass}">${p.rank}</td>
-          <td class="player-name"><span class="player-flag">${p.flag}</span> ${p.name}</td>
+          <td class="player-name">${p.name}</td>
           <td>${p.country}</td><td class="player-club">${p.club}</td>
           <td style="text-align:center;">${p.played}</td>
           <td class="${goalClass}" style="text-align:center;">${p.goals}</td>
@@ -1331,7 +1331,7 @@
         const assistClass = p.assists >= 3 ? 'stat-highlight' : '';
         html += `<tr>
           <td class="rank ${rankClass}">${p.rank}</td>
-          <td class="player-name"><span class="player-flag">${p.flag}</span> ${p.name}</td>
+          <td class="player-name">${p.name}</td>
           <td>${p.country}</td><td class="player-club">${p.club}</td>
           <td style="text-align:center;">${p.played}</td>
           <td class="${assistClass}" style="text-align:center;">${p.assists}</td>
@@ -1347,12 +1347,13 @@
       if (!container || !data.starPlayers) return;
 
       let html = `<table class="player-table">
-        <thead><tr><th>Player</th><th>Pld</th><th>Goals</th><th>Assists</th><th>Status</th></tr></thead><tbody>`;
+        <thead><tr><th>Player</th><th>Country</th><th>Pld</th><th>Goals</th><th>Assists</th><th>Status</th></tr></thead><tbody>`;
 
       for (const p of data.starPlayers) {
         const goalClass = p.goals >= 4 ? 'stat-highlight' : '';
         html += `<tr>
-          <td class="player-name"><span class="player-flag">${p.flag}</span> ${p.name}</td>
+          <td class="player-name">${p.name}</td>
+          <td>${p.country}</td>
           <td>${p.played}</td>
           <td class="${goalClass}">${p.goals}</td>
           <td>${p.assists}</td>
@@ -1379,7 +1380,7 @@
         const rowStyle = p.highlight ? 'background: rgba(239, 68, 68, 0.1);' : '';
         html += `<tr style="${rowStyle}">
           <td class="rank ${rankClass}">${p.rank}</td>
-          <td class="player-name"><span class="player-flag">${p.flag}</span> ${p.name}</td>
+          <td class="player-name">${p.name}</td>
           <td>${p.country}</td><td>${p.position}</td>
           <td style="text-align:center;">${p.matches}</td>
           <td class="${kmClass}" style="text-align:center;">${p.totalKm}</td>
@@ -1400,8 +1401,8 @@
       for (const c of data.redCards) {
         const rowStyle = c.highlight ? 'background: rgba(239, 68, 68, 0.2);' : '';
         html += `<tr style="${rowStyle}">
-          <td>${c.homeFlag} ${c.match} ${c.awayFlag}</td>
-          <td class="player-name"><span class="player-flag">${c.playerFlag}</span> ${c.player}</td>
+          <td>${c.match}</td>
+          <td class="player-name">${c.player}</td>
           <td>${c.minute}</td>
           <td>${c.reason}</td>
         </tr>`;
@@ -1421,7 +1422,7 @@
         const cardClass = t.cards >= 6 ? 'stat-highlight' : '';
         html += `<tr>
           <td class="rank">${t.rank}</td>
-          <td class="player-name"><span class="player-flag">${t.flag}</span> ${t.team}</td>
+          <td class="player-name">${t.team}</td>
           <td>${t.played}</td>
           <td class="${cardClass}">${t.cards}</td>
         </tr>`;
@@ -1442,7 +1443,7 @@
         const resultText = p.result === 'scored' ? '✓ Scored' : '✗ Missed';
         html += `<tr>
           <td>${p.match}</td>
-          <td class="player-name"><span class="player-flag">${p.flag}</span> ${p.team}</td>
+          <td class="player-name">${p.team}</td>
           <td style="${resultStyle}">${resultText}</td>
         </tr>`;
       }
@@ -1460,7 +1461,7 @@
       for (const r of data.referees) {
         html += `<tr>
           <td>${r.name}</td>
-          <td class="player-name"><span class="player-flag">${r.flag}</span> ${r.country}</td>
+          <td>${r.country}</td>
           <td style="text-align:center;">${r.matches}</td>
           <td style="text-align:center;">${r.yellows}</td>
           <td style="text-align:center;">${r.reds}</td>
