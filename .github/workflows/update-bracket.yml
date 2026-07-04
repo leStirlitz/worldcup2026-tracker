@@ -263,3 +263,4 @@ jobs:
           git config user.email "action@github.com"
           git config user.name "GitHub Action"
           git add -A
+          git diff --quiet && git diff --staged --quiet || (git commit -m "🏆 Auto-update: $(TZ='Europe/Paris' date '+%Y-%m-%d %H:%M CET')" && git push)
