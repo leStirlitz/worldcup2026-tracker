@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-04T07:04:57.642Z",
+  "lastUpdated": "2026-07-03T11:00:00+02:00",
   "tournament": {
     "name": "FIFA World Cup 2026",
     "stage": "Round of 32",
@@ -13,16 +13,8 @@
         "date": "2026-06-28",
         "time": "21:00",
         "venue": "Vancouver",
-        "homeTeam": {
-          "code": "CAN",
-          "name": "Canada",
-          "flag": "🇨🇦"
-        },
-        "awayTeam": {
-          "code": "RSA",
-          "name": "South Africa",
-          "flag": "🇿🇦"
-        },
+        "homeTeam": { "code": "CAN", "name": "Canada", "flag": "🇨🇦" },
+        "awayTeam": { "code": "RSA", "name": "South Africa", "flag": "🇿🇦" },
         "homeScore": 1,
         "awayScore": 0,
         "status": "completed",
@@ -33,16 +25,8 @@
         "date": "2026-06-29",
         "time": "18:00",
         "venue": "Guadalajara",
-        "homeTeam": {
-          "code": "NED",
-          "name": "Netherlands",
-          "flag": "🇳🇱"
-        },
-        "awayTeam": {
-          "code": "MAR",
-          "name": "Morocco",
-          "flag": "🇲🇦"
-        },
+        "homeTeam": { "code": "NED", "name": "Netherlands", "flag": "🇳🇱" },
+        "awayTeam": { "code": "MAR", "name": "Morocco", "flag": "🇲🇦" },
         "homeScore": 1,
         "awayScore": 1,
         "homePenalties": 2,
@@ -56,16 +40,8 @@
         "date": "2026-06-29",
         "time": "21:00",
         "venue": "Foxborough",
-        "homeTeam": {
-          "code": "GER",
-          "name": "Germany",
-          "flag": "🇩🇪"
-        },
-        "awayTeam": {
-          "code": "PAR",
-          "name": "Paraguay",
-          "flag": "🇵🇾"
-        },
+        "homeTeam": { "code": "GER", "name": "Germany", "flag": "🇩🇪" },
+        "awayTeam": { "code": "PAR", "name": "Paraguay", "flag": "🇵🇾" },
         "homeScore": 1,
         "awayScore": 1,
         "homePenalties": 3,
@@ -79,16 +55,8 @@
         "date": "2026-06-30",
         "time": "18:00",
         "venue": "East Rutherford",
-        "homeTeam": {
-          "code": "FRA",
-          "name": "France",
-          "flag": "🇫🇷"
-        },
-        "awayTeam": {
-          "code": "SWE",
-          "name": "Sweden",
-          "flag": "🇸🇪"
-        },
+        "homeTeam": { "code": "FRA", "name": "France", "flag": "🇫🇷" },
+        "awayTeam": { "code": "SWE", "name": "Sweden", "flag": "🇸🇪" },
         "homeScore": 3,
         "awayScore": 0,
         "status": "completed",
@@ -99,16 +67,8 @@
         "date": "2026-06-29",
         "time": "00:00",
         "venue": "Houston",
-        "homeTeam": {
-          "code": "BRA",
-          "name": "Brazil",
-          "flag": "🇧🇷"
-        },
-        "awayTeam": {
-          "code": "JPN",
-          "name": "Japan",
-          "flag": "🇯🇵"
-        },
+        "homeTeam": { "code": "BRA", "name": "Brazil", "flag": "🇧🇷" },
+        "awayTeam": { "code": "JPN", "name": "Japan", "flag": "🇯🇵" },
         "homeScore": 2,
         "awayScore": 1,
         "status": "completed",
@@ -119,16 +79,8 @@
         "date": "2026-06-30",
         "time": "21:00",
         "venue": "Arlington",
-        "homeTeam": {
-          "code": "NOR",
-          "name": "Norway",
-          "flag": "🇳🇴"
-        },
-        "awayTeam": {
-          "code": "CIV",
-          "name": "Ivory Coast",
-          "flag": "🇨🇮"
-        },
+        "homeTeam": { "code": "NOR", "name": "Norway", "flag": "🇳🇴" },
+        "awayTeam": { "code": "CIV", "name": "Ivory Coast", "flag": "🇨🇮" },
         "homeScore": 2,
         "awayScore": 1,
         "status": "completed",
@@ -139,16 +91,8 @@
         "date": "2026-06-30",
         "time": "00:00",
         "venue": "Mexico City",
-        "homeTeam": {
-          "code": "MEX",
-          "name": "Mexico",
-          "flag": "🇲🇽"
-        },
-        "awayTeam": {
-          "code": "ECU",
-          "name": "Ecuador",
-          "flag": "🇪🇨"
-        },
+        "homeTeam": { "code": "MEX", "name": "Mexico", "flag": "🇲🇽" },
+        "awayTeam": { "code": "ECU", "name": "Ecuador", "flag": "🇪🇨" },
         "homeScore": 2,
         "awayScore": 0,
         "status": "completed",
@@ -159,16 +103,8 @@
         "date": "2026-07-01",
         "time": "21:00",
         "venue": "Atlanta",
-        "homeTeam": {
-          "code": "ENG",
-          "name": "England",
-          "flag": "ENG"
-        },
-        "awayTeam": {
-          "code": "COD",
-          "name": "DR Congo",
-          "flag": "🇨🇩"
-        },
+        "homeTeam": { "code": "ENG", "name": "England", "flag": "ENG" },
+        "awayTeam": { "code": "COD", "name": "DR Congo", "flag": "🇨🇩" },
         "homeScore": 2,
         "awayScore": 1,
         "status": "completed",
@@ -179,16 +115,8 @@
         "date": "2026-07-02",
         "time": "18:00",
         "venue": "Toronto",
-        "homeTeam": {
-          "code": "POR",
-          "name": "Portugal",
-          "flag": "🇵🇹"
-        },
-        "awayTeam": {
-          "code": "CRO",
-          "name": "Croatia",
-          "flag": "🇭🇷"
-        },
+        "homeTeam": { "code": "POR", "name": "Portugal", "flag": "🇵🇹" },
+        "awayTeam": { "code": "CRO", "name": "Croatia", "flag": "🇭🇷" },
         "homeScore": 2,
         "awayScore": 1,
         "status": "completed",
@@ -199,16 +127,8 @@
         "date": "2026-07-02",
         "time": "21:00",
         "venue": "Inglewood",
-        "homeTeam": {
-          "code": "ESP",
-          "name": "Spain",
-          "flag": "🇪🇸"
-        },
-        "awayTeam": {
-          "code": "AUT",
-          "name": "Austria",
-          "flag": "🇦🇹"
-        },
+        "homeTeam": { "code": "ESP", "name": "Spain", "flag": "🇪🇸" },
+        "awayTeam": { "code": "AUT", "name": "Austria", "flag": "🇦🇹" },
         "homeScore": 3,
         "awayScore": 0,
         "status": "completed",
@@ -219,16 +139,8 @@
         "date": "2026-07-01",
         "time": "00:00",
         "venue": "Santa Clara",
-        "homeTeam": {
-          "code": "USA",
-          "name": "USA",
-          "flag": "🇺🇸"
-        },
-        "awayTeam": {
-          "code": "BIH",
-          "name": "Bosnia",
-          "flag": "🇧🇦"
-        },
+        "homeTeam": { "code": "USA", "name": "USA", "flag": "🇺🇸" },
+        "awayTeam": { "code": "BIH", "name": "Bosnia", "flag": "🇧🇦" },
         "homeScore": 2,
         "awayScore": 0,
         "status": "completed",
@@ -239,16 +151,8 @@
         "date": "2026-07-01",
         "time": "03:00",
         "venue": "Seattle",
-        "homeTeam": {
-          "code": "BEL",
-          "name": "Belgium",
-          "flag": "🇧🇪"
-        },
-        "awayTeam": {
-          "code": "SEN",
-          "name": "Senegal",
-          "flag": "🇸🇳"
-        },
+        "homeTeam": { "code": "BEL", "name": "Belgium", "flag": "🇧🇪" },
+        "awayTeam": { "code": "SEN", "name": "Senegal", "flag": "🇸🇳" },
         "homeScore": 3,
         "awayScore": 2,
         "status": "completed",
@@ -260,16 +164,8 @@
         "date": "2026-07-03",
         "time": "20:00",
         "venue": "Arlington",
-        "homeTeam": {
-          "code": "AUS",
-          "name": "Australia",
-          "flag": "🇦🇺"
-        },
-        "awayTeam": {
-          "code": "EGY",
-          "name": "Egypt",
-          "flag": "🇪🇬"
-        },
+        "homeTeam": { "code": "AUS", "name": "Australia", "flag": "🇦🇺" },
+        "awayTeam": { "code": "EGY", "name": "Egypt", "flag": "🇪🇬" },
         "homeScore": 1,
         "awayScore": 1,
         "homePenalties": 3,
@@ -283,16 +179,8 @@
         "date": "2026-07-04",
         "time": "00:00",
         "venue": "Miami",
-        "homeTeam": {
-          "code": "ARG",
-          "name": "Argentina",
-          "flag": "🇦🇷"
-        },
-        "awayTeam": {
-          "code": "CPV",
-          "name": "Cape Verde",
-          "flag": "🇨🇻"
-        },
+        "homeTeam": { "code": "ARG", "name": "Argentina", "flag": "🇦🇷" },
+        "awayTeam": { "code": "CPV", "name": "Cape Verde", "flag": "🇨🇻" },
         "homeScore": 3,
         "awayScore": 2,
         "status": "completed",
@@ -304,16 +192,8 @@
         "date": "2026-07-02",
         "time": "00:00",
         "venue": "Vancouver",
-        "homeTeam": {
-          "code": "SUI",
-          "name": "Switzerland",
-          "flag": "🇨🇭"
-        },
-        "awayTeam": {
-          "code": "ALG",
-          "name": "Algeria",
-          "flag": "🇩🇿"
-        },
+        "homeTeam": { "code": "SUI", "name": "Switzerland", "flag": "🇨🇭" },
+        "awayTeam": { "code": "ALG", "name": "Algeria", "flag": "🇩🇿" },
         "homeScore": 2,
         "awayScore": 0,
         "status": "completed",
@@ -324,20 +204,12 @@
         "date": "2026-07-04",
         "time": "03:30",
         "venue": "Kansas City",
-        "homeTeam": {
-          "code": "COL",
-          "name": "Colombia",
-          "flag": "🇨🇴"
-        },
-        "awayTeam": {
-          "code": "GHA",
-          "name": "Ghana",
-          "flag": "🇬🇭"
-        },
-        "homeScore": 1,
-        "awayScore": 0,
-        "status": "completed",
-        "winner": "home"
+        "homeTeam": { "code": "COL", "name": "Colombia", "flag": "🇨🇴" },
+        "awayTeam": { "code": "GHA", "name": "Ghana", "flag": "🇬🇭" },
+        "homeScore": null,
+        "awayScore": null,
+        "status": "scheduled",
+        "winner": null
       }
     ],
     "r16": [
@@ -346,16 +218,8 @@
         "date": "2026-07-04",
         "time": "18:00",
         "venue": "Houston",
-        "homeTeam": {
-          "code": "CAN",
-          "name": "Canada",
-          "flag": "🇨🇦"
-        },
-        "awayTeam": {
-          "code": "MAR",
-          "name": "Morocco",
-          "flag": "🇲🇦"
-        },
+        "homeTeam": { "code": "CAN", "name": "Canada", "flag": "🇨🇦" },
+        "awayTeam": { "code": "MAR", "name": "Morocco", "flag": "🇲🇦" },
         "homeScore": null,
         "awayScore": null,
         "status": "scheduled",
@@ -366,16 +230,8 @@
         "date": "2026-07-04",
         "time": "21:00",
         "venue": "Philadelphia",
-        "homeTeam": {
-          "code": "PAR",
-          "name": "Paraguay",
-          "flag": "🇵🇾"
-        },
-        "awayTeam": {
-          "code": "FRA",
-          "name": "France",
-          "flag": "🇫🇷"
-        },
+        "homeTeam": { "code": "PAR", "name": "Paraguay", "flag": "🇵🇾" },
+        "awayTeam": { "code": "FRA", "name": "France", "flag": "🇫🇷" },
         "homeScore": null,
         "awayScore": null,
         "status": "scheduled",
@@ -386,16 +242,8 @@
         "date": "2026-07-05",
         "time": "18:00",
         "venue": "East Rutherford",
-        "homeTeam": {
-          "code": "BRA",
-          "name": "Brazil",
-          "flag": "🇧🇷"
-        },
-        "awayTeam": {
-          "code": "NOR",
-          "name": "Norway",
-          "flag": "🇳🇴"
-        },
+        "homeTeam": { "code": "BRA", "name": "Brazil", "flag": "🇧🇷" },
+        "awayTeam": { "code": "NOR", "name": "Norway", "flag": "🇳🇴" },
         "homeScore": null,
         "awayScore": null,
         "status": "scheduled",
@@ -406,16 +254,8 @@
         "date": "2026-07-05",
         "time": "21:00",
         "venue": "Mexico City",
-        "homeTeam": {
-          "code": "MEX",
-          "name": "Mexico",
-          "flag": "🇲🇽"
-        },
-        "awayTeam": {
-          "code": "ENG",
-          "name": "England",
-          "flag": "ENG"
-        },
+        "homeTeam": { "code": "MEX", "name": "Mexico", "flag": "🇲🇽" },
+        "awayTeam": { "code": "ENG", "name": "England", "flag": "ENG" },
         "homeScore": null,
         "awayScore": null,
         "status": "scheduled",
@@ -426,16 +266,8 @@
         "date": "2026-07-06",
         "time": "18:00",
         "venue": "Arlington",
-        "homeTeam": {
-          "code": "POR",
-          "name": "Portugal",
-          "flag": "🇵🇹"
-        },
-        "awayTeam": {
-          "code": "ESP",
-          "name": "Spain",
-          "flag": "🇪🇸"
-        },
+        "homeTeam": { "code": "POR", "name": "Portugal", "flag": "🇵🇹" },
+        "awayTeam": { "code": "ESP", "name": "Spain", "flag": "🇪🇸" },
         "homeScore": null,
         "awayScore": null,
         "status": "scheduled",
@@ -446,16 +278,8 @@
         "date": "2026-07-06",
         "time": "21:00",
         "venue": "Seattle",
-        "homeTeam": {
-          "code": "USA",
-          "name": "USA",
-          "flag": "🇺🇸"
-        },
-        "awayTeam": {
-          "code": "BEL",
-          "name": "Belgium",
-          "flag": "🇧🇪"
-        },
+        "homeTeam": { "code": "USA", "name": "USA", "flag": "🇺🇸" },
+        "awayTeam": { "code": "BEL", "name": "Belgium", "flag": "🇧🇪" },
         "homeScore": null,
         "awayScore": null,
         "status": "scheduled",
@@ -466,16 +290,8 @@
         "date": "2026-07-07",
         "time": "18:00",
         "venue": "Atlanta",
-        "homeTeam": {
-          "code": "ARG",
-          "name": "Argentina",
-          "flag": "🇦🇷"
-        },
-        "awayTeam": {
-          "code": "EGY",
-          "name": "Egypt",
-          "flag": "🇪🇬"
-        },
+        "homeTeam": { "code": "ARG", "name": "Argentina", "flag": "🇦🇷" },
+        "awayTeam": { "code": "EGY", "name": "Egypt", "flag": "🇪🇬" },
         "homeScore": null,
         "awayScore": null,
         "status": "scheduled",
@@ -486,11 +302,7 @@
         "date": "2026-07-07",
         "time": "21:00",
         "venue": "Vancouver",
-        "homeTeam": {
-          "code": "SUI",
-          "name": "Switzerland",
-          "flag": "🇨🇭"
-        },
+        "homeTeam": { "code": "SUI", "name": "Switzerland", "flag": "🇨🇭" },
         "awayTeamSource": "r32_16",
         "homeScore": null,
         "awayScore": null,
@@ -499,59 +311,17 @@
       }
     ],
     "qf": [
-      {
-        "id": "qf_1",
-        "date": "2026-07-09",
-        "time": "22:00",
-        "venue": "Foxborough, MA",
-        "status": "pending"
-      },
-      {
-        "id": "qf_2",
-        "date": "2026-07-10",
-        "time": "21:00",
-        "venue": "Inglewood, CA",
-        "status": "pending"
-      },
-      {
-        "id": "qf_3",
-        "date": "2026-07-11",
-        "time": "23:00",
-        "venue": "Miami, FL",
-        "status": "pending"
-      },
-      {
-        "id": "qf_4",
-        "date": "2026-07-12",
-        "time": "03:00",
-        "venue": "Kansas City, MO",
-        "status": "pending"
-      }
+      { "id": "qf_1", "date": "2026-07-09", "time": "22:00", "venue": "Foxborough, MA", "status": "pending" },
+      { "id": "qf_2", "date": "2026-07-10", "time": "21:00", "venue": "Inglewood, CA", "status": "pending" },
+      { "id": "qf_3", "date": "2026-07-11", "time": "23:00", "venue": "Miami, FL", "status": "pending" },
+      { "id": "qf_4", "date": "2026-07-12", "time": "03:00", "venue": "Kansas City, MO", "status": "pending" }
     ],
     "sf": [
-      {
-        "id": "sf_1",
-        "date": "2026-07-14",
-        "time": "21:00",
-        "venue": "Arlington, TX",
-        "status": "pending"
-      },
-      {
-        "id": "sf_2",
-        "date": "2026-07-15",
-        "time": "21:00",
-        "venue": "Atlanta, GA",
-        "status": "pending"
-      }
+      { "id": "sf_1", "date": "2026-07-14", "time": "21:00", "venue": "Arlington, TX", "status": "pending" },
+      { "id": "sf_2", "date": "2026-07-15", "time": "21:00", "venue": "Atlanta, GA", "status": "pending" }
     ],
     "final": [
-      {
-        "id": "final",
-        "date": "2026-07-19",
-        "time": "21:00",
-        "venue": "East Rutherford, NJ",
-        "status": "pending"
-      }
+      { "id": "final", "date": "2026-07-19", "time": "21:00", "venue": "East Rutherford, NJ", "status": "pending" }
     ]
   },
   "espnTeamMapping": {
