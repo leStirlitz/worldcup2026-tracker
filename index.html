@@ -562,7 +562,7 @@
       <!-- Golden Boot Leaders -->
       <div class="stats-section">
         <h2>👟 Golden Boot Race - Top Scorers</h2>
-        <p style="color: #888; font-size: 0.85rem; margin-bottom: 1rem;">Mbappe and Messi lead with 6 goals each</p>
+        <p style="color: #888; font-size: 0.85rem; margin-bottom: 1rem;">Messi leads with 7 goals, Mbappe chasing with 6</p>
         <div id="golden-boot-table"><p style="color: #888;">Loading stats...</p></div>
       </div>
 
@@ -1204,17 +1204,34 @@
       const container = document.getElementById('golden-boot-table');
       if (!container || !data.goldenBoot) return;
 
+      // Sort by goals (desc), then assists (desc) as tiebreaker
+      const sorted = [...data.goldenBoot].sort((a, b) => {
+        if (b.goals !== a.goals) return b.goals - a.goals;
+        return b.assists - a.assists;
+      });
+
+      // Calculate dynamic ranks (same goals = same rank)
+      let currentRank = 1;
+      let lastGoals = -1;
+      for (let i = 0; i < sorted.length; i++) {
+        if (sorted[i].goals !== lastGoals) {
+          currentRank = i + 1;
+          lastGoals = sorted[i].goals;
+        }
+        sorted[i].dynamicRank = currentRank;
+      }
+
       let html = `<table class="player-table">
         <thead><tr>
           <th class="rank">#</th><th>Player</th><th>Country</th><th>Club</th>
           <th style="text-align:center;">Pld</th><th style="text-align:center;">Goals</th><th style="text-align:center;">Assists</th>
         </tr></thead><tbody>`;
 
-      for (const p of data.goldenBoot) {
-        const rankClass = getRankClass(p.rank);
+      for (const p of sorted) {
+        const rankClass = getRankClass(p.dynamicRank);
         const goalClass = p.goals >= 4 ? 'stat-highlight' : '';
         html += `<tr>
-          <td class="rank ${rankClass}">${p.rank}</td>
+          <td class="rank ${rankClass}">${p.dynamicRank}</td>
           <td class="player-name">${p.name}</td>
           <td>${p.country}</td><td class="player-club">${p.club}</td>
           <td style="text-align:center;">${p.played}</td>
@@ -1230,17 +1247,34 @@
       const container = document.getElementById('assists-table');
       if (!container || !data.assists) return;
 
+      // Sort by assists (desc), then goals (desc) as tiebreaker
+      const sorted = [...data.assists].sort((a, b) => {
+        if (b.assists !== a.assists) return b.assists - a.assists;
+        return b.goals - a.goals;
+      });
+
+      // Calculate dynamic ranks
+      let currentRank = 1;
+      let lastAssists = -1;
+      for (let i = 0; i < sorted.length; i++) {
+        if (sorted[i].assists !== lastAssists) {
+          currentRank = i + 1;
+          lastAssists = sorted[i].assists;
+        }
+        sorted[i].dynamicRank = currentRank;
+      }
+
       let html = `<table class="player-table">
         <thead><tr>
           <th class="rank">#</th><th>Player</th><th>Country</th><th>Club</th>
           <th style="text-align:center;">Pld</th><th style="text-align:center;">Assists</th><th style="text-align:center;">Goals</th>
         </tr></thead><tbody>`;
 
-      for (const p of data.assists) {
-        const rankClass = getRankClass(p.rank);
+      for (const p of sorted) {
+        const rankClass = getRankClass(p.dynamicRank);
         const assistClass = p.assists >= 3 ? 'stat-highlight' : '';
         html += `<tr>
-          <td class="rank ${rankClass}">${p.rank}</td>
+          <td class="rank ${rankClass}">${p.dynamicRank}</td>
           <td class="player-name">${p.name}</td>
           <td>${p.country}</td><td class="player-club">${p.club}</td>
           <td style="text-align:center;">${p.played}</td>
