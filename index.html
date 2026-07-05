@@ -1951,24 +1951,82 @@
 
     function renderYellowCards(data) {
       const container = document.getElementById('yellow-cards-table');
-      if (!container || !data.yellowCards) return;
+      if (!container) return;
+
+      // Start with group stage yellow cards per team
+      const groupStage = data.groupStage || {};
+      const groupTeamYellows = groupStage.teamYellowCards || {};
+      
+      // Initialize with group stage data
+      let teamYellowCards = {};
+      for (const [team, yellows] of Object.entries(groupTeamYellows)) {
+        teamYellowCards[team] = {
+          team: team,
+          groupYellows: yellows,
+          knockoutYellows: 0,
+          played: 3  // Group stage = 3 matches
+        };
+      }
+
+      // Add knockout yellow cards from matches.json
+      if (globalMatchData?.matches) {
+        const matches = globalMatchData.matches;
+        
+        for (const [round, matchList] of Object.entries(matches)) {
+          for (const m of matchList) {
+            if (m.status === 'completed' && m.discipline) {
+              const totalYellows = m.discipline.yellowCards || 0;
+              // Split yellows evenly between teams (approximation)
+              // In reality we'd need per-team data, but this gives a reasonable estimate
+              const yellowsPerTeam = Math.floor(totalYellows / 2);
+              const remainder = totalYellows % 2;
+              
+              if (m.homeTeam?.name) {
+                if (!teamYellowCards[m.homeTeam.name]) {
+                  teamYellowCards[m.homeTeam.name] = { team: m.homeTeam.name, groupYellows: 0, knockoutYellows: 0, played: 0 };
+                }
+                teamYellowCards[m.homeTeam.name].knockoutYellows += yellowsPerTeam + remainder;
+                teamYellowCards[m.homeTeam.name].played++;
+              }
+              if (m.awayTeam?.name) {
+                if (!teamYellowCards[m.awayTeam.name]) {
+                  teamYellowCards[m.awayTeam.name] = { team: m.awayTeam.name, groupYellows: 0, knockoutYellows: 0, played: 0 };
+                }
+                teamYellowCards[m.awayTeam.name].knockoutYellows += yellowsPerTeam;
+                teamYellowCards[m.awayTeam.name].played++;
+              }
+            }
+          }
+        }
+      }
+
+      // Convert to array with total cards
+      let teams = Object.values(teamYellowCards).map(t => ({
+        team: t.team,
+        played: t.played,
+        cards: t.groupYellows + t.knockoutYellows
+      }));
 
       // Sort by cards (desc) and calculate dynamic ranks
-      const sorted = [...data.yellowCards].sort((a, b) => b.cards - a.cards);
+      teams.sort((a, b) => b.cards - a.cards);
+      
+      // Take top 10 teams
+      teams = teams.slice(0, 10);
+      
       let currentRank = 1;
       let lastCards = -1;
-      for (let i = 0; i < sorted.length; i++) {
-        if (sorted[i].cards !== lastCards) {
+      for (let i = 0; i < teams.length; i++) {
+        if (teams[i].cards !== lastCards) {
           currentRank = i + 1;
-          lastCards = sorted[i].cards;
+          lastCards = teams[i].cards;
         }
-        sorted[i].dynamicRank = currentRank;
+        teams[i].dynamicRank = currentRank;
       }
 
       let html = `<table class="player-table">
         <thead><tr><th>#</th><th>Team</th><th>Pld</th><th>Cards</th></tr></thead><tbody>`;
 
-      for (const t of sorted) {
+      for (const t of teams) {
         const cardClass = t.cards >= 6 ? 'stat-highlight' : '';
         html += `<tr>
           <td class="rank">${t.dynamicRank}</td>
