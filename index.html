@@ -489,7 +489,7 @@
 <body>
   <h1>🏆 FIFA World Cup 2026</h1>
   <p class="subtitle">United States • Mexico • Canada</p>
-  <p class="update-note">Last updated: July 4, 2026 - R32 complete! R16 starts today with Canada vs Morocco (18:00 CET)</p>
+  <p class="update-note" id="update-note">Loading latest updates...</p>
 
   <!-- Tab Navigation -->
   <div class="tab-container">
@@ -516,15 +516,15 @@
     <h2>📊 Tournament Stats</h2>
     <div class="stats-grid">
       <div class="stat-item">
-        <div class="stat-value" id="r32-progress">16/16</div>
+        <div class="stat-value" id="r32-progress">-</div>
         <div class="stat-label">R32 Matches Played</div>
       </div>
       <div class="stat-item">
-        <div class="stat-value">16</div>
-        <div class="stat-label">Teams Remaining</div>
+        <div class="stat-value" id="r16-progress">-</div>
+        <div class="stat-label">R16 Matches Played</div>
       </div>
       <div class="stat-item">
-        <div class="stat-value">2</div>
+        <div class="stat-value" id="penalty-shootouts">-</div>
         <div class="stat-label">Penalty Shootouts</div>
       </div>
       <div class="stat-item">
@@ -547,12 +547,13 @@
   <div class="stats">
     <h2>🔥 Key Upsets & Headlines</h2>
     <ul style="padding-left: 1.5rem; line-height: 1.8;">
-      <li><strong>Germany OUT</strong> - Lost on penalties to Paraguay (4-3 PKs)</li>
-      <li><strong>Netherlands OUT</strong> - Morocco wins on penalties (3-2 PKs)</li>
+      <li><strong>Morocco dominates!</strong> - Beat Canada 3-0 in R16, advances to QF vs France</li>
+      <li><strong>France survives</strong> - Mbappé goal beats Paraguay 1-0, sets up QF clash with Morocco</li>
+      <li><strong>Germany OUT</strong> - Lost on penalties to Paraguay (4-3 PKs) in R32</li>
+      <li><strong>Netherlands OUT</strong> - Morocco won on penalties (3-2 PKs) in R32</li>
       <li><strong>Iberian Clash</strong> - Portugal vs Spain in R16 (Jul 6)</li>
       <li><strong>USA vs Belgium</strong> - Crucial R16 match in Seattle (Jul 6)</li>
       <li><strong>Messi's Argentina</strong> - Beat Cape Verde 3-2 (AET), faces Egypt in R16</li>
-      <li><strong>Host Mexico</strong> - Faces England at Azteca (Jul 5)</li>
     </ul>
   </div>
 
@@ -570,7 +571,7 @@
       <!-- Golden Boot Leaders -->
       <div class="stats-section">
         <h2>👟 Golden Boot Race - Top Scorers</h2>
-        <p style="color: #888; font-size: 0.85rem; margin-bottom: 1rem;">Messi leads with 7 goals, Mbappe chasing with 6</p>
+        <p id="golden-boot-subtitle" style="color: #888; font-size: 0.85rem; margin-bottom: 1rem;">Loading stats...</p>
         <div id="golden-boot-table"><p style="color: #888;">Loading stats...</p></div>
       </div>
 
@@ -648,29 +649,28 @@
         <h2>📈 Tournament Facts</h2>
         <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
           <div class="stat-item">
-            <div class="stat-value">148</div>
-            <div class="stat-label">Total Goals (Group Stage)</div>
+            <div class="stat-value" id="total-goals">-</div>
+            <div class="stat-label">Total Goals</div>
           </div>
           <div class="stat-item">
-            <div class="stat-value">2.05</div>
+            <div class="stat-value" id="goals-per-match">-</div>
             <div class="stat-label">Goals Per Match</div>
           </div>
           <div class="stat-item">
-            <div class="stat-value">🇫🇷</div>
-            <div class="stat-label">Most Goals (France: 19)</div>
+            <div class="stat-value" id="top-scoring-team-flag">-</div>
+            <div class="stat-label" id="top-scoring-team-label">Most Goals</div>
           </div>
           <div class="stat-item">
-            <div class="stat-value">18</div>
+            <div class="stat-value" id="messi-career-goals">-</div>
             <div class="stat-label">Messi Career WC Goals</div>
           </div>
           <div class="stat-item">
-            <div class="stat-value">12</div>
+            <div class="stat-value" id="ronaldo-career-goals">-</div>
             <div class="stat-label">Ronaldo Career WC Goals</div>
           </div>
         </div>
-        <p style="margin-top: 1rem; color: #888; font-size: 0.85rem;">
-          🏅 <strong style="color: #f59e0b;">Historic Moment:</strong> Lionel Messi became the all-time leading World Cup scorer (18 goals), 
-          surpassing Miroslav Klose's record during Argentina's group stage match against Algeria.
+        <p id="historic-moment" style="margin-top: 1rem; color: #888; font-size: 0.85rem;">
+          Loading historic moment...
         </p>
       </div>
 
@@ -678,7 +678,7 @@
       <div class="stats-section">
         <h2>📰 Golden Boot Storylines</h2>
         <ul style="padding-left: 1.5rem; line-height: 2;">
-          <li><strong>Mbappé vs Messi:</strong> The two are tied at 6 goals. Mbappé has played 4 matches vs Messi's 3.</li>
+          <li id="mbappe-messi-storyline"><strong>Mbappé vs Messi:</strong> Loading...</li>
           <li><strong>Haaland's Run:</strong> Norway's striker has 5 goals in 4 games, keeping them in R16 contention.</li>
           <li><strong>France's Firepower:</strong> Les Bleus have 19 goals - most in the tournament. Demb•l• (4G, 2A) and Olise (1G, 5A) supporting Mbapp•.</li>
           <li><strong>Olise's Assists:</strong> Bayern's winger leads assists (5), chasing Pel•'s single-tournament record (6).</li>
@@ -748,19 +748,19 @@
         <h2>📊 Tournament Discipline Summary</h2>
         <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));">
           <div class="stat-item">
-            <div class="stat-value">12</div>
+            <div class="stat-value" id="discipline-red-cards">-</div>
             <div class="stat-label">Red Cards</div>
           </div>
           <div class="stat-item">
-            <div class="stat-value">~180</div>
+            <div class="stat-value" id="discipline-yellow-cards">-</div>
             <div class="stat-label">Yellow Cards</div>
           </div>
           <div class="stat-item">
-            <div class="stat-value">6</div>
+            <div class="stat-value" id="discipline-penalties">-</div>
             <div class="stat-label">Penalties (open play)</div>
           </div>
           <div class="stat-item">
-            <div class="stat-value">2</div>
+            <div class="stat-value" id="discipline-shootouts">-</div>
             <div class="stat-label">Penalty Shootouts</div>
           </div>
           <div class="stat-item">
@@ -768,9 +768,8 @@
             <div class="stat-label">WC Record (2006)</div>
           </div>
         </div>
-        <p style="margin-top: 1rem; color: #888; font-size: 0.85rem;">
-          ? This tournament is on pace to break the 2006 red card record (28). 
-          Most reds have been for denying obvious goal-scoring opportunities (DOGSO).
+        <p id="red-card-pace" style="margin-top: 1rem; color: #888; font-size: 0.85rem;">
+          Loading discipline stats...
         </p>
       </div>
 
@@ -882,8 +881,8 @@
           if (match.status === 'completed') {
             completedMatches.push({ ...match, round: roundKey });
           } else if (match.status === 'scheduled' || match.status === 'live') {
-            if (match.date === todayStr || match.date === '2026-07-04' && todayStr === '2026-07-03') {
-              // Include matches happening today/tonight
+            if (match.date === todayStr) {
+              // Include matches happening today
               todayMatches.push({ ...match, round: roundKey });
             }
           }
@@ -1010,15 +1009,25 @@
       container.innerHTML = html;
     }
 
+    // Global data storage for cross-function access
+    let globalMatchData = null;
+    let globalStatsData = null;
+
     // Load match data and render tables
     async function loadMatchData() {
       try {
         const response = await fetch('data/matches.json');
         const data = await response.json();
+        globalMatchData = data;
         renderBracket(data);
         renderCompletedMatches(data);
         renderUpcomingMatches(data);
+        renderMatchStats(data); // Calculate match-based stats
         highlightTodayMatches(); // Re-run after bracket is rendered
+        // Update last updated note if stats also loaded
+        if (globalStatsData) {
+          updateLastUpdatedNote(globalMatchData, globalStatsData);
+        }
       } catch (error) {
         console.error('Failed to load match data:', error);
         // Fallback - show error message
@@ -1029,6 +1038,77 @@
         if (completed) completed.innerHTML = '<p style="color: #888;">Loading match data...</p>';
         if (upcoming) upcoming.innerHTML = '<p style="color: #888;">Loading match data...</p>';
       }
+    }
+
+    // Calculate and render match-based statistics from matches.json
+    function renderMatchStats(data) {
+      const matches = data.matches || {};
+      
+      // Count completed matches and penalty shootouts per round
+      let r32Completed = 0, r32Total = 0;
+      let r16Completed = 0, r16Total = 0;
+      let qfCompleted = 0, qfTotal = 0;
+      let sfCompleted = 0, sfTotal = 0;
+      let finalCompleted = 0;
+      let penaltyShootouts = 0;
+
+      // R32
+      for (const m of (matches.r32 || [])) {
+        r32Total++;
+        if (m.status === 'completed') {
+          r32Completed++;
+          if (m.homePenalties !== undefined) penaltyShootouts++;
+        }
+      }
+
+      // R16
+      for (const m of (matches.r16 || [])) {
+        r16Total++;
+        if (m.status === 'completed') {
+          r16Completed++;
+          if (m.homePenalties !== undefined) penaltyShootouts++;
+        }
+      }
+
+      // QF
+      for (const m of (matches.qf || [])) {
+        qfTotal++;
+        if (m.status === 'completed') {
+          qfCompleted++;
+          if (m.homePenalties !== undefined) penaltyShootouts++;
+        }
+      }
+
+      // SF
+      for (const m of (matches.sf || [])) {
+        sfTotal++;
+        if (m.status === 'completed') {
+          sfCompleted++;
+          if (m.homePenalties !== undefined) penaltyShootouts++;
+        }
+      }
+
+      // Final
+      for (const m of (matches.final || [])) {
+        if (m.status === 'completed') {
+          finalCompleted++;
+          if (m.homePenalties !== undefined) penaltyShootouts++;
+        }
+      }
+
+      // Update Tournament Stats box
+      const r32El = document.getElementById('r32-progress');
+      if (r32El) r32El.textContent = `${r32Completed}/${r32Total}`;
+
+      const r16El = document.getElementById('r16-progress');
+      if (r16El) r16El.textContent = `${r16Completed}/${r16Total}`;
+
+      const shootoutsEl = document.getElementById('penalty-shootouts');
+      if (shootoutsEl) shootoutsEl.textContent = penaltyShootouts;
+
+      // Also update discipline summary shootouts
+      const disciplineShootoutsEl = document.getElementById('discipline-shootouts');
+      if (disciplineShootoutsEl) disciplineShootoutsEl.textContent = penaltyShootouts;
     }
 
     // Render bracket dynamically from matches.json
@@ -1232,6 +1312,7 @@
       }
 
       console.log('Stats data loaded:', data);
+      globalStatsData = data;
       renderGoldenBoot(data);
       renderAssists(data);
       renderStarPlayers(data);
@@ -1240,6 +1321,173 @@
       renderYellowCards(data);
       renderPenalties(data);
       renderReferees(data);
+      renderDynamicTexts(data);
+      // Update last updated note if matches also loaded
+      if (globalMatchData) {
+        updateLastUpdatedNote(globalMatchData, globalStatsData);
+      }
+    }
+
+    // Update all dynamic text elements based on stats data
+    function renderDynamicTexts(data) {
+      // Golden Boot subtitle - find top 2 scorers
+      const goldenBoot = data.goldenBoot || [];
+      const sorted = [...goldenBoot].sort((a, b) => b.goals - a.goals);
+      const top1 = sorted[0];
+      const top2 = sorted[1];
+      
+      const subtitleEl = document.getElementById('golden-boot-subtitle');
+      if (subtitleEl && top1 && top2) {
+        if (top1.goals === top2.goals) {
+          subtitleEl.textContent = `${top1.name.split(' ').pop()} & ${top2.name.split(' ').pop()} tied at ${top1.goals} goals - Golden Boot race heats up!`;
+        } else {
+          subtitleEl.textContent = `${top1.name.split(' ').pop()} leads with ${top1.goals} goals, ${top2.name.split(' ').pop()} chasing with ${top2.goals}`;
+        }
+      }
+
+      // Mbappé vs Messi storyline
+      const messi = goldenBoot.find(p => p.name.toLowerCase().includes('messi'));
+      const mbappe = goldenBoot.find(p => p.name.toLowerCase().includes('mbappe') || p.name.toLowerCase().includes('mbappé'));
+      const storylineEl = document.getElementById('mbappe-messi-storyline');
+      if (storylineEl && messi && mbappe) {
+        if (messi.goals === mbappe.goals) {
+          storylineEl.innerHTML = `<strong>Mbappé vs Messi:</strong> Both tied at ${messi.goals} goals! Messi has ${messi.goals} in ${messi.played} matches, Mbappé in ${mbappe.played}.`;
+        } else if (messi.goals > mbappe.goals) {
+          storylineEl.innerHTML = `<strong>Mbappé vs Messi:</strong> Messi leads with ${messi.goals} goals (${messi.played} matches), Mbappé has ${mbappe.goals} (${mbappe.played} matches).`;
+        } else {
+          storylineEl.innerHTML = `<strong>Mbappé vs Messi:</strong> Mbappé leads with ${mbappe.goals} goals (${mbappe.played} matches), Messi has ${messi.goals} (${messi.played} matches).`;
+        }
+      }
+
+      // Messi career WC goals (from careerWCGoals config + this tournament)
+      const messiCareerEl = document.getElementById('messi-career-goals');
+      if (messiCareerEl && messi) {
+        const pre2026 = data.careerWCGoals?.Messi?.pre2026 || 13;
+        messiCareerEl.textContent = pre2026 + messi.goals;
+      }
+
+      // Ronaldo career WC goals (from careerWCGoals config + this tournament)
+      const ronaldo = goldenBoot.find(p => p.name.toLowerCase().includes('ronaldo'));
+      const ronaldoCareerEl = document.getElementById('ronaldo-career-goals');
+      if (ronaldoCareerEl && ronaldo) {
+        const pre2026 = data.careerWCGoals?.Ronaldo?.pre2026 || 9;
+        ronaldoCareerEl.textContent = pre2026 + ronaldo.goals;
+      }
+
+      // Tournament Facts - from tournament object in stats.json
+      const tournament = data.tournament || {};
+      
+      // Total Goals
+      const totalGoalsEl = document.getElementById('total-goals');
+      if (totalGoalsEl && tournament.totalGoals) {
+        totalGoalsEl.textContent = tournament.totalGoals;
+      }
+
+      // Goals Per Match
+      const goalsPerMatchEl = document.getElementById('goals-per-match');
+      if (goalsPerMatchEl && tournament.goalsPerMatch) {
+        goalsPerMatchEl.textContent = tournament.goalsPerMatch.toFixed(2);
+      }
+
+      // Top Scoring Team
+      const topTeam = tournament.topScoringTeam;
+      if (topTeam) {
+        const flagEl = document.getElementById('top-scoring-team-flag');
+        const labelEl = document.getElementById('top-scoring-team-label');
+        const flagMap = { 'France': '🇫🇷', 'Argentina': '🇦🇷', 'Brazil': '🇧🇷', 'Germany': '🇩🇪', 'Spain': '🇪🇸', 'England': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'Portugal': '🇵🇹' };
+        if (flagEl) flagEl.textContent = flagMap[topTeam.name] || '🏆';
+        if (labelEl) labelEl.textContent = `Most Goals (${topTeam.name}: ${topTeam.goals})`;
+      }
+
+      // Historic Moment - dynamically build based on Messi's current total
+      const historicEl = document.getElementById('historic-moment');
+      if (historicEl && messi) {
+        const pre2026 = data.careerWCGoals?.Messi?.pre2026 || 13;
+        const klose = data.careerWCGoals?.Klose?.total || 16;
+        const messiTotal = pre2026 + messi.goals;
+        if (messiTotal > klose) {
+          historicEl.innerHTML = `🏅 <strong style="color: #f59e0b;">Historic Moment:</strong> Lionel Messi is the all-time World Cup scorer with ${messiTotal} goals, surpassing Miroslav Klose's record of ${klose}.`;
+        } else if (messiTotal === klose) {
+          historicEl.innerHTML = `🏅 <strong style="color: #f59e0b;">Watch:</strong> Messi tied Klose's all-time record of ${klose} World Cup goals!`;
+        } else {
+          historicEl.innerHTML = `🏅 <strong style="color: #f59e0b;">Chasing History:</strong> Messi has ${messiTotal} career WC goals, ${klose - messiTotal} away from Klose's record (${klose}).`;
+        }
+      }
+
+      // Discipline Summary - from tournament object in stats.json
+      const redCardsEl = document.getElementById('discipline-red-cards');
+      if (redCardsEl && tournament.redCards !== undefined) {
+        redCardsEl.textContent = tournament.redCards;
+      }
+
+      const yellowCardsEl = document.getElementById('discipline-yellow-cards');
+      if (yellowCardsEl && tournament.yellowCards !== undefined) {
+        yellowCardsEl.textContent = tournament.yellowCards;
+      }
+
+      const penaltiesEl = document.getElementById('discipline-penalties');
+      if (penaltiesEl && tournament.penaltiesAwarded !== undefined) {
+        penaltiesEl.textContent = tournament.penaltiesAwarded;
+      }
+
+      // Red card pace analysis
+      const paceEl = document.getElementById('red-card-pace');
+      if (paceEl && tournament.redCards !== undefined) {
+        const WC_2006_REDS = 28; // Record
+        const redCards = tournament.redCards;
+        if (redCards > WC_2006_REDS) {
+          paceEl.innerHTML = `⚠️ This tournament has broken the 2006 red card record (${WC_2006_REDS}) with ${redCards} reds so far!`;
+        } else if (redCards >= WC_2006_REDS - 5) {
+          paceEl.innerHTML = `⚠️ This tournament is on pace to break the 2006 red card record (${WC_2006_REDS}). Currently at ${redCards} reds.`;
+        } else {
+          paceEl.innerHTML = `📊 ${redCards} red cards so far. 2006 record: ${WC_2006_REDS}. Most reds have been for DOGSO.`;
+        }
+      }
+    }
+
+    // Update the "Last updated" note from matches.json
+    function updateLastUpdatedNote(matchData, statsData) {
+      const noteEl = document.getElementById('update-note');
+      if (!noteEl) return;
+
+      // Get last updated date from matches.json
+      let lastUpdated = matchData?.lastUpdated || statsData?.lastUpdated;
+      let dateStr = 'Unknown';
+      if (lastUpdated) {
+        const date = new Date(lastUpdated);
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        dateStr = `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+      }
+
+      // Get tournament stage
+      const stage = matchData?.tournament?.stage || 'Knockout Stage';
+
+      // Find recent completed matches for headline
+      const recentResults = [];
+      if (matchData?.matches) {
+        const allMatches = [];
+        for (const [round, matches] of Object.entries(matchData.matches)) {
+          for (const m of matches) {
+            if (m.status === 'completed' && m.homeTeam && m.awayTeam) {
+              allMatches.push({ ...m, round });
+            }
+          }
+        }
+        // Sort by date descending, take last 2
+        allMatches.sort((a, b) => new Date(b.date) - new Date(a.date));
+        for (const m of allMatches.slice(0, 2)) {
+          const winner = m.winner === 'home' ? m.homeTeam.name : m.awayTeam.name;
+          const loser = m.winner === 'home' ? m.awayTeam.name : m.homeTeam.name;
+          const score = `${m.homeScore}-${m.awayScore}`;
+          recentResults.push(`${winner} ${score} ${loser}`);
+        }
+      }
+
+      let note = `Last updated: ${dateStr} - ${stage}`;
+      if (recentResults.length > 0) {
+        note += ` | Recent: ${recentResults.join(', ')}`;
+      }
+      noteEl.textContent = note;
     }
 
     // Fetch live stats from ESPN API
