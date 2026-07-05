@@ -1,13 +1,12 @@
 {
   "lastUpdated": "2026-07-05T10:00:00+02:00",
-  "tournament": {
-    "totalGoals": 152,
-    "goalsPerMatch": 2.05,
-    "topScoringTeam": { "name": "France", "goals": 20 },
-    "redCards": 12,
-    "yellowCards": 185,
-    "penaltiesAwarded": 6,
-    "penaltyShootouts": 3
+  "groupStage": {
+    "goals": 148,
+    "matches": 72,
+    "yellowCards": 165,
+    "redCards": 10,
+    "penalties": 5,
+    "note": "Group stage totals (not in matches.json)"
   },
   "careerWCGoals": {
     "Messi": { "pre2026": 13, "note": "Goals before 2026 WC (2006-2022)" },
@@ -90,13 +89,7 @@
     { "match": "ENG vs CRO", "team": "England", "flag": "ENG", "result": "scored" },
     { "match": "ESP vs AUT", "team": "Spain", "flag": "ES", "result": "scored" },
     { "match": "ARG vs ALG", "team": "Argentina", "flag": "AR", "result": "missed" },
-    { "match": "BRA vs JPN", "team": "Brazil", "flag": "BR", "result": "scored" }
-  ],
-  "referees": [
-    { "name": "Ma Ning", "country": "China", "flag": "CN", "matches": 3, "yellows": 14, "reds": 2, "penalties": 2 },
-    { "name": "Clement Turpin", "country": "France", "flag": "FR", "matches": 3, "yellows": 9, "reds": 1, "penalties": 1 },
-    { "name": "Ismail Elfath", "country": "USA", "flag": "US", "matches": 2, "yellows": 7, "reds": 1, "penalties": 0 },
-    { "name": "Jesus Valenzuela", "country": "Venezuela", "flag": "VE", "matches": 3, "yellows": 8, "reds": 2, "penalties": 1 },
-    { "name": "Slavko Vincic", "country": "Slovenia", "flag": "SI", "matches": 2, "yellows": 5, "reds": 0, "penalties": 1 }
+    { "match": "BRA vs JPN", "team": "Brazil", "flag": "BR", "result": "scored" },
+    { "match": "PAR vs FRA", "team": "France", "flag": "FR", "result": "scored", "scorer": "Mbappé", "round": "R16" }
   ]
 }
