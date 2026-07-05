@@ -1466,8 +1466,24 @@
         goalsPerMatchEl.textContent = gpm.toFixed(2);
       }
 
-      // Top Scoring Team - calculated from knockout matches only (group stage not in data)
-      const topTeam = matchStats.topScoringTeam?.name ? matchStats.topScoringTeam : tournament.topScoringTeam;
+      // Top Scoring Team - combine group stage + knockout goals
+      const groupTeamGoals = groupStage.teamGoals || {};
+      const knockoutTeamGoals = matchStats.teamGoals || {};
+      
+      // Merge group stage and knockout team goals
+      const combinedTeamGoals = { ...groupTeamGoals };
+      for (const [team, goals] of Object.entries(knockoutTeamGoals)) {
+        combinedTeamGoals[team] = (combinedTeamGoals[team] || 0) + goals;
+      }
+      
+      // Find top scoring team from combined totals
+      let topTeam = { name: '-', goals: 0 };
+      for (const [team, goals] of Object.entries(combinedTeamGoals)) {
+        if (goals > topTeam.goals) {
+          topTeam = { name: team, goals: goals };
+        }
+      }
+      
       if (topTeam && topTeam.name !== '-') {
         const flagEl = document.getElementById('top-scoring-team-flag');
         const labelEl = document.getElementById('top-scoring-team-label');
@@ -1974,7 +1990,7 @@
 
       for (const p of data.penalties) {
         const resultStyle = p.result === 'scored' ? 'color: #22c55e;' : 'color: #ef4444;';
-        const resultText = p.result === 'scored' ? '? Scored' : '? Missed';
+        const resultText = p.result === 'scored' ? '✅ Scored' : '❌ Missed';
         html += `<tr>
           <td>${p.match}</td>
           <td class="player-name">${p.team}</td>
@@ -1989,9 +2005,25 @@
       const container = document.getElementById('referees-table');
       if (!container) return;
 
-      // Calculate referee stats from match data if available
-      let refereeStats = {};
+      // Start with group stage referee stats from stats.json
+      const groupStage = data.groupStage || {};
+      const groupRefereeStats = groupStage.refereeStats || {};
       
+      // Initialize with group stage data
+      let refereeStats = {};
+      for (const [name, stats] of Object.entries(groupRefereeStats)) {
+        refereeStats[name] = {
+          name: name,
+          country: stats.country,
+          flag: stats.flag,
+          matches: stats.matches || 0,
+          yellows: stats.yellows || 0,
+          reds: stats.reds || 0,
+          penalties: stats.penalties || 0
+        };
+      }
+
+      // Add knockout stage stats from matches.json
       if (globalMatchData?.matches) {
         const matches = globalMatchData.matches;
         
@@ -2024,11 +2056,6 @@
 
       // Convert to array and sort by matches (desc), then yellows (desc)
       let referees = Object.values(refereeStats);
-      
-      // Fallback to stats.json if no match data
-      if (referees.length === 0 && data.referees) {
-        referees = data.referees;
-      }
       
       referees.sort((a, b) => {
         if (b.matches !== a.matches) return b.matches - a.matches;
