@@ -1,13 +1,18 @@
 {
-  "lastUpdated": "2026-07-04T00:00:00+02:00",
+  "lastUpdated": "2026-07-05T10:00:00+02:00",
   "tournament": {
-    "totalGoals": 148,
+    "totalGoals": 152,
     "goalsPerMatch": 2.05,
-    "topScoringTeam": { "name": "France", "goals": 19 },
+    "topScoringTeam": { "name": "France", "goals": 20 },
     "redCards": 12,
-    "yellowCards": 180,
+    "yellowCards": 185,
     "penaltiesAwarded": 6,
     "penaltyShootouts": 3
+  },
+  "careerWCGoals": {
+    "Messi": { "pre2026": 13, "note": "Goals before 2026 WC (2006-2022)" },
+    "Ronaldo": { "pre2026": 9, "note": "Goals before 2026 WC (2006-2022)" },
+    "Klose": { "total": 16, "note": "All-time record holder (2002-2014)" }
   },
   "goldenBoot": [
     { "rank": 1, "name": "Lionel Messi", "country": "Argentina", "countryCode": "ARG", "flag": "AR", "club": "Inter Miami", "played": 4, "goals": 7, "assists": 1 },
@@ -33,14 +38,14 @@
     { "rank": 3, "name": "Alexander Isak", "country": "Sweden", "countryCode": "SWE", "flag": "SE", "club": "Newcastle", "played": 4, "assists": 3, "goals": 2 },
     { "rank": 3, "name": "Martin Odegaard", "country": "Norway", "countryCode": "NOR", "flag": "NO", "club": "Arsenal", "played": 4, "assists": 3, "goals": 1 },
     { "rank": 3, "name": "Florian Wirtz", "country": "Germany", "countryCode": "GER", "flag": "DE", "club": "Leverkusen", "played": 4, "assists": 3, "goals": 1 },
-    { "rank": 7, "name": "Kylian Mbappe", "country": "France", "countryCode": "FRA", "flag": "FR", "club": "Real Madrid", "played": 4, "assists": 2, "goals": 6 },
+    { "rank": 7, "name": "Kylian Mbappe", "country": "France", "countryCode": "FRA", "flag": "FR", "club": "Real Madrid", "played": 5, "assists": 2, "goals": 7 },
     { "rank": 7, "name": "Ousmane Dembele", "country": "France", "countryCode": "FRA", "flag": "FR", "club": "PSG", "played": 4, "assists": 2, "goals": 4 },
     { "rank": 7, "name": "Mohamed Salah", "country": "Egypt", "countryCode": "EGY", "flag": "EG", "club": "Liverpool", "played": 4, "assists": 2, "goals": 1 },
     { "rank": 7, "name": "Bukayo Saka", "country": "England", "countryCode": "ENG", "flag": "ENG", "club": "Arsenal", "played": 4, "assists": 2, "goals": 1 }
   ],
   "starPlayers": [
     { "name": "Messi", "country": "Argentina", "flag": "AR", "played": 4, "goals": 7, "assists": 1, "status": "R16 Jul 7", "statusColor": "#f59e0b" },
-    { "name": "Mbappe", "country": "France", "flag": "FR", "played": 5, "goals": 7, "assists": 2, "status": "QF Jul 9", "statusColor": "#22c55e" },
+    { "name": "Mbappe", "country": "France", "flag": "FR", "played": 5, "goals": 7, "assists": 2, "status": "R16 ✓", "statusColor": "#22c55e" },
     { "name": "Ronaldo", "country": "Portugal", "flag": "PT", "played": 4, "goals": 3, "assists": 0, "status": "R16 Jul 6", "statusColor": "#f59e0b" },
     { "name": "Haaland", "country": "Norway", "flag": "NO", "played": 4, "goals": 5, "assists": 1, "status": "R16 Jul 5", "statusColor": "#f59e0b" },
     { "name": "Vinicius Jr", "country": "Brazil", "flag": "BR", "played": 4, "goals": 4, "assists": 1, "status": "R16 Jul 5", "statusColor": "#f59e0b" },
