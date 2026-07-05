@@ -277,7 +277,7 @@
       {
         "id": "r16_3",
         "date": "2026-07-05",
-        "time": "18:00",
+        "time": "22:00",
         "venue": "East Rutherford",
         "homeTeam": { "code": "BRA", "name": "Brazil", "flag": "🇧🇷" },
         "awayTeam": { "code": "NOR", "name": "Norway", "flag": "🇳🇴" },
@@ -289,7 +289,7 @@
       {
         "id": "r16_4",
         "date": "2026-07-05",
-        "time": "21:00",
+        "time": "02:00",
         "venue": "Mexico City",
         "homeTeam": { "code": "MEX", "name": "Mexico", "flag": "🇲🇽" },
         "awayTeam": { "code": "ENG", "name": "England", "flag": "ENG" },
@@ -301,7 +301,7 @@
       {
         "id": "r16_5",
         "date": "2026-07-06",
-        "time": "18:00",
+        "time": "21:00",
         "venue": "Arlington",
         "homeTeam": { "code": "POR", "name": "Portugal", "flag": "🇵🇹" },
         "awayTeam": { "code": "ESP", "name": "Spain", "flag": "🇪🇸" },
@@ -313,7 +313,7 @@
       {
         "id": "r16_6",
         "date": "2026-07-06",
-        "time": "21:00",
+        "time": "02:00",
         "venue": "Seattle",
         "homeTeam": { "code": "USA", "name": "USA", "flag": "🇺🇸" },
         "awayTeam": { "code": "BEL", "name": "Belgium", "flag": "🇧🇪" },
@@ -337,7 +337,7 @@
       {
         "id": "r16_8",
         "date": "2026-07-07",
-        "time": "21:00",
+        "time": "22:00",
         "venue": "Vancouver",
         "homeTeam": { "code": "SUI", "name": "Switzerland", "flag": "🇨🇭" },
         "awayTeam": { "code": "COL", "name": "Colombia", "flag": "🇨🇴" },
