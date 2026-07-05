@@ -1883,7 +1883,7 @@
           <td>${p.played}</td>
           <td class="${goalClass}">${p.goals}</td>
           <td>${p.assists}</td>
-          <td><span style="color: ${p.statusColor};">? ${p.status}</span></td>
+          <td><span style="color: ${p.statusColor};">📍 ${p.status}</span></td>
         </tr>`;
       }
       html += '</tbody></table>';
@@ -1957,7 +1957,7 @@
       const groupStage = data.groupStage || {};
       const groupTeamYellows = groupStage.teamYellowCards || {};
       
-      // Initialize with group stage data
+      // Initialize with group stage data (all teams played 3 group matches)
       let teamYellowCards = {};
       for (const [team, yellows] of Object.entries(groupTeamYellows)) {
         teamYellowCards[team] = {
@@ -1983,14 +1983,14 @@
               
               if (m.homeTeam?.name) {
                 if (!teamYellowCards[m.homeTeam.name]) {
-                  teamYellowCards[m.homeTeam.name] = { team: m.homeTeam.name, groupYellows: 0, knockoutYellows: 0, played: 0 };
+                  teamYellowCards[m.homeTeam.name] = { team: m.homeTeam.name, groupYellows: 0, knockoutYellows: 0, played: 3 };
                 }
                 teamYellowCards[m.homeTeam.name].knockoutYellows += yellowsPerTeam + remainder;
                 teamYellowCards[m.homeTeam.name].played++;
               }
               if (m.awayTeam?.name) {
                 if (!teamYellowCards[m.awayTeam.name]) {
-                  teamYellowCards[m.awayTeam.name] = { team: m.awayTeam.name, groupYellows: 0, knockoutYellows: 0, played: 0 };
+                  teamYellowCards[m.awayTeam.name] = { team: m.awayTeam.name, groupYellows: 0, knockoutYellows: 0, played: 3 };
                 }
                 teamYellowCards[m.awayTeam.name].knockoutYellows += yellowsPerTeam;
                 teamYellowCards[m.awayTeam.name].played++;
