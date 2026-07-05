@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-05T21:12:56.103Z",
+  "lastUpdated": "2026-07-05T22:17:26.026Z",
   "tournament": {
     "name": "FIFA World Cup 2026",
     "stage": "Round of 16",
@@ -577,10 +577,10 @@
           "name": "Norway",
           "flag": "🇳🇴"
         },
-        "homeScore": 0,
-        "awayScore": 0,
-        "status": "live",
-        "winner": null
+        "homeScore": 1,
+        "awayScore": 2,
+        "status": "completed",
+        "winner": "away"
       },
       {
         "id": "r16_4",
