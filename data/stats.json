@@ -11,7 +11,7 @@
   },
   "goldenBoot": [
     { "rank": 1, "name": "Lionel Messi", "country": "Argentina", "countryCode": "ARG", "flag": "AR", "club": "Inter Miami", "played": 4, "goals": 7, "assists": 1 },
-    { "rank": 2, "name": "Kylian Mbappe", "country": "France", "countryCode": "FRA", "flag": "FR", "club": "Real Madrid", "played": 4, "goals": 6, "assists": 2 },
+    { "rank": 1, "name": "Kylian Mbappe", "country": "France", "countryCode": "FRA", "flag": "FR", "club": "Real Madrid", "played": 5, "goals": 7, "assists": 2 },
     { "rank": 3, "name": "Erling Haaland", "country": "Norway", "countryCode": "NOR", "flag": "NO", "club": "Man City", "played": 4, "goals": 5, "assists": 1 },
     { "rank": 3, "name": "Harry Kane", "country": "England", "countryCode": "ENG", "flag": "ENG", "club": "Bayern Munich", "played": 4, "goals": 5, "assists": 0 },
     { "rank": 5, "name": "Ousmane Dembele", "country": "France", "countryCode": "FRA", "flag": "FR", "club": "PSG", "played": 4, "goals": 4, "assists": 2 },
@@ -40,7 +40,7 @@
   ],
   "starPlayers": [
     { "name": "Messi", "country": "Argentina", "flag": "AR", "played": 4, "goals": 7, "assists": 1, "status": "R16 Jul 7", "statusColor": "#f59e0b" },
-    { "name": "Mbappe", "country": "France", "flag": "FR", "played": 4, "goals": 6, "assists": 2, "status": "R16 Jul 4", "statusColor": "#f59e0b" },
+    { "name": "Mbappe", "country": "France", "flag": "FR", "played": 5, "goals": 7, "assists": 2, "status": "QF Jul 9", "statusColor": "#22c55e" },
     { "name": "Ronaldo", "country": "Portugal", "flag": "PT", "played": 4, "goals": 3, "assists": 0, "status": "R16 Jul 6", "statusColor": "#f59e0b" },
     { "name": "Haaland", "country": "Norway", "flag": "NO", "played": 4, "goals": 5, "assists": 1, "status": "R16 Jul 5", "statusColor": "#f59e0b" },
     { "name": "Vinicius Jr", "country": "Brazil", "flag": "BR", "played": 4, "goals": 4, "assists": 1, "status": "R16 Jul 5", "statusColor": "#f59e0b" },
