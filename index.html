@@ -578,14 +578,14 @@
       <!-- Assist Leaders -->
       <div class="stats-section">
         <h2>🅰️ Top Assist Providers</h2>
-        <p style="color: #888; font-size: 0.85rem; margin-bottom: 1rem;">Michael Olise chasing Pele's all-time record (6 assists in single tournament)</p>
+        <p id="assists-subtitle" style="color: #888; font-size: 0.85rem; margin-bottom: 1rem;">Loading...</p>
         <div id="assists-table"><p style="color: #888;">Loading stats...</p></div>
       </div>
 
       <!-- Star Players Section -->
       <div class="stats-row">
         <div class="stats-section">
-          <h2>? Star Players Watch</h2>
+          <h2>⭐ Star Players Watch</h2>
           <div id="star-players-table"><p style="color: #888;">Loading stats...</p></div>
         </div>
 
@@ -677,13 +677,8 @@
       <!-- Key Storylines -->
       <div class="stats-section">
         <h2>📰 Golden Boot Storylines</h2>
-        <ul style="padding-left: 1.5rem; line-height: 2;">
-          <li id="mbappe-messi-storyline"><strong>Mbappé vs Messi:</strong> Loading...</li>
-          <li><strong>Haaland's Run:</strong> Norway's striker has 5 goals in 4 games, keeping them in R16 contention.</li>
-          <li><strong>France's Firepower:</strong> Les Bleus have 19 goals - most in the tournament. Demb•l• (4G, 2A) and Olise (1G, 5A) supporting Mbapp•.</li>
-          <li><strong>Olise's Assists:</strong> Bayern's winger leads assists (5), chasing Pel•'s single-tournament record (6).</li>
-          <li><strong>Kane Watch:</strong> England captain has 5 goals, continuing his prolific tournament form.</li>
-          <li><strong>Eliminated Scorers:</strong> Germany's Undav (3G) and Netherlands' Gakpo (3G) out despite strong scoring.</li>
+        <ul id="storylines-list" style="padding-left: 1.5rem; line-height: 2;">
+          <li>Loading storylines...</li>
         </ul>
       </div>
 
@@ -724,7 +719,7 @@
 
         <!-- Penalties Section -->
         <div class="stats-section">
-          <h2>? Penalties Awarded</h2>
+          <h2>⚽ Penalties Awarded</h2>
           <div id="penalties-table">Loading penalties data...</div>
           <p style="margin-top: 0.75rem; font-size: 0.8rem; color: #888;">
             Penalty conversion: 5/6 (83%)
@@ -922,7 +917,7 @@
         const todayList = todayMatches.map(m => 
           `${m.homeTeam.name} vs ${m.awayTeam.name} (${m.time} CET)`
         ).join(', ');
-        noteEl.textContent = `? Today's matches: ${todayList}`;
+        noteEl.textContent = `📅 Today's matches: ${todayList}`;
       }
     }
 
@@ -1044,20 +1039,65 @@
     function renderMatchStats(data) {
       const matches = data.matches || {};
       
-      // Count completed matches and penalty shootouts per round
+      // Count completed matches, penalty shootouts, and penalties awarded per round
       let r32Completed = 0, r32Total = 0;
       let r16Completed = 0, r16Total = 0;
       let qfCompleted = 0, qfTotal = 0;
       let sfCompleted = 0, sfTotal = 0;
       let finalCompleted = 0;
       let penaltyShootouts = 0;
+      let penaltiesAwarded = 0;
+      let totalYellowCards = 0;
+      let totalRedCards = 0;
+      let totalGoals = 0;
+      let totalMatches = 0;
+      let teamGoals = {}; // Track goals by team
+
+      // Helper to count stats from match
+      function countMatchStats(m) {
+        if (m.status === 'completed') {
+          totalMatches++;
+          
+          // Count goals
+          if (m.homeScore !== null && m.awayScore !== null) {
+            const homeGoals = parseInt(m.homeScore) || 0;
+            const awayGoals = parseInt(m.awayScore) || 0;
+            totalGoals += homeGoals + awayGoals;
+            
+            // Track goals by team
+            if (m.homeTeam?.name) {
+              teamGoals[m.homeTeam.name] = (teamGoals[m.homeTeam.name] || 0) + homeGoals;
+            }
+            if (m.awayTeam?.name) {
+              teamGoals[m.awayTeam.name] = (teamGoals[m.awayTeam.name] || 0) + awayGoals;
+            }
+          }
+          
+          if (m.homePenalties !== undefined) penaltyShootouts++;
+          
+          // Count from discipline object (preferred)
+          if (m.discipline) {
+            totalYellowCards += m.discipline.yellowCards || 0;
+            totalRedCards += m.discipline.redCards || 0;
+            penaltiesAwarded += m.discipline.penalties || 0;
+          }
+          // Fallback: Count penalties from notes field (e.g., "Penalty", "2 Penalties")
+          else if (m.notes) {
+            const notes = m.notes.toLowerCase();
+            if (notes.includes('penalty') || notes.includes('pen')) {
+              const match = notes.match(/(\d+)\s*penalt/);
+              penaltiesAwarded += match ? parseInt(match[1]) : 1;
+            }
+          }
+        }
+      }
 
       // R32
       for (const m of (matches.r32 || [])) {
         r32Total++;
         if (m.status === 'completed') {
           r32Completed++;
-          if (m.homePenalties !== undefined) penaltyShootouts++;
+          countMatchStats(m);
         }
       }
 
@@ -1066,7 +1106,7 @@
         r16Total++;
         if (m.status === 'completed') {
           r16Completed++;
-          if (m.homePenalties !== undefined) penaltyShootouts++;
+          countMatchStats(m);
         }
       }
 
@@ -1075,7 +1115,7 @@
         qfTotal++;
         if (m.status === 'completed') {
           qfCompleted++;
-          if (m.homePenalties !== undefined) penaltyShootouts++;
+          countMatchStats(m);
         }
       }
 
@@ -1084,7 +1124,7 @@
         sfTotal++;
         if (m.status === 'completed') {
           sfCompleted++;
-          if (m.homePenalties !== undefined) penaltyShootouts++;
+          countMatchStats(m);
         }
       }
 
@@ -1092,9 +1132,20 @@
       for (const m of (matches.final || [])) {
         if (m.status === 'completed') {
           finalCompleted++;
-          if (m.homePenalties !== undefined) penaltyShootouts++;
+          countMatchStats(m);
         }
       }
+
+      // Find top scoring team
+      let topScoringTeam = { name: '-', goals: 0 };
+      for (const [team, goals] of Object.entries(teamGoals)) {
+        if (goals > topScoringTeam.goals) {
+          topScoringTeam = { name: team, goals: goals };
+        }
+      }
+
+      // Calculate goals per match
+      const goalsPerMatch = totalMatches > 0 ? (totalGoals / totalMatches) : 0;
 
       // Update Tournament Stats box
       const r32El = document.getElementById('r32-progress');
@@ -1109,6 +1160,19 @@
       // Also update discipline summary shootouts
       const disciplineShootoutsEl = document.getElementById('discipline-shootouts');
       if (disciplineShootoutsEl) disciplineShootoutsEl.textContent = penaltyShootouts;
+
+      // Store calculated stats globally for renderDynamicTexts to use
+      window.matchStats = {
+        totalGoals: totalGoals,
+        goalsPerMatch: goalsPerMatch,
+        totalMatches: totalMatches,
+        topScoringTeam: topScoringTeam,
+        teamGoals: teamGoals,
+        penalties: penaltiesAwarded,
+        yellowCards: totalYellowCards,
+        redCards: totalRedCards,
+        shootouts: penaltyShootouts
+      };
     }
 
     // Render bracket dynamically from matches.json
@@ -1332,6 +1396,7 @@
     function renderDynamicTexts(data) {
       // Golden Boot subtitle - find top 2 scorers
       const goldenBoot = data.goldenBoot || [];
+      const assists = data.assists || [];
       const sorted = [...goldenBoot].sort((a, b) => b.goals - a.goals);
       const top1 = sorted[0];
       const top2 = sorted[1];
@@ -1345,19 +1410,22 @@
         }
       }
 
-      // Mbappé vs Messi storyline
-      const messi = goldenBoot.find(p => p.name.toLowerCase().includes('messi'));
-      const mbappe = goldenBoot.find(p => p.name.toLowerCase().includes('mbappe') || p.name.toLowerCase().includes('mbappé'));
-      const storylineEl = document.getElementById('mbappe-messi-storyline');
-      if (storylineEl && messi && mbappe) {
-        if (messi.goals === mbappe.goals) {
-          storylineEl.innerHTML = `<strong>Mbappé vs Messi:</strong> Both tied at ${messi.goals} goals! Messi has ${messi.goals} in ${messi.played} matches, Mbappé in ${mbappe.played}.`;
-        } else if (messi.goals > mbappe.goals) {
-          storylineEl.innerHTML = `<strong>Mbappé vs Messi:</strong> Messi leads with ${messi.goals} goals (${messi.played} matches), Mbappé has ${mbappe.goals} (${mbappe.played} matches).`;
+      // Assists subtitle - find leader
+      const sortedAssists = [...assists].sort((a, b) => b.assists - a.assists);
+      const assistsSubtitleEl = document.getElementById('assists-subtitle');
+      if (assistsSubtitleEl && sortedAssists[0]) {
+        const leader = sortedAssists[0];
+        const PELE_RECORD = 6;
+        if (leader.assists >= PELE_RECORD) {
+          assistsSubtitleEl.textContent = `${leader.name} tied/broke Pelé's single-tournament assist record (${PELE_RECORD})!`;
         } else {
-          storylineEl.innerHTML = `<strong>Mbappé vs Messi:</strong> Mbappé leads with ${mbappe.goals} goals (${mbappe.played} matches), Messi has ${messi.goals} (${messi.played} matches).`;
+          assistsSubtitleEl.textContent = `${leader.name} leads with ${leader.assists} assists, chasing Pelé's record (${PELE_RECORD})`;
         }
       }
+
+      // Messi & Mbappe for career calculations
+      const messi = goldenBoot.find(p => p.name.toLowerCase().includes('messi'));
+      const mbappe = goldenBoot.find(p => p.name.toLowerCase().includes('mbappe') || p.name.toLowerCase().includes('mbappé'));
 
       // Messi career WC goals (from careerWCGoals config + this tournament)
       const messiCareerEl = document.getElementById('messi-career-goals');
@@ -1374,27 +1442,41 @@
         ronaldoCareerEl.textContent = pre2026 + ronaldo.goals;
       }
 
-      // Tournament Facts - from tournament object in stats.json
+      // Tournament Facts - prioritize calculated from matches, fallback to stats.json
       const tournament = data.tournament || {};
+      const matchStats = window.matchStats || {};
+      const groupStage = data.groupStage || { goals: 0, matches: 0, yellowCards: 0, redCards: 0, penalties: 0 };
       
-      // Total Goals
+      // Total Goals - group stage + knockout stage (calculated from matches.json)
       const totalGoalsEl = document.getElementById('total-goals');
-      if (totalGoalsEl && tournament.totalGoals) {
-        totalGoalsEl.textContent = tournament.totalGoals;
+      if (totalGoalsEl) {
+        const knockoutGoals = matchStats.totalGoals || 0;
+        const totalGoals = groupStage.goals + knockoutGoals;
+        totalGoalsEl.textContent = totalGoals;
       }
 
-      // Goals Per Match
+      // Goals Per Match - total goals / total matches
       const goalsPerMatchEl = document.getElementById('goals-per-match');
-      if (goalsPerMatchEl && tournament.goalsPerMatch) {
-        goalsPerMatchEl.textContent = tournament.goalsPerMatch.toFixed(2);
+      if (goalsPerMatchEl) {
+        const knockoutGoals = matchStats.totalGoals || 0;
+        const knockoutMatches = matchStats.totalMatches || 0;
+        const totalGoals = groupStage.goals + knockoutGoals;
+        const totalMatches = groupStage.matches + knockoutMatches;
+        const gpm = totalMatches > 0 ? (totalGoals / totalMatches) : 0;
+        goalsPerMatchEl.textContent = gpm.toFixed(2);
       }
 
-      // Top Scoring Team
-      const topTeam = tournament.topScoringTeam;
-      if (topTeam) {
+      // Top Scoring Team - calculated from knockout matches only (group stage not in data)
+      const topTeam = matchStats.topScoringTeam?.name ? matchStats.topScoringTeam : tournament.topScoringTeam;
+      if (topTeam && topTeam.name !== '-') {
         const flagEl = document.getElementById('top-scoring-team-flag');
         const labelEl = document.getElementById('top-scoring-team-label');
-        const flagMap = { 'France': '🇫🇷', 'Argentina': '🇦🇷', 'Brazil': '🇧🇷', 'Germany': '🇩🇪', 'Spain': '🇪🇸', 'England': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'Portugal': '🇵🇹' };
+        const flagMap = { 
+          'France': '🇫🇷', 'Argentina': '🇦🇷', 'Brazil': '🇧🇷', 'Germany': '🇩🇪', 
+          'Spain': '🇪🇸', 'England': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'Portugal': '🇵🇹', 'Morocco': '🇲🇦',
+          'USA': '🇺🇸', 'Mexico': '🇲🇽', 'Belgium': '🇧🇪', 'Netherlands': '🇳🇱',
+          'Norway': '🇳🇴', 'Switzerland': '🇨🇭', 'Colombia': '🇨🇴', 'Egypt': '🇪🇬'
+        };
         if (flagEl) flagEl.textContent = flagMap[topTeam.name] || '🏆';
         if (labelEl) labelEl.textContent = `Most Goals (${topTeam.name}: ${topTeam.goals})`;
       }
@@ -1414,35 +1496,109 @@
         }
       }
 
-      // Discipline Summary - from tournament object in stats.json
+      // Discipline Summary - group stage + knockout (calculated from matches.json)
+      const knockoutReds = matchStats.redCards || 0;
+      const knockoutYellows = matchStats.yellowCards || 0;
+      const knockoutPenalties = matchStats.penalties || 0;
+      
+      const totalRedCards = (groupStage.redCards || 0) + knockoutReds;
+      const totalYellowCards = (groupStage.yellowCards || 0) + knockoutYellows;
+      const totalPenalties = (groupStage.penalties || 0) + knockoutPenalties;
+
       const redCardsEl = document.getElementById('discipline-red-cards');
-      if (redCardsEl && tournament.redCards !== undefined) {
-        redCardsEl.textContent = tournament.redCards;
+      if (redCardsEl) {
+        redCardsEl.textContent = totalRedCards;
       }
 
       const yellowCardsEl = document.getElementById('discipline-yellow-cards');
-      if (yellowCardsEl && tournament.yellowCards !== undefined) {
-        yellowCardsEl.textContent = tournament.yellowCards;
+      if (yellowCardsEl) {
+        yellowCardsEl.textContent = totalYellowCards;
       }
 
+      // Penalties awarded
       const penaltiesEl = document.getElementById('discipline-penalties');
-      if (penaltiesEl && tournament.penaltiesAwarded !== undefined) {
-        penaltiesEl.textContent = tournament.penaltiesAwarded;
+      if (penaltiesEl) {
+        penaltiesEl.textContent = totalPenalties;
       }
 
       // Red card pace analysis
       const paceEl = document.getElementById('red-card-pace');
-      if (paceEl && tournament.redCards !== undefined) {
+      if (paceEl && totalRedCards > 0) {
         const WC_2006_REDS = 28; // Record
-        const redCards = tournament.redCards;
-        if (redCards > WC_2006_REDS) {
-          paceEl.innerHTML = `⚠️ This tournament has broken the 2006 red card record (${WC_2006_REDS}) with ${redCards} reds so far!`;
-        } else if (redCards >= WC_2006_REDS - 5) {
-          paceEl.innerHTML = `⚠️ This tournament is on pace to break the 2006 red card record (${WC_2006_REDS}). Currently at ${redCards} reds.`;
+        if (totalRedCards > WC_2006_REDS) {
+          paceEl.innerHTML = `⚠️ This tournament has broken the 2006 red card record (${WC_2006_REDS}) with ${totalRedCards} reds so far!`;
+        } else if (totalRedCards >= WC_2006_REDS - 5) {
+          paceEl.innerHTML = `⚠️ This tournament is on pace to break the 2006 red card record (${WC_2006_REDS}). Currently at ${totalRedCards} reds.`;
         } else {
-          paceEl.innerHTML = `📊 ${redCards} red cards so far. 2006 record: ${WC_2006_REDS}. Most reds have been for DOGSO.`;
+          paceEl.innerHTML = `📊 ${totalRedCards} red cards so far. 2006 record: ${WC_2006_REDS}. Most reds have been for DOGSO.`;
         }
       }
+
+      // Render Golden Boot Storylines dynamically
+      renderStorylines(data);
+    }
+
+    // Generate storylines dynamically from stats data
+    function renderStorylines(data) {
+      const container = document.getElementById('storylines-list');
+      if (!container) return;
+
+      const goldenBoot = data.goldenBoot || [];
+      const assists = data.assists || [];
+      const tournament = data.tournament || {};
+      const sorted = [...goldenBoot].sort((a, b) => b.goals - a.goals);
+
+      const storylines = [];
+
+      // 1. Mbappé vs Messi
+      const messi = goldenBoot.find(p => p.name.toLowerCase().includes('messi'));
+      const mbappe = goldenBoot.find(p => p.name.toLowerCase().includes('mbappe') || p.name.toLowerCase().includes('mbappé'));
+      if (messi && mbappe) {
+        if (messi.goals === mbappe.goals) {
+          storylines.push(`<strong>Mbappé vs Messi:</strong> Both tied at ${messi.goals} goals! Messi in ${messi.played} matches, Mbappé in ${mbappe.played}.`);
+        } else if (messi.goals > mbappe.goals) {
+          storylines.push(`<strong>Mbappé vs Messi:</strong> Messi leads with ${messi.goals} goals, Mbappé has ${mbappe.goals}.`);
+        } else {
+          storylines.push(`<strong>Mbappé vs Messi:</strong> Mbappé leads with ${mbappe.goals} goals, Messi has ${messi.goals}.`);
+        }
+      }
+
+      // 2. Haaland watch
+      const haaland = goldenBoot.find(p => p.name.toLowerCase().includes('haaland'));
+      if (haaland) {
+        storylines.push(`<strong>Haaland's Run:</strong> Norway's striker has ${haaland.goals} goals in ${haaland.played} games.`);
+      }
+
+      // 3. Top scoring team
+      if (tournament.topScoringTeam) {
+        const team = tournament.topScoringTeam;
+        storylines.push(`<strong>${team.name}'s Firepower:</strong> ${team.goals} goals - most in the tournament.`);
+      }
+
+      // 4. Assist leader
+      const sortedAssists = [...assists].sort((a, b) => b.assists - a.assists);
+      if (sortedAssists[0]) {
+        const leader = sortedAssists[0];
+        storylines.push(`<strong>${leader.name.split(' ').pop()}'s Assists:</strong> Leads with ${leader.assists} assists, chasing Pelé's single-tournament record (6).`);
+      }
+
+      // 5. Kane watch
+      const kane = goldenBoot.find(p => p.name.toLowerCase().includes('kane'));
+      if (kane) {
+        storylines.push(`<strong>Kane Watch:</strong> England captain has ${kane.goals} goals in ${kane.played} matches.`);
+      }
+
+      // 6. Find eliminated scorers (players from eliminated teams with 3+ goals)
+      const eliminatedTeams = ['Germany', 'Netherlands']; // Teams known to be out
+      const eliminatedScorers = sorted.filter(p => 
+        eliminatedTeams.some(t => p.country.includes(t)) && p.goals >= 3
+      );
+      if (eliminatedScorers.length > 0) {
+        const scorerList = eliminatedScorers.map(p => `${p.country}'s ${p.name.split(' ').pop()} (${p.goals}G)`).join(' and ');
+        storylines.push(`<strong>Eliminated Scorers:</strong> ${scorerList} out despite strong scoring.`);
+      }
+
+      container.innerHTML = storylines.map(s => `<li>${s}</li>`).join('');
     }
 
     // Update the "Last updated" note from matches.json
@@ -1831,12 +1987,64 @@
 
     function renderReferees(data) {
       const container = document.getElementById('referees-table');
-      if (!container || !data.referees) return;
+      if (!container) return;
+
+      // Calculate referee stats from match data if available
+      let refereeStats = {};
+      
+      if (globalMatchData?.matches) {
+        const matches = globalMatchData.matches;
+        
+        // Iterate through all rounds
+        for (const [round, matchList] of Object.entries(matches)) {
+          for (const m of matchList) {
+            if (m.status === 'completed' && m.referee) {
+              const refName = m.referee.name;
+              if (!refereeStats[refName]) {
+                refereeStats[refName] = {
+                  name: refName,
+                  country: m.referee.country,
+                  flag: m.referee.flag,
+                  matches: 0,
+                  yellows: 0,
+                  reds: 0,
+                  penalties: 0
+                };
+              }
+              refereeStats[refName].matches++;
+              if (m.discipline) {
+                refereeStats[refName].yellows += m.discipline.yellowCards || 0;
+                refereeStats[refName].reds += m.discipline.redCards || 0;
+                refereeStats[refName].penalties += m.discipline.penalties || 0;
+              }
+            }
+          }
+        }
+      }
+
+      // Convert to array and sort by matches (desc), then yellows (desc)
+      let referees = Object.values(refereeStats);
+      
+      // Fallback to stats.json if no match data
+      if (referees.length === 0 && data.referees) {
+        referees = data.referees;
+      }
+      
+      referees.sort((a, b) => {
+        if (b.matches !== a.matches) return b.matches - a.matches;
+        return b.yellows - a.yellows;
+      });
+
+      if (referees.length === 0) {
+        container.innerHTML = '<p style="color: #888;">No referee data available</p>';
+        return;
+      }
 
       let html = `<table class="player-table">
-        <thead><tr><th>Referee</th><th>Country</th><th>Matches</th><th>Yellows</th><th>Reds</th><th>Pens</th></tr></thead><tbody>`;
+        <thead><tr><th>Referee</th><th>Country</th><th>Matches</th><th>Yellows</th><th>Reds</th><th>Pens</th><th>Avg YC</th></tr></thead><tbody>`;
 
-      for (const r of data.referees) {
+      for (const r of referees) {
+        const avgYC = r.matches > 0 ? (r.yellows / r.matches).toFixed(1) : '0.0';
         html += `<tr>
           <td>${r.name}</td>
           <td>${r.country}</td>
@@ -1844,6 +2052,7 @@
           <td style="text-align:center;">${r.yellows}</td>
           <td style="text-align:center;">${r.reds}</td>
           <td style="text-align:center;">${r.penalties}</td>
+          <td style="text-align:center;">${avgYC}</td>
         </tr>`;
       }
       html += '</tbody></table>';
