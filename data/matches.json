@@ -18,7 +18,9 @@
         "homeScore": 1,
         "awayScore": 0,
         "status": "completed",
-        "winner": "home"
+        "winner": "home",
+        "referee": { "name": "Slavko Vinčić", "country": "Slovenia", "flag": "SI" },
+        "discipline": { "yellowCards": 3, "redCards": 0, "penalties": 0 }
       },
       {
         "id": "r32_2",
@@ -33,7 +35,9 @@
         "awayPenalties": 3,
         "status": "completed",
         "winner": "away",
-        "notes": "PKs"
+        "notes": "PKs",
+        "referee": { "name": "Jesús Valenzuela", "country": "Venezuela", "flag": "VE" },
+        "discipline": { "yellowCards": 4, "redCards": 0, "penalties": 0 }
       },
       {
         "id": "r32_3",
@@ -48,19 +52,23 @@
         "awayPenalties": 4,
         "status": "completed",
         "winner": "away",
-        "notes": "PKs"
+        "notes": "PKs",
+        "referee": { "name": "Clément Turpin", "country": "France", "flag": "FR" },
+        "discipline": { "yellowCards": 5, "redCards": 0, "penalties": 0 }
       },
       {
         "id": "r32_4",
         "date": "2026-06-30",
         "time": "18:00",
         "venue": "East Rutherford",
-        "homeTeam": { "code": "FRA", "name": "France", "flag": "🇫🇷" },
-        "awayTeam": { "code": "SWE", "name": "Sweden", "flag": "🇸🇪" },
+        "homeTeam": { "code": "FRA", "name": "France", "flag": "�🇷" },
+        "awayTeam": { "code": "SWE", "name": "Sweden", "flag": "��" },
         "homeScore": 3,
         "awayScore": 0,
         "status": "completed",
-        "winner": "home"
+        "winner": "home",
+        "referee": { "name": "Ismail Elfath", "country": "USA", "flag": "US" },
+        "discipline": { "yellowCards": 2, "redCards": 0, "penalties": 1 }
       },
       {
         "id": "r32_5",
@@ -72,7 +80,9 @@
         "homeScore": 2,
         "awayScore": 1,
         "status": "completed",
-        "winner": "home"
+        "winner": "home",
+        "referee": { "name": "Ma Ning", "country": "China", "flag": "CN" },
+        "discipline": { "yellowCards": 4, "redCards": 0, "penalties": 1 }
       },
       {
         "id": "r32_6",
@@ -84,7 +94,9 @@
         "homeScore": 2,
         "awayScore": 1,
         "status": "completed",
-        "winner": "home"
+        "winner": "home",
+        "referee": { "name": "Facundo Tello", "country": "Argentina", "flag": "AR" },
+        "discipline": { "yellowCards": 3, "redCards": 0, "penalties": 0 }
       },
       {
         "id": "r32_7",
@@ -96,7 +108,9 @@
         "homeScore": 2,
         "awayScore": 0,
         "status": "completed",
-        "winner": "home"
+        "winner": "home",
+        "referee": { "name": "Anthony Taylor", "country": "England", "flag": "ENG" },
+        "discipline": { "yellowCards": 4, "redCards": 0, "penalties": 0 }
       },
       {
         "id": "r32_8",
@@ -108,7 +122,9 @@
         "homeScore": 2,
         "awayScore": 1,
         "status": "completed",
-        "winner": "home"
+        "winner": "home",
+        "referee": { "name": "Jesús Valenzuela", "country": "Venezuela", "flag": "VE" },
+        "discipline": { "yellowCards": 3, "redCards": 0, "penalties": 1 }
       },
       {
         "id": "r32_9",
@@ -120,7 +136,9 @@
         "homeScore": 2,
         "awayScore": 1,
         "status": "completed",
-        "winner": "home"
+        "winner": "home",
+        "referee": { "name": "Daniel Siebert", "country": "Germany", "flag": "DE" },
+        "discipline": { "yellowCards": 2, "redCards": 0, "penalties": 0 }
       },
       {
         "id": "r32_10",
@@ -132,19 +150,23 @@
         "homeScore": 3,
         "awayScore": 0,
         "status": "completed",
-        "winner": "home"
+        "winner": "home",
+        "referee": { "name": "Slavko Vinčić", "country": "Slovenia", "flag": "SI" },
+        "discipline": { "yellowCards": 3, "redCards": 0, "penalties": 1 }
       },
       {
         "id": "r32_11",
         "date": "2026-07-01",
         "time": "00:00",
         "venue": "Santa Clara",
-        "homeTeam": { "code": "USA", "name": "USA", "flag": "🇺🇸" },
-        "awayTeam": { "code": "BIH", "name": "Bosnia", "flag": "🇧🇦" },
+        "homeTeam": { "code": "USA", "name": "USA", "flag": "��" },
+        "awayTeam": { "code": "BIH", "name": "Bosnia", "flag": "��" },
         "homeScore": 2,
         "awayScore": 0,
         "status": "completed",
-        "winner": "home"
+        "winner": "home",
+        "referee": { "name": "Clément Turpin", "country": "France", "flag": "FR" },
+        "discipline": { "yellowCards": 4, "redCards": 1, "penalties": 0 }
       },
       {
         "id": "r32_12",
@@ -157,7 +179,9 @@
         "awayScore": 2,
         "status": "completed",
         "winner": "home",
-        "notes": "AET"
+        "notes": "AET",
+        "referee": { "name": "Ma Ning", "country": "China", "flag": "CN" },
+        "discipline": { "yellowCards": 5, "redCards": 0, "penalties": 1 }
       },
       {
         "id": "r32_13",
@@ -172,7 +196,9 @@
         "awayPenalties": 4,
         "status": "completed",
         "winner": "away",
-        "notes": "PKs"
+        "notes": "PKs",
+        "referee": { "name": "Wilton Sampaio", "country": "Brazil", "flag": "BR" },
+        "discipline": { "yellowCards": 4, "redCards": 0, "penalties": 0 }
       },
       {
         "id": "r32_14",
@@ -185,7 +211,9 @@
         "awayScore": 2,
         "status": "completed",
         "winner": "home",
-        "notes": "AET"
+        "notes": "AET",
+        "referee": { "name": "Ismail Elfath", "country": "USA", "flag": "US" },
+        "discipline": { "yellowCards": 5, "redCards": 0, "penalties": 0 }
       },
       {
         "id": "r32_15",
@@ -197,7 +225,9 @@
         "homeScore": 2,
         "awayScore": 0,
         "status": "completed",
-        "winner": "home"
+        "winner": "home",
+        "referee": { "name": "Facundo Tello", "country": "Argentina", "flag": "AR" },
+        "discipline": { "yellowCards": 3, "redCards": 0, "penalties": 0 }
       },
       {
         "id": "r32_16",
@@ -209,7 +239,9 @@
         "homeScore": 1,
         "awayScore": 0,
         "status": "completed",
-        "winner": "home"
+        "winner": "home",
+        "referee": { "name": "Daniel Siebert", "country": "Germany", "flag": "DE" },
+        "discipline": { "yellowCards": 2, "redCards": 0, "penalties": 0 }
       }
     ],
     "r16": [
@@ -223,7 +255,9 @@
         "homeScore": 0,
         "awayScore": 3,
         "status": "completed",
-        "winner": "away"
+        "winner": "away",
+        "referee": { "name": "Anthony Taylor", "country": "England", "flag": "ENG" },
+        "discipline": { "yellowCards": 3, "redCards": 0, "penalties": 0 }
       },
       {
         "id": "r16_2",
@@ -235,7 +269,10 @@
         "homeScore": 0,
         "awayScore": 1,
         "status": "completed",
-        "winner": "away"
+        "winner": "away",
+        "notes": "Penalty",
+        "referee": { "name": "Ma Ning", "country": "China", "flag": "CN" },
+        "discipline": { "yellowCards": 5, "redCards": 0, "penalties": 1 }
       },
       {
         "id": "r16_3",
