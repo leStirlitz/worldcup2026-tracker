@@ -1165,32 +1165,186 @@
 
     // Load stats data and render tables
     async function loadStatsData() {
+      // First try to fetch live data from ESPN
+      let liveData = null;
+      try {
+        liveData = await fetchESPNStats();
+      } catch (e) {
+        console.log('ESPN fetch failed, using local stats.json:', e.message);
+      }
+
+      // Load local stats.json as fallback/base
+      let localData = null;
       try {
         const response = await fetch('data/stats.json');
-        if (!response.ok) {
-          throw new Error('Failed to fetch stats.json: ' + response.status);
+        if (response.ok) {
+          localData = await response.json();
         }
-        const data = await response.json();
-        console.log('Stats data loaded:', data);
-        renderGoldenBoot(data);
-        renderAssists(data);
-        renderStarPlayers(data);
-        renderDistanceCovered(data);
-        renderRedCards(data);
-        renderYellowCards(data);
-        renderPenalties(data);
-        renderReferees(data);
-      } catch (error) {
-        console.error('Failed to load stats data:', error);
-        // Show error message in containers
-        const containers = ['golden-boot-table', 'assists-table', 'star-players-table', 
-                           'distance-table', 'red-cards-table', 'yellow-cards-table', 
-                           'penalties-table', 'referees-table'];
-        containers.forEach(id => {
-          const el = document.getElementById(id);
-          if (el) el.innerHTML = '<p style="color: #ef4444;">Error loading data. Try refreshing or use a local server.</p>';
-        });
+      } catch (e) {
+        console.log('Local stats.json failed:', e.message);
       }
+
+      // Merge live data with local data (live takes priority)
+      const data = localData || {};
+      if (liveData) {
+        if (liveData.goldenBoot && liveData.goldenBoot.length > 0) {
+          // Preserve club info from local data
+          for (const player of liveData.goldenBoot) {
+            const local = data.goldenBoot?.find(p => 
+              p.name.toLowerCase().includes(player.name.split(' ').pop().toLowerCase())
+            );
+            if (local?.club) player.club = local.club;
+          }
+          data.goldenBoot = liveData.goldenBoot;
+          console.log('Using LIVE Golden Boot data from ESPN');
+        }
+        if (liveData.assists && liveData.assists.length > 0) {
+          for (const player of liveData.assists) {
+            const local = data.assists?.find(p => 
+              p.name.toLowerCase().includes(player.name.split(' ').pop().toLowerCase())
+            );
+            if (local?.club) player.club = local.club;
+          }
+          data.assists = liveData.assists;
+          console.log('Using LIVE Assists data from ESPN');
+        }
+        if (liveData.yellowCards && liveData.yellowCards.length > 0) {
+          data.yellowCards = liveData.yellowCards;
+          console.log('Using LIVE Yellow Cards data from ESPN');
+        }
+        if (liveData.redCards && liveData.redCards.length > 0) {
+          // Merge with local red cards (local has more detail like minute/reason)
+          console.log('ESPN Red Cards available:', liveData.redCards.length);
+        }
+      }
+
+      if (!data.goldenBoot) {
+        console.error('No stats data available');
+        return;
+      }
+
+      console.log('Stats data loaded:', data);
+      renderGoldenBoot(data);
+      renderAssists(data);
+      renderStarPlayers(data);
+      renderDistanceCovered(data);
+      renderRedCards(data);
+      renderYellowCards(data);
+      renderPenalties(data);
+      renderReferees(data);
+    }
+
+    // Fetch live stats from ESPN API
+    async function fetchESPNStats() {
+      const ESPN_TO_NAME = {
+        'United States': 'USA',
+        "Côte d'Ivoire": 'Ivory Coast',
+        'Bosnia-Herzegovina': 'Bosnia',
+        'Congo DR': 'DR Congo',
+        'Cabo Verde': 'Cape Verde'
+      };
+
+      const result = { goldenBoot: [], assists: [], yellowCards: [], redCards: [] };
+
+      // Fetch main leaders (goals, assists)
+      try {
+        const response = await fetch('https://site.api.espn.com/apis/v2/sports/soccer/fifa.world/leaders');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.leaders) {
+            for (const category of data.leaders) {
+              const catName = (category.name || category.displayName || '').toLowerCase();
+              const abbr = (category.abbreviation || '').toUpperCase();
+              
+              if (catName.includes('goal') || abbr === 'G') {
+                // Goals/Golden Boot
+                for (const leader of (category.leaders || []).slice(0, 20)) {
+                  const athlete = leader.athlete;
+                  if (!athlete) continue;
+                  const teamName = athlete.team?.displayName || athlete.team?.name || 'Unknown';
+                  result.goldenBoot.push({
+                    rank: 0,
+                    name: athlete.displayName || athlete.fullName,
+                    country: ESPN_TO_NAME[teamName] || teamName,
+                    countryCode: athlete.team?.abbreviation || '',
+                    flag: athlete.team?.abbreviation || '',
+                    club: '',
+                    played: parseInt(leader.statistics?.gamesPlayed || leader.statistics?.appearances || 0),
+                    goals: parseInt(leader.value || leader.statistics?.goals || 0),
+                    assists: parseInt(leader.statistics?.assists || 0)
+                  });
+                }
+              }
+              
+              if (catName.includes('assist') || abbr === 'A') {
+                // Assists
+                for (const leader of (category.leaders || []).slice(0, 15)) {
+                  const athlete = leader.athlete;
+                  if (!athlete) continue;
+                  const teamName = athlete.team?.displayName || athlete.team?.name || 'Unknown';
+                  result.assists.push({
+                    rank: 0,
+                    name: athlete.displayName || athlete.fullName,
+                    country: ESPN_TO_NAME[teamName] || teamName,
+                    countryCode: athlete.team?.abbreviation || '',
+                    flag: athlete.team?.abbreviation || '',
+                    club: '',
+                    played: parseInt(leader.statistics?.gamesPlayed || leader.statistics?.appearances || 0),
+                    assists: parseInt(leader.value || leader.statistics?.assists || 0),
+                    goals: parseInt(leader.statistics?.goals || 0)
+                  });
+                }
+              }
+
+              if (catName.includes('yellow') || abbr === 'YC') {
+                // Yellow cards (teams)
+                for (const leader of (category.leaders || []).slice(0, 10)) {
+                  const team = leader.team || leader.athlete?.team;
+                  if (!team) continue;
+                  const teamName = team.displayName || team.name || 'Unknown';
+                  result.yellowCards.push({
+                    rank: 0,
+                    team: ESPN_TO_NAME[teamName] || teamName,
+                    flag: team.abbreviation || '',
+                    played: parseInt(leader.statistics?.gamesPlayed || 4),
+                    cards: parseInt(leader.value || leader.statistics?.yellowCards || 0)
+                  });
+                }
+              }
+
+              if (catName.includes('red') || abbr === 'RC') {
+                // Red cards
+                for (const leader of (category.leaders || []).slice(0, 15)) {
+                  const athlete = leader.athlete;
+                  if (!athlete) continue;
+                  const teamName = athlete.team?.displayName || athlete.team?.name || 'Unknown';
+                  result.redCards.push({
+                    match: teamName,
+                    player: athlete.displayName || athlete.fullName,
+                    minute: '',
+                    reason: 'Red card'
+                  });
+                }
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.log('ESPN leaders fetch failed:', e.message);
+      }
+
+      // Try discipline-specific endpoint
+      try {
+        const discResponse = await fetch('https://site.api.espn.com/apis/v2/sports/soccer/fifa.world/leaders?view=discipline');
+        if (discResponse.ok) {
+          const discData = await discResponse.json();
+          console.log('Discipline data:', discData);
+        }
+      } catch (e) {
+        // Silently fail
+      }
+
+      return result;
     }
 
     function getRankClass(rank) {
@@ -1312,18 +1466,30 @@
       const container = document.getElementById('distance-table');
       if (!container || !data.distanceCovered) return;
 
+      // Sort by totalKm (desc) and calculate dynamic ranks
+      const sorted = [...data.distanceCovered].sort((a, b) => b.totalKm - a.totalKm);
+      let currentRank = 1;
+      let lastKm = -1;
+      for (let i = 0; i < sorted.length; i++) {
+        if (sorted[i].totalKm !== lastKm) {
+          currentRank = i + 1;
+          lastKm = sorted[i].totalKm;
+        }
+        sorted[i].dynamicRank = currentRank;
+      }
+
       let html = `<table class="player-table">
         <thead><tr>
           <th class="rank">#</th><th>Player</th><th>Country</th><th>Pos</th>
           <th style="text-align:center;">Matches</th><th style="text-align:center;">Total km</th><th style="text-align:center;">Avg/Match</th>
         </tr></thead><tbody>`;
 
-      for (const p of data.distanceCovered) {
-        const rankClass = getRankClass(p.rank);
+      for (const p of sorted) {
+        const rankClass = getRankClass(p.dynamicRank);
         const kmClass = p.totalKm >= 45 ? 'stat-highlight' : '';
         const rowStyle = p.highlight ? 'background: rgba(239, 68, 68, 0.1);' : '';
         html += `<tr style="${rowStyle}">
-          <td class="rank ${rankClass}">${p.rank}</td>
+          <td class="rank ${rankClass}">${p.dynamicRank}</td>
           <td class="player-name">${p.name}</td>
           <td>${p.country}</td><td>${p.position}</td>
           <td style="text-align:center;">${p.matches}</td>
@@ -1359,15 +1525,27 @@
       const container = document.getElementById('yellow-cards-table');
       if (!container || !data.yellowCards) return;
 
+      // Sort by cards (desc) and calculate dynamic ranks
+      const sorted = [...data.yellowCards].sort((a, b) => b.cards - a.cards);
+      let currentRank = 1;
+      let lastCards = -1;
+      for (let i = 0; i < sorted.length; i++) {
+        if (sorted[i].cards !== lastCards) {
+          currentRank = i + 1;
+          lastCards = sorted[i].cards;
+        }
+        sorted[i].dynamicRank = currentRank;
+      }
+
       let html = `<table class="player-table">
         <thead><tr><th>#</th><th>Team</th><th>Pld</th><th>Cards</th></tr></thead><tbody>`;
 
-      for (const t of data.yellowCards) {
+      for (const t of sorted) {
         const cardClass = t.cards >= 6 ? 'stat-highlight' : '';
         html += `<tr>
-          <td class="rank">${t.rank}</td>
+          <td class="rank">${t.dynamicRank}</td>
           <td class="player-name">${t.team}</td>
-          <td>${t.played}</td>
+          <td>${t.played || '-'}</td>
           <td class="${cardClass}">${t.cards}</td>
         </tr>`;
       }
