@@ -6,7 +6,38 @@
     "yellowCards": 165,
     "redCards": 10,
     "penalties": 5,
-    "note": "Group stage totals (not in matches.json)"
+    "note": "Group stage totals (not in matches.json)",
+    "teamGoals": {
+      "France": 12,
+      "Spain": 10,
+      "Argentina": 9,
+      "Germany": 9,
+      "Brazil": 8,
+      "England": 8,
+      "Portugal": 8,
+      "Belgium": 7,
+      "Morocco": 7,
+      "Mexico": 7,
+      "USA": 6,
+      "Netherlands": 6,
+      "Norway": 6,
+      "Colombia": 5,
+      "Switzerland": 5
+    },
+    "refereeStats": {
+      "Ma Ning": { "country": "China", "flag": "CN", "matches": 4, "yellows": 19, "reds": 0, "penalties": 1 },
+      "Clément Turpin": { "country": "France", "flag": "FR", "matches": 4, "yellows": 14, "reds": 1, "penalties": 0 },
+      "Jesús Valenzuela": { "country": "Venezuela", "flag": "VE", "matches": 4, "yellows": 12, "reds": 0, "penalties": 0 },
+      "Ismail Elfath": { "country": "USA", "flag": "US", "matches": 3, "yellows": 8, "reds": 0, "penalties": 1 },
+      "Anthony Taylor": { "country": "England", "flag": "ENG", "matches": 4, "yellows": 15, "reds": 1, "penalties": 0 },
+      "Slavko Vinčić": { "country": "Slovenia", "flag": "SI", "matches": 3, "yellows": 10, "reds": 0, "penalties": 1 },
+      "Facundo Tello": { "country": "Argentina", "flag": "AR", "matches": 4, "yellows": 13, "reds": 0, "penalties": 0 },
+      "Daniel Siebert": { "country": "Germany", "flag": "DE", "matches": 3, "yellows": 9, "reds": 0, "penalties": 0 },
+      "Wilton Sampaio": { "country": "Brazil", "flag": "BR", "matches": 4, "yellows": 16, "reds": 1, "penalties": 0 },
+      "Szymon Marciniak": { "country": "Poland", "flag": "PL", "matches": 3, "yellows": 8, "reds": 0, "penalties": 0 },
+      "Felix Zwayer": { "country": "Germany", "flag": "DE", "matches": 3, "yellows": 11, "reds": 1, "penalties": 1 },
+      "Fernando Rapallini": { "country": "Argentina", "flag": "AR", "matches": 3, "yellows": 7, "reds": 0, "penalties": 0 }
+    }
   },
   "careerWCGoals": {
     "Messi": { "pre2026": 13, "note": "Goals before 2026 WC (2006-2022)" },
