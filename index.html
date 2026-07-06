@@ -181,6 +181,144 @@
     .legend-dot.completed { background: #22c55e; }
     .legend-dot.upcoming { background: #4a5568; }
     
+    /* Live Match Stats Panel */
+    .live-match-panel {
+      max-width: 700px;
+      margin: 1.5rem auto;
+      background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+      border: 2px solid #b45309;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 20px rgba(180, 83, 9, 0.3);
+    }
+    .live-match-panel.completed {
+      border-color: #22c55e;
+      box-shadow: 0 4px 20px rgba(34, 197, 94, 0.2);
+    }
+    .live-match-panel.scheduled {
+      border-color: #f59e0b;
+      box-shadow: 0 4px 20px rgba(245, 158, 11, 0.2);
+    }
+    .live-match-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .live-match-status {
+      background: #b45309;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      animation: statusPulse 2s ease-in-out infinite;
+    }
+    .live-match-status.completed {
+      background: #22c55e;
+      animation: none;
+    }
+    .live-match-status.halftime {
+      background: #f59e0b;
+      animation: none;
+    }
+    .live-match-status.scheduled {
+      background: #4a5568;
+      animation: none;
+    }
+    @keyframes statusPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    .live-match-venue {
+      color: #888;
+      font-size: 0.8rem;
+    }
+    .live-match-teams {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .live-team {
+      text-align: center;
+      flex: 1;
+    }
+    .live-team-name {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 0.25rem;
+    }
+    .live-team-flag {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .live-score {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #f59e0b;
+      min-width: 100px;
+      text-align: center;
+    }
+    .live-stats-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .live-stat-row {
+      display: contents;
+    }
+    .live-stat-home {
+      text-align: right;
+      font-weight: 500;
+      padding: 0.4rem 0;
+    }
+    .live-stat-label {
+      text-align: center;
+      color: #888;
+      font-size: 0.85rem;
+      padding: 0.4rem 1rem;
+    }
+    .live-stat-away {
+      text-align: left;
+      font-weight: 500;
+      padding: 0.4rem 0;
+    }
+    .live-stat-bar {
+      height: 6px;
+      background: #4a5568;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 0.25rem;
+    }
+    .live-stat-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #22c55e, #f59e0b);
+      border-radius: 3px;
+    }
+    
+    @media (max-width: 768px) {
+      .live-match-panel {
+        margin: 1rem 0.5rem;
+        padding: 1rem;
+      }
+      .live-team-name {
+        font-size: 1rem;
+      }
+      .live-team-flag {
+        font-size: 2rem;
+      }
+      .live-score {
+        font-size: 2rem;
+        min-width: 70px;
+      }
+      .live-stat-label {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.5rem;
+      }
+    }
+
     .stats {
       max-width: 800px;
       margin: 2rem auto;
@@ -510,6 +648,28 @@
     <div class="legend-item"><div class="legend-dot completed"></div> Completed</div>
     <div class="legend-item"><div class="legend-dot" style="background: #f59e0b;"></div> Today</div>
     <div class="legend-item"><div class="legend-dot upcoming"></div> Upcoming</div>
+  </div>
+
+  <!-- Live Match Stats Panel -->
+  <div id="live-match-panel" class="live-match-panel" style="display: none;">
+    <div class="live-match-header">
+      <span id="live-match-status" class="live-match-status">LIVE 45'</span>
+      <span id="live-match-venue" class="live-match-venue">AT&T Stadium, Arlington</span>
+    </div>
+    <div class="live-match-teams">
+      <div class="live-team">
+        <div id="live-home-flag" class="live-team-flag">🇵🇹</div>
+        <div id="live-home-name" class="live-team-name">Portugal</div>
+      </div>
+      <div id="live-score" class="live-score">0 - 0</div>
+      <div class="live-team">
+        <div id="live-away-flag" class="live-team-flag">🇪🇸</div>
+        <div id="live-away-name" class="live-team-name">Spain</div>
+      </div>
+    </div>
+    <div id="live-stats-grid" class="live-stats-grid">
+      <!-- Stats will be populated dynamically -->
+    </div>
   </div>
 
   <div class="stats">
@@ -1010,6 +1170,8 @@
             console.log('ESPN Scoreboard: Found', liveMatches.length, 'matches');
             // Update matches.json data with live ESPN data
             mergeESPNMatchData(data, liveMatches);
+            // Render live match stats panel
+            renderLiveMatchPanel(liveMatches);
           }
         } catch (e) {
           console.log('ESPN scoreboard fetch failed, using local data:', e.message);
@@ -1054,19 +1216,35 @@
               const homeTeam = competition.competitors?.find(c => c.homeAway === 'home');
               const awayTeam = competition.competitors?.find(c => c.homeAway === 'away');
               
+              // Extract statistics for both teams
+              const homeStats = {};
+              const awayStats = {};
+              for (const stat of (homeTeam?.statistics || [])) {
+                homeStats[stat.name] = stat.displayValue;
+              }
+              for (const stat of (awayTeam?.statistics || [])) {
+                awayStats[stat.name] = stat.displayValue;
+              }
+              
               matches.push({
                 id: event.id,
                 name: event.name,
                 date: event.date,
-                status: competition.status?.type?.name, // 'STATUS_FINAL', 'STATUS_IN_PROGRESS', etc.
+                status: competition.status?.type?.name,
+                statusDetail: competition.status?.type?.shortDetail || competition.status?.type?.detail,
+                displayClock: competition.status?.displayClock,
+                period: competition.status?.period,
                 homeTeam: homeTeam?.team?.displayName,
                 homeCode: homeTeam?.team?.abbreviation,
                 homeScore: parseInt(homeTeam?.score) || 0,
+                homeLogo: homeTeam?.team?.logo,
+                homeStats: homeStats,
                 awayTeam: awayTeam?.team?.displayName,
                 awayCode: awayTeam?.team?.abbreviation,
                 awayScore: parseInt(awayTeam?.score) || 0,
-                venue: competition.venue?.fullName,
-                // Try to get match details
+                awayLogo: awayTeam?.team?.logo,
+                awayStats: awayStats,
+                venue: competition.venue?.fullName + (competition.venue?.address?.city ? ', ' + competition.venue.address.city : ''),
                 details: competition.details || [],
                 notes: competition.notes || []
               });
@@ -1078,6 +1256,131 @@
       }
       
       return matches;
+    }
+    
+    // Store last displayed match for persistence
+    let lastLiveMatchData = null;
+
+    // Render live match stats panel
+    function renderLiveMatchPanel(espnMatches) {
+      const panel = document.getElementById('live-match-panel');
+      if (!panel) return;
+      
+      // Find live or most recent completed match
+      let matchToShow = null;
+      
+      // Priority 1: Currently live match
+      for (const m of espnMatches) {
+        if (m.status === 'STATUS_FIRST_HALF' || m.status === 'STATUS_SECOND_HALF' || 
+            m.status === 'STATUS_HALFTIME' || m.status === 'STATUS_IN_PROGRESS') {
+          matchToShow = m;
+          matchToShow.isLive = true;
+          break;
+        }
+      }
+      
+      // Priority 2: Recently completed match (today)
+      if (!matchToShow) {
+        for (const m of espnMatches) {
+          if (m.status === 'STATUS_FINAL' || m.status === 'STATUS_FULL_TIME') {
+            matchToShow = m;
+            matchToShow.isLive = false;
+            break;
+          }
+        }
+      }
+      
+      // Priority 3: Use last shown match if still relevant
+      if (!matchToShow && lastLiveMatchData) {
+        matchToShow = lastLiveMatchData;
+      }
+      
+      if (!matchToShow) {
+        panel.style.display = 'none';
+        return;
+      }
+      
+      // Store for persistence
+      lastLiveMatchData = matchToShow;
+      
+      // Show panel
+      panel.style.display = 'block';
+      
+      // Update panel class based on status
+      panel.className = 'live-match-panel';
+      if (matchToShow.status === 'STATUS_FINAL' || matchToShow.status === 'STATUS_FULL_TIME') {
+        panel.classList.add('completed');
+      } else if (matchToShow.status === 'STATUS_SCHEDULED') {
+        panel.classList.add('scheduled');
+      }
+      
+      // Status badge
+      const statusEl = document.getElementById('live-match-status');
+      let statusText = '';
+      let statusClass = 'live-match-status';
+      
+      if (matchToShow.status === 'STATUS_FIRST_HALF') {
+        statusText = `🔴 LIVE ${matchToShow.displayClock || '1st Half'}`;
+      } else if (matchToShow.status === 'STATUS_SECOND_HALF') {
+        statusText = `🔴 LIVE ${matchToShow.displayClock || '2nd Half'}`;
+      } else if (matchToShow.status === 'STATUS_HALFTIME') {
+        statusText = '⏸️ HALFTIME';
+        statusClass += ' halftime';
+      } else if (matchToShow.status === 'STATUS_FINAL' || matchToShow.status === 'STATUS_FULL_TIME') {
+        statusText = '✅ FULL TIME';
+        statusClass += ' completed';
+      } else if (matchToShow.status === 'STATUS_IN_PROGRESS') {
+        statusText = `🔴 LIVE ${matchToShow.displayClock || ''}`;
+      } else {
+        statusText = matchToShow.statusDetail || 'SCHEDULED';
+        statusClass += ' scheduled';
+      }
+      statusEl.textContent = statusText;
+      statusEl.className = statusClass;
+      
+      // Venue
+      document.getElementById('live-match-venue').textContent = matchToShow.venue || '';
+      
+      // Team flags (use country code emoji mapping)
+      const flagMap = {
+        'POR': '🇵🇹', 'ESP': '🇪🇸', 'USA': '🇺🇸', 'BEL': '🇧🇪', 'ARG': '🇦🇷', 'EGY': '🇪🇬',
+        'SUI': '🇨🇭', 'COL': '🇨🇴', 'FRA': '🇫🇷', 'MAR': '🇲🇦', 'ENG': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'NOR': '🇳🇴',
+        'BRA': '🇧🇷', 'GER': '🇩🇪', 'NED': '🇳🇱', 'MEX': '🇲🇽', 'JPN': '🇯🇵', 'CAN': '🇨🇦'
+      };
+      document.getElementById('live-home-flag').textContent = flagMap[matchToShow.homeCode] || '🏳️';
+      document.getElementById('live-away-flag').textContent = flagMap[matchToShow.awayCode] || '🏳️';
+      document.getElementById('live-home-name').textContent = matchToShow.homeTeam || 'Home';
+      document.getElementById('live-away-name').textContent = matchToShow.awayTeam || 'Away';
+      
+      // Score
+      document.getElementById('live-score').textContent = `${matchToShow.homeScore} - ${matchToShow.awayScore}`;
+      
+      // Stats grid
+      const statsGrid = document.getElementById('live-stats-grid');
+      const homeStats = matchToShow.homeStats || {};
+      const awayStats = matchToShow.awayStats || {};
+      
+      // Define stats to show
+      const statsToShow = [
+        { key: 'possessionPct', label: 'Possession %', suffix: '%' },
+        { key: 'totalShots', label: 'Shots' },
+        { key: 'shotsOnTarget', label: 'On Target' },
+        { key: 'wonCorners', label: 'Corners' },
+        { key: 'foulsCommitted', label: 'Fouls' }
+      ];
+      
+      let statsHtml = '';
+      for (const stat of statsToShow) {
+        const homeVal = homeStats[stat.key] || '0';
+        const awayVal = awayStats[stat.key] || '0';
+        statsHtml += `
+          <div class="live-stat-row">
+            <div class="live-stat-home">${homeVal}${stat.suffix || ''}</div>
+            <div class="live-stat-label">${stat.label}</div>
+            <div class="live-stat-away">${awayVal}${stat.suffix || ''}</div>
+          </div>`;
+      }
+      statsGrid.innerHTML = statsHtml;
     }
 
     // Merge ESPN live data into local matches.json structure
