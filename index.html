@@ -16,7 +16,7 @@
   
   <!-- Open Graph / Social Media Meta Tags -->
   <meta property="og:title" content="🏆 FIFA World Cup 2026 - Live Bracket & Stats">
-  <meta property="og:description" content="Live knockout bracket, Golden Boot race, player stats & match schedule. 100% live data from ESPN.">
+  <meta property="og:description" content="Live knockout bracket, Golden Boot race, player stats & match schedule. Messi vs Mbappé - who wins the Golden Boot?">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://lestirlitz.github.io/worldcup2026-tracker/">
   <meta property="og:image" content="https://lestirlitz.github.io/worldcup2026-tracker/thumbnail.jpg">
@@ -30,7 +30,7 @@
   <meta name="twitter:image" content="https://lestirlitz.github.io/worldcup2026-tracker/thumbnail.jpg">
   
   <!-- General Meta -->
-  <meta name="description" content="FIFA World Cup 2026 live knockout bracket, player statistics, Golden Boot standings. Auto-updated from ESPN.">
+  <meta name="description" content="FIFA World Cup 2026 live knockout bracket, player statistics, Golden Boot standings, and match schedule. Updated daily.">
   
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -44,703 +44,2266 @@
     h1 { text-align: center; margin-bottom: 0.5rem; font-size: 2rem; }
     .subtitle { text-align: center; color: #888; margin-bottom: 1rem; font-size: 0.9rem; }
     .update-note { text-align: center; color: #f59e0b; margin-bottom: 1rem; font-size: 0.85rem; }
-    .live-indicator { color: #ef4444; animation: blink 1s infinite; }
-    @keyframes blink { 50% { opacity: 0.5; } }
     
-    .tab-container { max-width: 1400px; margin: 0 auto 2rem; }
-    .tab-nav { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
-    .tab-btn {
-      background: #2d3748; border: 2px solid #4a5568; color: #888;
-      padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer;
-      font-size: 0.9rem; font-weight: 600; transition: all 0.3s ease;
+    /* Tab Navigation */
+    .tab-container {
+      max-width: 1400px;
+      margin: 0 auto 2rem;
     }
-    .tab-btn:hover { border-color: #f59e0b; color: #f59e0b; }
-    .tab-btn.active { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-color: #f59e0b; color: #1a1a2e; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
+    .tab-nav {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      background: #2d3748;
+      border: 2px solid #4a5568;
+      color: #888;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .tab-btn:hover {
+      border-color: #f59e0b;
+      color: #f59e0b;
+    }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      border-color: #f59e0b;
+      color: #1a1a2e;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
     
-    .bracket-container { display: flex; justify-content: flex-start; gap: 1rem; overflow-x: auto; padding: 1rem; min-width: min-content; }
-    @media (min-width: 1600px) { .bracket-container { justify-content: center; } }
+    .bracket-container { 
+      display: flex; 
+      justify-content: flex-start; 
+      gap: 1rem; 
+      overflow-x: auto;
+      padding: 1rem;
+      min-width: min-content;
+    }
+    
+    /* Center bracket only when it fits on screen */
+    @media (min-width: 1600px) {
+      .bracket-container {
+        justify-content: center;
+      }
+    }
     
     .round { display: flex; flex-direction: column; justify-content: space-around; min-width: 180px; }
-    .round-title { text-align: center; font-weight: bold; margin-bottom: 1rem; color: #f59e0b; font-size: 0.85rem; text-transform: uppercase; }
+    .round-title { 
+      text-align: center; 
+      font-weight: bold; 
+      margin-bottom: 1rem; 
+      color: #f59e0b;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+    }
     
-    .match { background: #2d3748; border-radius: 8px; margin: 0.5rem 0; overflow: hidden; border: 1px solid #4a5568; }
+    .match {
+      background: #2d3748;
+      border-radius: 8px;
+      margin: 0.5rem 0;
+      overflow: hidden;
+      border: 1px solid #4a5568;
+    }
     .match.completed { border-color: #22c55e; }
     .match.live { border-color: #ef4444; animation: pulse 2s infinite; }
     .match.upcoming { border-color: #4a5568; opacity: 0.8; }
-    .match.today { border-color: #f59e0b; border-width: 2px; opacity: 1; background: linear-gradient(135deg, #2d3748 0%, #3d2f1e 100%); }
+    .match.today { 
+      border-color: #f59e0b; 
+      border-width: 2px;
+      opacity: 1;
+      background: linear-gradient(135deg, #2d3748 0%, #3d2f1e 100%);
+      animation: glowToday 2s ease-in-out infinite;
+    }
+    
+    @keyframes glowToday {
+      0%, 100% { box-shadow: 0 0 5px rgba(245, 158, 11, 0.3); }
+      50% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.6); }
+    }
     
     @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); } 50% { box-shadow: 0 0 0 8px rgba(239,68,68,0); } }
     
-    .team { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; border-bottom: 1px solid #4a5568; }
+    .team {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid #4a5568;
+    }
     .team:last-child { border-bottom: none; }
     .team.winner { background: rgba(34, 197, 94, 0.2); }
     .team.loser { opacity: 0.5; }
     .team.tbd { color: #888; font-style: italic; }
-    .team-name { font-weight: 500; }
-    .score { font-weight: bold; color: #f59e0b; min-width: 25px; text-align: right; }
-    .match-info { background: #1a202c; padding: 0.25rem 0.5rem; font-size: 0.7rem; color: #888; text-align: center; }
     
-    .legend { display: flex; justify-content: center; gap: 2rem; margin-top: 2rem; flex-wrap: wrap; }
-    .legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; }
-    .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .team-name { font-weight: 500; display: flex; align-items: center; gap: 0.5rem; }
+    .flag { font-size: 1.2rem; }
+    .score { font-weight: bold; color: #f59e0b; min-width: 25px; text-align: right; }
+    .score.pen { font-size: 0.75rem; color: #888; }
+    
+    .match-info {
+      background: #1a202c;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.7rem;
+      color: #888;
+      text-align: center;
+    }
+    
+    .legend {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+    }
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
     .legend-dot.completed { background: #22c55e; }
     .legend-dot.upcoming { background: #4a5568; }
     
-    .stats { max-width: 800px; margin: 2rem auto; background: #2d3748; border-radius: 8px; padding: 1.5rem; }
+    .stats {
+      max-width: 800px;
+      margin: 2rem auto;
+      background: #2d3748;
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
     .stats h2 { margin-bottom: 1rem; font-size: 1.2rem; color: #f59e0b; }
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
     .stat-item { text-align: center; }
     .stat-value { font-size: 1.5rem; font-weight: bold; color: #22c55e; }
     .stat-label { font-size: 0.8rem; color: #888; }
     
-    .player-stats-container { max-width: 1200px; margin: 0 auto; }
-    .stats-section { background: #2d3748; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
-    .stats-section h2 { color: #f59e0b; margin-bottom: 1rem; font-size: 1.3rem; }
-    .player-table { width: 100%; border-collapse: collapse; }
-    .player-table th { background: #1a202c; padding: 0.75rem; text-align: left; color: #f59e0b; font-size: 0.85rem; border-bottom: 2px solid #4a5568; }
-    .player-table td { padding: 0.75rem; border-bottom: 1px solid #4a5568; font-size: 0.9rem; }
-    .player-table tr:hover { background: rgba(245, 158, 11, 0.1); }
-    .player-table .rank { width: 40px; text-align: center; font-weight: bold; color: #f59e0b; }
+    /* Player Stats Styles */
+    .player-stats-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .stats-section {
+      background: #2d3748;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .stats-section h2 {
+      color: #f59e0b;
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .player-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .player-table th {
+      background: #1a202c;
+      padding: 0.75rem;
+      text-align: left;
+      color: #f59e0b;
+      font-size: 0.85rem;
+      border-bottom: 2px solid #4a5568;
+    }
+    .player-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #4a5568;
+      font-size: 0.9rem;
+    }
+    .player-table tr:hover {
+      background: rgba(245, 158, 11, 0.1);
+    }
+    .player-table .rank {
+      width: 40px;
+      text-align: center;
+      font-weight: bold;
+      color: #f59e0b;
+    }
     .player-table .rank.gold { color: #ffd700; }
     .player-table .rank.silver { color: #c0c0c0; }
     .player-table .rank.bronze { color: #cd7f32; }
-    .stat-highlight { font-weight: bold; color: #22c55e; font-size: 1.1rem; }
-    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; }
+    .player-name {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .player-flag { font-size: 1.2rem; }
+    .player-club { color: #888; font-size: 0.8rem; }
+    .stat-highlight {
+      font-weight: bold;
+      color: #22c55e;
+      font-size: 1.1rem;
+    }
+    .leader-card {
+      background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+      border: 2px solid #f59e0b;
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .leader-card .leader-name {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin: 0.5rem 0;
+    }
+    .leader-card .leader-stat {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #f59e0b;
+    }
+    .leader-card .leader-label {
+      color: #888;
+      font-size: 0.9rem;
+    }
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+    .mini-stat {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: #1a202c;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      margin-right: 0.5rem;
+    }
 
+    /* Mobile Responsive Styles */
     @media (max-width: 768px) {
-      body { padding: 1rem 0.5rem; }
-      h1 { font-size: 1.5rem; }
-      .tab-btn { padding: 0.6rem 1rem; font-size: 0.85rem; }
-      .round { min-width: 150px; }
-      .round-title { font-size: 0.75rem; }
-      .team { padding: 0.4rem 0.5rem; }
-      .team-name { font-size: 0.8rem; }
-      .match-info { font-size: 0.65rem; }
-      .stats { margin: 1rem auto; padding: 1rem; }
-      .stats h2 { font-size: 1rem; }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
-      .stat-value { font-size: 1.2rem; }
-      .stat-label { font-size: 0.7rem; }
-      .stats-section { padding: 1rem; margin-bottom: 1rem; }
-      .player-table th, .player-table td { padding: 0.5rem 0.3rem; font-size: 0.8rem; }
-      .stats-row { grid-template-columns: 1fr; }
+      body {
+        padding: 1rem 0.5rem;
+      }
+      h1 {
+        font-size: 1.5rem;
+      }
+      .subtitle {
+        font-size: 0.8rem;
+      }
+      .update-note {
+        font-size: 0.75rem;
+        padding: 0 0.5rem;
+      }
+      .tab-btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+      }
+      
+      /* Bracket - horizontal scroll on mobile */
+      .bracket-container {
+        justify-content: flex-start;
+        padding: 0.5rem;
+        gap: 0.5rem;
+      }
+      .round {
+        min-width: 150px;
+      }
+      .round-title {
+        font-size: 0.75rem;
+      }
+      .match {
+        margin: 0.3rem 0;
+      }
+      .team {
+        padding: 0.4rem 0.5rem;
+      }
+      .team-name {
+        font-size: 0.8rem;
+      }
+      .flag {
+        font-size: 1rem;
+      }
+      .score {
+        font-size: 0.85rem;
+      }
+      .match-info {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.4rem;
+      }
+      
+      /* Stats sections */
+      .stats {
+        margin: 1rem auto;
+        padding: 1rem;
+        border-radius: 8px;
+      }
+      .stats h2 {
+        font-size: 1rem;
+      }
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+      }
+      .stat-value {
+        font-size: 1.2rem;
+      }
+      .stat-label {
+        font-size: 0.7rem;
+      }
+      
+      /* Player stats tables */
+      .player-stats-container {
+        padding: 0;
+      }
+      .stats-section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+      }
+      .stats-section h2 {
+        font-size: 1.1rem;
+        margin-bottom: 0.75rem;
+      }
+      .player-table {
+        font-size: 0.8rem;
+      }
+      .player-table th,
+      .player-table td {
+        padding: 0.5rem 0.3rem;
+      }
+      .player-table .rank {
+        width: 30px;
+      }
+      .player-flag {
+        font-size: 1rem;
+      }
+      .player-club {
+        display: none; /* Hide club on mobile to save space */
+      }
+      .stat-highlight {
+        font-size: 1rem;
+      }
+      .stats-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      /* Legend */
+      .legend {
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      .legend-item {
+        font-size: 0.75rem;
+      }
+      
+      /* Highlights table */
+      table[style*="border-collapse"] th,
+      table[style*="border-collapse"] td {
+        padding: 0.4rem !important;
+        font-size: 0.75rem !important;
+      }
+      
+      /* Upcoming matches table */
+      .stats table {
+        font-size: 0.75rem;
+      }
+      .stats table th,
+      .stats table td {
+        padding: 0.5rem 0.3rem;
+      }
+      
+      /* Key storylines list */
+      .stats-section ul {
+        padding-left: 1rem;
+        line-height: 1.6;
+        font-size: 0.85rem;
+      }
+    }
+
+    /* Extra small phones */
+    @media (max-width: 400px) {
+      h1 {
+        font-size: 1.3rem;
+      }
+      .tab-btn {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.8rem;
+      }
+      .round {
+        min-width: 130px;
+      }
+      .team-name {
+        font-size: 0.75rem;
+      }
+      .player-table th,
+      .player-table td {
+        padding: 0.4rem 0.2rem;
+        font-size: 0.75rem;
+      }
+    }
+
+    /* Tablet styles */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      body {
+        padding: 1.5rem;
+      }
+      .bracket-container {
+        gap: 0.75rem;
+      }
+      .round {
+        min-width: 160px;
+      }
+      .stats {
+        max-width: 95%;
+      }
+      .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .player-table {
+        font-size: 0.85rem;
+      }
+      .player-table th,
+      .player-table td {
+        padding: 0.6rem 0.5rem;
+      }
+      .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
     }
   </style>
 </head>
 <body>
   <h1>🏆 FIFA World Cup 2026</h1>
   <p class="subtitle">United States • Mexico • Canada</p>
-  <p class="update-note" id="update-note">Loading live data from ESPN...</p>
+  <p class="update-note" id="update-note">Loading latest updates...</p>
 
+  <!-- Tab Navigation -->
   <div class="tab-container">
     <div class="tab-nav">
       <button class="tab-btn active" onclick="showTab('bracket')">🏟️ Bracket</button>
       <button class="tab-btn" onclick="showTab('stats')">⚽ Player Stats</button>
-      <button class="tab-btn" onclick="showTab('discipline')">🏃 Discipline</button>
+      <button class="tab-btn" onclick="showTab('physical')">🏃 Physical & Discipline</button>
     </div>
   </div>
 
   <!-- Bracket Tab -->
   <div id="bracket-tab" class="tab-content active">
-    <div id="bracket-container" class="bracket-container">
-      <p style="color: #888; text-align: center; width: 100%;">Loading bracket from ESPN...</p>
-    </div>
-    <div class="legend">
-      <div class="legend-item"><div class="legend-dot completed"></div> Completed</div>
-      <div class="legend-item"><div class="legend-dot" style="background: #ef4444;"></div> Live</div>
-      <div class="legend-item"><div class="legend-dot" style="background: #f59e0b;"></div> Today</div>
-      <div class="legend-item"><div class="legend-dot upcoming"></div> Upcoming</div>
-    </div>
-    <div class="stats">
-      <h2>📊 Tournament Stats (Live from ESPN)</h2>
-      <div class="stats-grid">
-        <div class="stat-item"><div class="stat-value" id="matches-completed">-</div><div class="stat-label">Matches Completed</div></div>
-        <div class="stat-item"><div class="stat-value" id="total-goals">-</div><div class="stat-label">Total Goals</div></div>
-        <div class="stat-item"><div class="stat-value" id="penalty-shootouts">-</div><div class="stat-label">Penalty Shootouts</div></div>
-        <div class="stat-item"><div class="stat-value" id="goals-per-match">-</div><div class="stat-label">Goals/Match</div></div>
+  <div id="bracket-container" class="bracket-container">
+    <p style="color: #888; text-align: center; width: 100%;">Loading bracket...</p>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot completed"></div> Completed</div>
+    <div class="legend-item"><div class="legend-dot" style="background: #f59e0b;"></div> Today</div>
+    <div class="legend-item"><div class="legend-dot upcoming"></div> Upcoming</div>
+  </div>
+
+  <div class="stats">
+    <h2>📊 Tournament Stats</h2>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-value" id="r32-progress">-</div>
+        <div class="stat-label">R32 Matches Played</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="r16-progress">-</div>
+        <div class="stat-label">R16 Matches Played</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="penalty-shootouts">-</div>
+        <div class="stat-label">Penalty Shootouts</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">Jul 19</div>
+        <div class="stat-label">Final Date</div>
       </div>
     </div>
-    <div class="stats">
-      <h2>🎬 Recent Results</h2>
-      <div id="completed-matches-table"><p style="color: #888;">Loading...</p></div>
-    </div>
-    <div class="stats">
-      <h2>📅 Upcoming Matches</h2>
-      <div id="upcoming-matches-table"><p style="color: #888;">Loading...</p></div>
-    </div>
   </div>
+
+  <div class="stats">
+    <h2>🎬 Completed Matches - Highlights (Sporza)</h2>
+    <p style="font-size: 0.85rem; color: #888; margin-bottom: 1rem;">Click the 🎥 icon to watch match highlights on Sporza YouTube</p>
+    <div id="completed-matches-table"></div>
+    <p id="today-matches-note" style="margin-top: 0.75rem; font-size: 0.85rem; color: #f59e0b;"></p>
+    <p style="margin-top: 1rem; font-size: 0.8rem; color: #888;">
+      📺 <a href="https://www.youtube.com/@Sporza_be" target="_blank" style="color: #f59e0b;">Visit Sporza YouTube Channel</a> for all World Cup content
+    </p>
+  </div>
+
+  <div class="stats">
+    <h2>🔥 Key Upsets & Headlines</h2>
+    <ul style="padding-left: 1.5rem; line-height: 1.8;">
+      <li><strong>Morocco dominates!</strong> - Beat Canada 3-0 in R16, advances to QF vs France</li>
+      <li><strong>France survives</strong> - Mbappé goal beats Paraguay 1-0, sets up QF clash with Morocco</li>
+      <li><strong>Germany OUT</strong> - Lost on penalties to Paraguay (4-3 PKs) in R32</li>
+      <li><strong>Netherlands OUT</strong> - Morocco won on penalties (3-2 PKs) in R32</li>
+      <li><strong>Iberian Clash</strong> - Portugal vs Spain in R16 (Jul 6)</li>
+      <li><strong>USA vs Belgium</strong> - Crucial R16 match in Seattle (Jul 6)</li>
+      <li><strong>Messi's Argentina</strong> - Beat Cape Verde 3-2 (AET), faces Egypt in R16</li>
+    </ul>
+  </div>
+
+  <div class="stats">
+    <h2>📅 Upcoming Matches (CET Timezone)</h2>
+    <div id="upcoming-matches-table"></div>
+    <p style="margin-top: 1rem; font-size: 0.8rem; color: #888;">* Next day (after midnight CET)</p>
+  </div>
+  </div> <!-- End Bracket Tab -->
 
   <!-- Player Stats Tab -->
   <div id="stats-tab" class="tab-content">
     <div class="player-stats-container">
+      
+      <!-- Golden Boot Leaders -->
       <div class="stats-section">
-        <h2>👟 Golden Boot Race (Live from ESPN)</h2>
-        <p id="golden-boot-subtitle" style="color: #888; font-size: 0.85rem; margin-bottom: 1rem;">Calculated from match goalscorers</p>
-        <div id="golden-boot-table"><p style="color: #888;">Loading scorers from ESPN...</p></div>
+        <h2>👟 Golden Boot Race - Top Scorers</h2>
+        <p id="golden-boot-subtitle" style="color: #888; font-size: 0.85rem; margin-bottom: 1rem;">Loading stats...</p>
+        <div id="golden-boot-table"><p style="color: #888;">Loading stats...</p></div>
       </div>
+
+      <!-- Assist Leaders -->
       <div class="stats-section">
         <h2>🅰️ Top Assist Providers</h2>
-        <div id="assists-table"><p style="color: #888;">Loading...</p></div>
+        <p id="assists-subtitle" style="color: #888; font-size: 0.85rem; margin-bottom: 1rem;">Loading...</p>
+        <div id="assists-table"><p style="color: #888;">Loading stats...</p></div>
       </div>
+
+      <!-- Golden Boot History - Static Reference Data -->
+      <div class="stats-section">
+        <h2>⚽ Golden Boot History</h2>
+        <table class="player-table">
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Winner</th>
+              <th>⚽</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2022</td>
+              <td class="player-name">Kylian Mbappé (France)</td>
+              <td class="stat-highlight">8</td>
+            </tr>
+            <tr>
+              <td>2018</td>
+              <td class="player-name">Harry Kane (England)</td>
+              <td class="stat-highlight">6</td>
+            </tr>
+            <tr>
+              <td>2014</td>
+              <td class="player-name">James Rodríguez (Colombia)</td>
+              <td class="stat-highlight">6</td>
+            </tr>
+            <tr>
+              <td>2010</td>
+              <td class="player-name">Thomas Müller (Germany)</td>
+              <td class="stat-highlight">5</td>
+            </tr>
+            <tr>
+              <td>2006</td>
+              <td class="player-name">Miroslav Klose (Germany)</td>
+              <td class="stat-highlight">5</td>
+            </tr>
+            <tr style="border-top: 2px solid #f59e0b;">
+              <td colspan="2" style="color: #f59e0b;">All-time WC Record</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>1958</td>
+              <td class="player-name">Just Fontaine (France)</td>
+              <td class="stat-highlight">13</td>
+            </tr>
+            <tr>
+              <td>Career</td>
+              <td class="player-name">Miroslav Klose (Germany)</td>
+              <td class="stat-highlight">16</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Tournament Facts -->
       <div class="stats-section">
         <h2>📈 Tournament Facts</h2>
         <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
-          <div class="stat-item"><div class="stat-value" id="fact-total-goals">-</div><div class="stat-label">Total Goals</div></div>
-          <div class="stat-item"><div class="stat-value" id="fact-goals-per-match">-</div><div class="stat-label">Goals Per Match</div></div>
-          <div class="stat-item"><div class="stat-value" id="fact-top-team">-</div><div class="stat-label" id="fact-top-team-label">Top Scoring Team</div></div>
+          <div class="stat-item">
+            <div class="stat-value" id="total-goals">-</div>
+            <div class="stat-label">Total Goals</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="goals-per-match">-</div>
+            <div class="stat-label">Goals Per Match</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="top-scoring-team-flag">-</div>
+            <div class="stat-label" id="top-scoring-team-label">Most Goals</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="messi-career-goals">-</div>
+            <div class="stat-label">Messi Career WC Goals</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="ronaldo-career-goals">-</div>
+            <div class="stat-label">Ronaldo Career WC Goals</div>
+          </div>
         </div>
+        <p id="historic-moment" style="margin-top: 1rem; color: #888; font-size: 0.85rem;">
+          Loading historic moment...
+        </p>
       </div>
-    </div>
-  </div>
 
-  <!-- Discipline Tab -->
-  <div id="discipline-tab" class="tab-content">
-    <div class="player-stats-container">
+      <!-- Key Storylines -->
       <div class="stats-section">
-        <h2>📊 Discipline Summary (Live from ESPN)</h2>
-        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));">
-          <div class="stat-item"><div class="stat-value" id="disc-yellow">-</div><div class="stat-label">Yellow Cards</div></div>
-          <div class="stat-item"><div class="stat-value" id="disc-red">-</div><div class="stat-label">Red Cards</div></div>
-          <div class="stat-item"><div class="stat-value" id="disc-penalties">-</div><div class="stat-label">Penalties Awarded</div></div>
-          <div class="stat-item"><div class="stat-value" id="disc-shootouts">-</div><div class="stat-label">Penalty Shootouts</div></div>
-        </div>
+        <h2>📰 Golden Boot Storylines</h2>
+        <ul id="storylines-list" style="padding-left: 1.5rem; line-height: 2;">
+          <li>Loading storylines...</li>
+        </ul>
       </div>
-      <div class="stats-row">
-        <div class="stats-section">
-          <h2>🟨 Yellow Cards by Team</h2>
-          <div id="yellow-cards-table"><p style="color: #888;">Loading...</p></div>
-        </div>
-        <div class="stats-section">
-          <h2>🟥 Red Cards</h2>
-          <div id="red-cards-table"><p style="color: #888;">Loading...</p></div>
-        </div>
-      </div>
+
     </div>
-  </div>
+  </div> <!-- End Stats Tab -->
+
+  <!-- Physical & Discipline Tab -->
+  <div id="physical-tab" class="tab-content">
+    <div class="player-stats-container">
+
+      <!-- Tournament Discipline Summary -->
+      <div class="stats-section">
+        <h2>📊 Tournament Discipline Summary</h2>
+        <p style="color: #888; font-size: 0.85rem; margin-bottom: 1rem;">All data calculated from ESPN + match results</p>
+        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));">
+          <div class="stat-item">
+            <div class="stat-value" id="discipline-red-cards">-</div>
+            <div class="stat-label">Red Cards</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="discipline-yellow-cards">-</div>
+            <div class="stat-label">Yellow Cards</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="discipline-penalties">-</div>
+            <div class="stat-label">Penalties (open play)</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="discipline-shootouts">-</div>
+            <div class="stat-label">Penalty Shootouts</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">28</div>
+            <div class="stat-label">WC Record (2006)</div>
+          </div>
+        </div>
+        <p id="red-card-pace" style="margin-top: 1rem; color: #888; font-size: 0.85rem;">
+          Loading discipline stats...
+        </p>
+      </div>
+
+      <!-- Red Cards Section - Count Only -->
+      <div class="stats-section">
+        <h2>🟥 Red Cards Summary</h2>
+        <p style="color: #888; font-size: 0.85rem; margin-bottom: 1rem;">Total red cards calculated from match data</p>
+        <div id="red-cards-count" style="text-align: center; padding: 1rem;">
+          <div class="stat-value" style="font-size: 3rem;" id="red-cards-total">-</div>
+          <div class="stat-label">Total Red Cards</div>
+        </div>
+        <p style="margin-top: 1rem; color: #888; font-size: 0.85rem; text-align: center;">
+          📊 Comparison: 2018 WC had 4 reds, 2022 WC had 4 reds, 2006 record: 28 reds
+        </p>
+      </div>
+
+      <div class="stats-row">
+        <!-- Yellow Cards Leaders -->
+        <div class="stats-section">
+          <h2>🟨 Yellow Cards (Teams)</h2>
+          <p style="color: #888; font-size: 0.85rem; margin-bottom: 1rem;">Calculated from group stage + knockout match data</p>
+          <div id="yellow-cards-table">Loading yellow cards data...</div>
+        </div>
+
+        <!-- Penalties Summary -->
+        <div class="stats-section">
+          <h2>⚽ Penalty Kicks</h2>
+          <p style="color: #888; font-size: 0.85rem; margin-bottom: 1rem;">Penalty counts from match discipline data</p>
+          <div style="text-align: center; padding: 1rem;">
+            <div class="stat-value" style="font-size: 2.5rem;" id="penalties-total">-</div>
+            <div class="stat-label">Penalties Awarded (Open Play)</div>
+          </div>
+          <div style="text-align: center; padding: 0.5rem; margin-top: 1rem; background: rgba(245, 158, 11, 0.1); border-radius: 8px;">
+            <div class="stat-value" style="font-size: 2rem; color: #f59e0b;" id="shootouts-total">-</div>
+            <div class="stat-label">Penalty Shootouts</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Referee Stats - Calculated from Match Data -->
+      <div class="stats-section">
+        <h2>👨‍⚖️ Referee Statistics</h2>
+        <p style="color: #888; font-size: 0.85rem; margin-bottom: 1rem;">Stats calculated from knockout match referee assignments</p>
+        <div id="referees-table">Loading referees data...</div>
+      </div>
+
+    </div>
+  </div> <!-- End Physical Tab -->
 
   <script>
-
-    // ===== CONFIGURATION =====
-    const CONFIG = {
-      espnUrl: 'https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard',
-      startDate: '20260611',
-      endDate: '20260719',
-      refreshLive: 60000,   // 1 minute when live matches
-      refreshNormal: 300000, // 5 minutes otherwise
-      teamNameMap: {
-        'United States': 'USA', 'Korea Republic': 'South Korea',
-        "Côte d'Ivoire": 'Ivory Coast', "Cote d'Ivoire": 'Ivory Coast',
-        'Bosnia-Herzegovina': 'Bosnia', 'Congo DR': 'DR Congo', 'Cabo Verde': 'Cape Verde'
-      },
-      flagMap: {
-        'USA': '🇺🇸', 'France': '🇫🇷', 'Argentina': '🇦🇷', 'Brazil': '🇧🇷', 'Germany': '🇩🇪',
-        'Spain': '🇪🇸', 'England': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'Portugal': '🇵🇹', 'Morocco': '🇲🇦', 'Mexico': '🇲🇽',
-        'Belgium': '🇧🇪', 'Netherlands': '🇳🇱', 'Norway': '🇳🇴', 'Switzerland': '🇨🇭',
-        'Colombia': '🇨🇴', 'Egypt': '🇪🇬', 'Canada': '🇨🇦', 'Japan': '🇯🇵', 'South Korea': '🇰🇷',
-        'Paraguay': '🇵🇾', 'Ivory Coast': '🇨🇮', 'Senegal': '🇸🇳', 'Croatia': '🇭🇷',
-        'Austria': '🇦🇹', 'Sweden': '🇸🇪', 'Algeria': '🇩🇿', 'Australia': '🇦🇺',
-        'Cape Verde': '🇨🇻', 'Ghana': '🇬🇭', 'South Africa': '🇿🇦', 'DR Congo': '🇨🇩',
-        'Ecuador': '🇪🇨', 'Bosnia': '🇧🇦'
-      }
-    };
-
-    // ===== GLOBAL STATE =====
-    let DATA = { matches: [], scorers: {}, teamStats: {}, hasLive: false, lastFetch: null };
-
-    // ===== TAB NAVIGATION =====
-    function showTab(name) {
-      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(name + '-tab').classList.add('active');
+    function showTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(tabName + '-tab').classList.add('active');
       event.target.classList.add('active');
     }
 
-    // ===== UTILITY FUNCTIONS =====
-    const mapTeam = (name) => CONFIG.teamNameMap[name] || name;
-    const getFlag = (team) => CONFIG.flagMap[team] || '';
-    const formatDate = (d) => {
-      const date = new Date(d);
-      return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][date.getMonth()] + ' ' + date.getDate();
-    };
-    const formatTime = (d) => {
-      const date = new Date(d);
-      return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-    };
-    const isToday = (d) => new Date(d).toDateString() === new Date().toDateString();
-    const getRankClass = (r) => r === 1 ? 'gold' : r === 2 ? 'silver' : r === 3 ? 'bronze' : '';
-
-    // ===== ESPN DATA FETCHING =====
-    async function fetchESPNData() {
-      const note = document.getElementById('update-note');
-      note.textContent = 'Fetching live data from ESPN...';
+    // Auto-highlight today's matches in bracket
+    function highlightTodayMatches() {
+      const now = new Date();
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const todayStr = months[now.getMonth()] + ' ' + now.getDate();
       
-      try {
-        const url = `${CONFIG.espnUrl}?dates=${CONFIG.startDate}-${CONFIG.endDate}&limit=200`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`ESPN API: ${res.status}`);
-        
-        const json = await res.json();
-        console.log('ESPN: Loaded', json.events?.length || 0, 'events');
-        
-        processESPNData(json);
-        renderAll();
-        
-        // Schedule next refresh
-        const interval = DATA.hasLive ? CONFIG.refreshLive : CONFIG.refreshNormal;
-        note.innerHTML = DATA.hasLive 
-          ? `<span class="live-indicator">🔴 LIVE</span> Auto-refresh in 1 min | Last: ${new Date().toLocaleTimeString()}`
-          : `Live data from ESPN | Last: ${new Date().toLocaleTimeString()} | Next: ${Math.round(interval/60000)}min`;
-        setTimeout(fetchESPNData, interval);
-        
-      } catch (err) {
-        console.error('ESPN fetch error:', err);
-        note.textContent = `⚠️ Error: ${err.message}. Retrying in 30s...`;
-        setTimeout(fetchESPNData, 30000);
-      }
-    }
-
-    // ===== PROCESS ESPN DATA =====
-    function processESPNData(json) {
-      DATA = { matches: [], scorers: {}, teamStats: {}, hasLive: false, lastFetch: new Date() };
-      
-      for (const event of (json.events || [])) {
-        const comp = event.competitions?.[0];
-        if (!comp) continue;
-        
-        const home = comp.competitors?.find(c => c.homeAway === 'home');
-        const away = comp.competitors?.find(c => c.homeAway === 'away');
-        if (!home || !away) continue;
-        
-        const statusName = comp.status?.type?.name || '';
-        const isCompleted = statusName === 'STATUS_FINAL';
-        const isLive = statusName === 'STATUS_IN_PROGRESS' || statusName === 'STATUS_HALFTIME';
-        if (isLive) DATA.hasLive = true;
-        
-        // Determine round from event name
-        const name = (event.name || '').toLowerCase();
-        let round = 'group';
-        if (name.includes('final') && !name.includes('quarter') && !name.includes('semi')) round = 'final';
-        else if (name.includes('semi')) round = 'sf';
-        else if (name.includes('quarter')) round = 'qf';
-        else if (name.includes('16') || name.includes('r16')) round = 'r16';
-        else if (name.includes('32') || name.includes('r32')) round = 'r32';
-        
-        // Only show knockout matches
-        if (round === 'group') continue;
-        
-        const homeTeam = mapTeam(home.team?.displayName || '');
-        const awayTeam = mapTeam(away.team?.displayName || '');
-        const homeScore = parseInt(home.score) || 0;
-        const awayScore = parseInt(away.score) || 0;
-        
-        // Penalty shootout detection
-        const hasPK = home.shootoutScore !== undefined || statusName.toLowerCase().includes('penalties');
-        
-        const match = {
-          id: event.id,
-          name: event.name,
-          date: event.date,
-          venue: comp.venue?.address?.city || comp.venue?.fullName || '',
-          round,
-          homeTeam, awayTeam,
-          homeCode: home.team?.abbreviation || '',
-          awayCode: away.team?.abbreviation || '',
-          homeScore, awayScore,
-          homePK: home.shootoutScore,
-          awayPK: away.shootoutScore,
-          hasPK,
-          status: isCompleted ? 'completed' : isLive ? 'live' : 'scheduled',
-          winner: isCompleted ? (hasPK ? (home.shootoutScore > away.shootoutScore ? 'home' : 'away') 
-                              : homeScore > awayScore ? 'home' : awayScore > homeScore ? 'away' : 'draw') : null,
-          scorers: [],
-          yellowCards: 0,
-          redCards: 0,
-          penalties: 0
-        };
-        
-        // Extract goalscorers and cards from competition.details
-        for (const detail of (comp.details || [])) {
-          const type = (detail.type?.text || '').toLowerCase();
-          const player = detail.participants?.[0]?.athlete?.displayName;
-          const team = mapTeam(detail.team?.displayName || '');
-          const teamCode = detail.team?.abbreviation || '';
-          
-          // Goals
-          if (detail.scoringPlay && type.includes('goal') && player) {
-            const isPen = detail.penaltyKick || type.includes('penalty');
-            const isOG = detail.ownGoal || type.includes('own goal');
-            
-            if (!DATA.scorers[player]) {
-              DATA.scorers[player] = { name: player, team, teamCode, goals: 0, assists: 0, matches: new Set() };
-            }
-            if (!isOG) DATA.scorers[player].goals++;
-            DATA.scorers[player].matches.add(match.id);
-            
-            match.scorers.push({ name: player, team, teamCode, isPen, isOG });
-            if (isPen) match.penalties++;
-            
-            // Check for assist (second participant)
-            const assister = detail.participants?.[1]?.athlete?.displayName;
-            if (assister && !isOG) {
-              if (!DATA.scorers[assister]) {
-                DATA.scorers[assister] = { name: assister, team, teamCode, goals: 0, assists: 0, matches: new Set() };
-              }
-              DATA.scorers[assister].assists++;
-              DATA.scorers[assister].matches.add(match.id);
+      document.querySelectorAll('.match-info').forEach(info => {
+        const text = info.textContent;
+        const match = text.match(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d+)/);
+        if (match) {
+          const matchDate = match[1] + ' ' + parseInt(match[2]);
+          if (matchDate === todayStr) {
+            const matchEl = info.closest('.match');
+            if (matchEl && !matchEl.classList.contains('completed')) {
+              matchEl.classList.remove('upcoming');
+              matchEl.classList.add('today');
             }
           }
-          
-          // Cards
-          if (type.includes('yellow card') || type === 'yellow card') match.yellowCards++;
-          if (type.includes('red card') || type === 'red card' || type.includes('second yellow')) match.redCards++;
         }
-        
-        // Also try statistics array for cards
-        for (const competitor of [home, away]) {
-          for (const stat of (competitor.statistics || [])) {
-            if (stat.name === 'yellowCards') match.yellowCards = Math.max(match.yellowCards, parseInt(stat.displayValue) || 0);
-            if (stat.name === 'redCards') match.redCards = Math.max(match.redCards, parseInt(stat.displayValue) || 0);
-          }
-        }
-        
-        // Track team stats
-        if (isCompleted) {
-          for (const t of [{name: homeTeam, code: match.homeCode, goals: homeScore}, 
-                          {name: awayTeam, code: match.awayCode, goals: awayScore}]) {
-            if (!DATA.teamStats[t.name]) DATA.teamStats[t.name] = { name: t.name, code: t.code, goals: 0, yellows: 0, reds: 0, matches: 0 };
-            DATA.teamStats[t.name].goals += t.goals;
-            DATA.teamStats[t.name].yellows += Math.ceil(match.yellowCards / 2);
-            DATA.teamStats[t.name].reds += Math.ceil(match.redCards / 2);
-            DATA.teamStats[t.name].matches++;
-          }
-        }
-        
-        DATA.matches.push(match);
+      });
+    }
+
+    // Format date for display
+    function formatDate(dateStr) {
+      const date = new Date(dateStr + 'T12:00:00');
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return months[date.getMonth()] + ' ' + date.getDate();
+    }
+
+    // Format date with day name for upcoming matches
+    function formatDateWithDay(dateStr) {
+      const date = new Date(dateStr + 'T12:00:00');
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return days[date.getDay()] + ', ' + months[date.getMonth()] + ' ' + date.getDate();
+    }
+
+    // Generate Sporza search URL
+    function getSporzaUrl(homeName, awayName) {
+      const cleanName = (n) => n.replace('DR Congo', 'Congo').replace('Ivory Coast', 'C•te d\'Ivoire');
+      return `https://www.youtube.com/@Sporza_be/search?query=${encodeURIComponent(cleanName(homeName))}+${encodeURIComponent(cleanName(awayName))}+WK+2026`;
+    }
+
+    // Build score display with penalties/AET if applicable
+    function buildScoreDisplay(match) {
+      if (match.homeScore === null) return '-';
+      let score = `${match.homeScore}-${match.awayScore}`;
+      if (match.homePenalties !== undefined) {
+        score += ` (${match.homePenalties}-${match.awayPenalties} PKs)`;
+      } else if (match.notes === 'AET') {
+        score += ' (AET)';
       }
-      
-      // Sort matches by date
-      DATA.matches.sort((a, b) => new Date(a.date) - new Date(b.date));
+      return score;
     }
 
-
-    // ===== RENDER ALL =====
-    function renderAll() {
-      renderBracket();
-      renderCompletedMatches();
-      renderUpcomingMatches();
-      renderTournamentStats();
-      renderGoldenBoot();
-      renderAssists();
-      renderDiscipline();
+    // Get round label
+    function getRoundLabel(roundKey) {
+      const labels = { r32: 'R32', r16: 'R16', qf: 'QF', sf: 'SF', final: 'FINAL' };
+      return labels[roundKey] || roundKey.toUpperCase();
     }
 
-    // ===== RENDER BRACKET =====
-    function renderBracket() {
-      const container = document.getElementById('bracket-container');
-      if (!container) return;
-      
-      // Group matches by round
-      const byRound = { r32: [], r16: [], qf: [], sf: [], final: [] };
-      for (const m of DATA.matches) {
-        if (byRound[m.round]) byRound[m.round].push(m);
-      }
-      
-      // Match HTML builder
-      const matchHtml = (m) => {
-        if (!m) return '';
-        let cls = 'match ' + m.status;
-        if (isToday(m.date) && m.status === 'scheduled') cls = 'match today';
-        
-        const homeWin = m.winner === 'home';
-        const awayWin = m.winner === 'away';
-        
-        let homeScoreStr = m.status === 'scheduled' ? '-' : m.homeScore;
-        let awayScoreStr = m.status === 'scheduled' ? '-' : m.awayScore;
-        if (m.hasPK && m.homePK !== undefined) {
-          homeScoreStr += ` (${m.homePK})`;
-          awayScoreStr += ` (${m.awayPK})`;
-        }
-        
-        let info = formatDate(m.date);
-        if (m.venue) info += ' • ' + m.venue.split(',')[0];
-        if (m.hasPK) info += ' (PKs)';
-        if (m.status === 'live') info = '🔴 LIVE - ' + info;
-        
-        return `<div class="${cls}">
-          <div class="team${homeWin ? ' winner' : awayWin ? ' loser' : ''}">
-            <span class="team-name">${getFlag(m.homeTeam)} ${m.homeTeam}</span>
-            <span class="score">${homeScoreStr}</span>
-          </div>
-          <div class="team${awayWin ? ' winner' : homeWin ? ' loser' : ''}">
-            <span class="team-name">${getFlag(m.awayTeam)} ${m.awayTeam}</span>
-            <span class="score">${awayScoreStr}</span>
-          </div>
-          <div class="match-info">${info}</div>
-        </div>`;
+    // Get round background color
+    function getRoundBgColor(roundKey) {
+      const colors = {
+        r32: '',
+        r16: 'rgba(245, 158, 11, 0.1)',
+        qf: 'rgba(239, 68, 68, 0.1)',
+        sf: 'rgba(168, 85, 247, 0.1)',
+        final: 'rgba(245, 158, 11, 0.2)'
       };
-      
-      // Build rounds
-      const buildRound = (title, matches) => {
-        let html = `<div class="round"><div class="round-title">${title}</div>`;
-        for (const m of matches) html += matchHtml(m);
-        if (matches.length === 0) html += '<div class="match upcoming"><div class="team tbd">TBD</div><div class="team tbd">TBD</div></div>';
-        html += '</div>';
-        return html;
-      };
-      
-      // Split left/right for bracket display
-      const r32 = byRound.r32;
-      const r16 = byRound.r16;
-      const qf = byRound.qf;
-      const sf = byRound.sf;
-      const final = byRound.final;
-      
-      // Build bracket HTML
-      let html = '';
-      html += buildRound('Round of 32', r32.slice(0, 8));
-      html += buildRound('Round of 16', r16.slice(0, 4));
-      html += buildRound('Quarterfinals', qf.filter((_, i) => i % 2 === 0));
-      html += buildRound('Semifinals', sf.slice(0, 1));
-      html += buildRound('🏆 Final', final);
-      html += buildRound('Semifinals', sf.slice(1, 2));
-      html += buildRound('Quarterfinals', qf.filter((_, i) => i % 2 === 1));
-      html += buildRound('Round of 16', r16.slice(4, 8));
-      html += buildRound('Round of 32', r32.slice(8, 16));
-      
-      container.innerHTML = html;
+      return colors[roundKey] || '';
     }
 
-    // ===== RENDER COMPLETED MATCHES =====
-    function renderCompletedMatches() {
+    // Get round text color
+    function getRoundTextColor(roundKey) {
+      const colors = { r32: '', r16: '#f59e0b', qf: '#ef4444', sf: '#a855f7', final: '#f59e0b' };
+      return colors[roundKey] || '';
+    }
+
+    // Render completed matches table
+    function renderCompletedMatches(data) {
       const container = document.getElementById('completed-matches-table');
       if (!container) return;
-      
-      const completed = DATA.matches.filter(m => m.status === 'completed').slice(-10).reverse();
-      
-      if (completed.length === 0) {
-        container.innerHTML = '<p style="color: #888;">No completed matches yet.</p>';
-        return;
+
+      const completedMatches = [];
+      const todayMatches = [];
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
+
+      // Collect all completed and today's matches
+      for (const [roundKey, matches] of Object.entries(data.matches)) {
+        for (const match of matches) {
+          if (!match.homeTeam) continue;
+          
+          if (match.status === 'completed') {
+            completedMatches.push({ ...match, round: roundKey });
+          } else if (match.status === 'scheduled' || match.status === 'live') {
+            if (match.date === todayStr) {
+              // Include matches happening today
+              todayMatches.push({ ...match, round: roundKey });
+            }
+          }
+        }
       }
-      
-      let html = '<table style="width: 100%; border-collapse: collapse;">';
-      html += '<tr style="border-bottom: 2px solid #4a5568;"><th style="padding: 0.5rem; color: #f59e0b; text-align: left;">Date</th><th style="padding: 0.5rem; color: #f59e0b; text-align: left;">Match</th><th style="padding: 0.5rem; color: #f59e0b; text-align: left;">Score</th><th style="padding: 0.5rem; color: #f59e0b;">Scorers</th></tr>';
-      
-      for (const m of completed) {
-        const scoreDisplay = m.hasPK ? `${m.homeScore}-${m.awayScore} (${m.homePK}-${m.awayPK} PKs)` : `${m.homeScore}-${m.awayScore}`;
-        const scorersList = m.scorers.map(s => `${s.name}${s.isPen ? ' (P)' : ''}`).join(', ') || '-';
-        
-        html += `<tr style="border-bottom: 1px solid #4a5568;">
-          <td style="padding: 0.5rem;">${formatDate(m.date)}</td>
-          <td style="padding: 0.5rem;">${m.homeTeam} vs ${m.awayTeam}</td>
-          <td style="padding: 0.5rem; font-weight: bold; color: #f59e0b;">${scoreDisplay}</td>
-          <td style="padding: 0.5rem; font-size: 0.8rem; color: #888;">${scorersList}</td>
+
+      // Sort by date
+      completedMatches.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      let html = `<table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="border-bottom: 2px solid #4a5568; text-align: left;">
+            <th style="padding: 0.5rem; color: #f59e0b;">Date</th>
+            <th style="padding: 0.5rem; color: #f59e0b;">Match</th>
+            <th style="padding: 0.5rem; color: #f59e0b;">Score</th>
+            <th style="padding: 0.5rem; color: #f59e0b;">Highlights</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+      for (const match of completedMatches) {
+        const isHighlight = match.homeTeam.code === 'BEL'; // Highlight Belgium matches
+        html += `<tr style="border-bottom: 1px solid #4a5568;${isHighlight ? ' background: rgba(34, 197, 94, 0.1);' : ''}">
+          <td style="padding: 0.5rem;">${formatDate(match.date)}</td>
+          <td style="padding: 0.5rem;">${match.homeTeam.name} vs ${match.awayTeam.name}</td>
+          <td style="padding: 0.5rem; font-weight: bold;">${buildScoreDisplay(match)}</td>
+          <td style="padding: 0.5rem;"><a href="${getSporzaUrl(match.homeTeam.name, match.awayTeam.name)}" target="_blank" style="color: #ef4444; text-decoration: none;">🎥 Watch</a></td>
         </tr>`;
       }
-      html += '</table>';
+
+      html += '</tbody></table>';
       container.innerHTML = html;
+
+      // Update today's matches note
+      const noteEl = document.getElementById('today-matches-note');
+      if (noteEl && todayMatches.length > 0) {
+        const todayList = todayMatches.map(m => 
+          `${m.homeTeam.name} vs ${m.awayTeam.name} (${m.time} CET)`
+        ).join(', ');
+        noteEl.textContent = `📅 Today's matches: ${todayList}`;
+      }
     }
 
-    // ===== RENDER UPCOMING MATCHES =====
-    function renderUpcomingMatches() {
+    // Render upcoming matches table
+    function renderUpcomingMatches(data) {
       const container = document.getElementById('upcoming-matches-table');
       if (!container) return;
-      
-      const upcoming = DATA.matches.filter(m => m.status === 'scheduled' || m.status === 'live').slice(0, 10);
-      
-      if (upcoming.length === 0) {
-        container.innerHTML = '<p style="color: #888;">No upcoming matches scheduled.</p>';
-        return;
+
+      const upcomingMatches = [];
+
+      // Collect all upcoming matches from all rounds
+      for (const [roundKey, matches] of Object.entries(data.matches)) {
+        for (const match of matches) {
+          if (match.status !== 'completed') {
+            upcomingMatches.push({ ...match, round: roundKey });
+          }
+        }
       }
-      
-      let html = '<table style="width: 100%; border-collapse: collapse;">';
-      html += '<tr style="border-bottom: 2px solid #4a5568;"><th style="padding: 0.5rem; color: #f59e0b; text-align: left;">Date</th><th style="padding: 0.5rem; color: #f59e0b; text-align: left;">Time</th><th style="padding: 0.5rem; color: #f59e0b; text-align: left;">Match</th><th style="padding: 0.5rem; color: #f59e0b;">Round</th></tr>';
-      
-      for (const m of upcoming) {
-        const isLive = m.status === 'live';
-        const today = isToday(m.date);
-        const rowStyle = isLive ? 'background: rgba(239, 68, 68, 0.1);' : today ? 'background: rgba(245, 158, 11, 0.1);' : '';
-        const roundLabel = {r32: 'R32', r16: 'R16', qf: 'QF', sf: 'SF', final: 'Final'}[m.round] || m.round;
+
+      // Sort by date and time
+      upcomingMatches.sort((a, b) => {
+        const dateCompare = new Date(a.date) - new Date(b.date);
+        if (dateCompare !== 0) return dateCompare;
+        return a.time.localeCompare(b.time);
+      });
+
+      let html = `<table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+        <thead>
+          <tr style="border-bottom: 2px solid #4a5568; text-align: left;">
+            <th style="padding: 0.75rem; color: #f59e0b;">Date</th>
+            <th style="padding: 0.75rem; color: #f59e0b;">Time (CET)</th>
+            <th style="padding: 0.75rem; color: #f59e0b;">Match</th>
+            <th style="padding: 0.75rem; color: #f59e0b;">Round</th>
+            <th style="padding: 0.75rem; color: #f59e0b;">Venue</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+      for (const match of upcomingMatches) {
+        const bgColor = getRoundBgColor(match.round);
+        const roundColor = getRoundTextColor(match.round);
+        const isFinal = match.round === 'final';
         
-        html += `<tr style="border-bottom: 1px solid #4a5568; ${rowStyle}">
-          <td style="padding: 0.5rem;">${formatDate(m.date)}</td>
-          <td style="padding: 0.5rem; color: #22c55e;">${isLive ? '🔴 LIVE' : formatTime(m.date)}</td>
-          <td style="padding: 0.5rem;">${m.homeTeam} vs ${m.awayTeam}</td>
-          <td style="padding: 0.5rem; text-align: center; color: #f59e0b;">${roundLabel}</td>
+        // Build match display
+        let matchDisplay;
+        if (match.homeTeam && match.awayTeam) {
+          matchDisplay = `${match.homeTeam.name} vs ${match.awayTeam.name}`;
+        } else if (match.homeTeam) {
+          matchDisplay = `${match.homeTeam.name} vs TBD`;
+        } else if (match.round === 'qf') {
+          matchDisplay = `QF: TBD vs TBD`;
+        } else if (match.round === 'sf') {
+          matchDisplay = `SF: TBD vs TBD`;
+        } else if (match.round === 'final') {
+          matchDisplay = `🏆 FINAL`;
+        } else {
+          matchDisplay = 'TBD vs TBD';
+        }
+
+        // Format time - add * for late night matches
+        let timeDisplay = match.time;
+        const hour = parseInt(match.time.split(':')[0]);
+        if (hour < 12) timeDisplay += '*';
+
+        html += `<tr style="border-bottom: 1px solid #4a5568;${bgColor ? ' background: ' + bgColor + ';' : ''}${isFinal ? ' font-weight: bold;' : ''}">
+          <td style="padding: 0.75rem;">${formatDateWithDay(match.date)}</td>
+          <td style="padding: 0.75rem; color: #22c55e; font-weight: bold;">${timeDisplay}</td>
+          <td style="padding: 0.75rem;">${matchDisplay}</td>
+          <td style="padding: 0.75rem;${roundColor ? ' color: ' + roundColor + ';' : ''}">${getRoundLabel(match.round)}</td>
+          <td style="padding: 0.75rem;">${match.venue || 'TBD'}</td>
         </tr>`;
       }
-      html += '</table>';
+
+      // Add 3rd place match (not in JSON)
+      html += `<tr style="border-bottom: 1px solid #4a5568;">
+        <td style="padding: 0.75rem;">Sat, Jul 18</td>
+        <td style="padding: 0.75rem; color: #22c55e; font-weight: bold;">23:00</td>
+        <td style="padding: 0.75rem;">3rd Place Match</td>
+        <td style="padding: 0.75rem;">3rd</td>
+        <td style="padding: 0.75rem;">Miami, FL</td>
+      </tr>`;
+
+      html += '</tbody></table>';
       container.innerHTML = html;
     }
 
-    // ===== RENDER TOURNAMENT STATS =====
-    function renderTournamentStats() {
-      const completed = DATA.matches.filter(m => m.status === 'completed');
-      const totalGoals = completed.reduce((sum, m) => sum + m.homeScore + m.awayScore, 0);
-      const shootouts = completed.filter(m => m.hasPK).length;
-      const gpm = completed.length > 0 ? (totalGoals / completed.length).toFixed(2) : '-';
-      
-      document.getElementById('matches-completed').textContent = completed.length;
-      document.getElementById('total-goals').textContent = totalGoals;
-      document.getElementById('penalty-shootouts').textContent = shootouts;
-      document.getElementById('goals-per-match').textContent = gpm;
-      
-      // Facts tab
-      document.getElementById('fact-total-goals').textContent = totalGoals;
-      document.getElementById('fact-goals-per-match').textContent = gpm;
-      
-      // Top scoring team
-      const teams = Object.values(DATA.teamStats).sort((a, b) => b.goals - a.goals);
-      if (teams.length > 0) {
-        document.getElementById('fact-top-team').textContent = getFlag(teams[0].name) || teams[0].code;
-        document.getElementById('fact-top-team-label').textContent = `${teams[0].name} (${teams[0].goals} goals)`;
+    // Global data storage for cross-function access
+    let globalMatchData = null;
+    let globalStatsData = null;
+
+    // Load match data and render tables
+    async function loadMatchData() {
+      try {
+        const response = await fetch('data/matches.json');
+        const data = await response.json();
+        
+        // Try to fetch live match data from ESPN scoreboard
+        try {
+          const liveMatches = await fetchESPNScoreboard();
+          if (liveMatches && liveMatches.length > 0) {
+            console.log('ESPN Scoreboard: Found', liveMatches.length, 'matches');
+            // Update matches.json data with live ESPN data
+            mergeESPNMatchData(data, liveMatches);
+          }
+        } catch (e) {
+          console.log('ESPN scoreboard fetch failed, using local data:', e.message);
+        }
+        
+        globalMatchData = data;
+        renderBracket(data);
+        renderCompletedMatches(data);
+        renderUpcomingMatches(data);
+        renderMatchStats(data); // Calculate match-based stats
+        highlightTodayMatches(); // Re-run after bracket is rendered
+        // Update last updated note if stats also loaded
+        if (globalStatsData) {
+          updateLastUpdatedNote(globalMatchData, globalStatsData);
+        }
+      } catch (error) {
+        console.error('Failed to load match data:', error);
+        // Fallback - show error message
+        const bracket = document.getElementById('bracket-container');
+        const completed = document.getElementById('completed-matches-table');
+        const upcoming = document.getElementById('upcoming-matches-table');
+        if (bracket) bracket.innerHTML = '<p style="color: #ef4444;">Error loading bracket data.</p>';
+        if (completed) completed.innerHTML = '<p style="color: #888;">Loading match data...</p>';
+        if (upcoming) upcoming.innerHTML = '<p style="color: #888;">Loading match data...</p>';
       }
     }
 
+    // Fetch live/recent matches from ESPN scoreboard
+    async function fetchESPNScoreboard() {
+      const matches = [];
+      
+      // Try fetching current scoreboard (today's and recent matches)
+      try {
+        const response = await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.events) {
+            for (const event of data.events) {
+              const competition = event.competitions?.[0];
+              if (!competition) continue;
+              
+              const homeTeam = competition.competitors?.find(c => c.homeAway === 'home');
+              const awayTeam = competition.competitors?.find(c => c.homeAway === 'away');
+              
+              matches.push({
+                id: event.id,
+                name: event.name,
+                date: event.date,
+                status: competition.status?.type?.name, // 'STATUS_FINAL', 'STATUS_IN_PROGRESS', etc.
+                homeTeam: homeTeam?.team?.displayName,
+                homeCode: homeTeam?.team?.abbreviation,
+                homeScore: parseInt(homeTeam?.score) || 0,
+                awayTeam: awayTeam?.team?.displayName,
+                awayCode: awayTeam?.team?.abbreviation,
+                awayScore: parseInt(awayTeam?.score) || 0,
+                venue: competition.venue?.fullName,
+                // Try to get match details
+                details: competition.details || [],
+                notes: competition.notes || []
+              });
+            }
+          }
+        }
+      } catch (e) {
+        console.log('ESPN scoreboard error:', e.message);
+      }
+      
+      return matches;
+    }
 
-    // ===== RENDER GOLDEN BOOT =====
-    function renderGoldenBoot() {
+    // Merge ESPN live data into local matches.json structure
+    function mergeESPNMatchData(localData, espnMatches) {
+      const teamMapping = localData.espnTeamMapping || {};
+      
+      for (const espnMatch of espnMatches) {
+        if (espnMatch.status !== 'STATUS_FINAL') continue; // Only update completed matches
+        
+        // Try to find matching local match by team codes
+        for (const [round, matchList] of Object.entries(localData.matches)) {
+          for (const localMatch of matchList) {
+            if (!localMatch.homeTeam || !localMatch.awayTeam) continue;
+            
+            // Match by team code
+            const espnHomeCode = espnMatch.homeCode;
+            const espnAwayCode = espnMatch.awayCode;
+            const localHomeCode = localMatch.homeTeam.code;
+            const localAwayCode = localMatch.awayTeam.code;
+            
+            // Check if this ESPN match corresponds to this local match
+            const homeMatches = espnHomeCode === localHomeCode || 
+                              teamMapping[espnMatch.homeTeam] === localMatch.homeTeam.name;
+            const awayMatches = espnAwayCode === localAwayCode ||
+                              teamMapping[espnMatch.awayTeam] === localMatch.awayTeam.name;
+            
+            if (homeMatches && awayMatches && localMatch.status !== 'completed') {
+              console.log(`ESPN Update: ${localMatch.homeTeam.name} vs ${localMatch.awayTeam.name} = ${espnMatch.homeScore}-${espnMatch.awayScore}`);
+              localMatch.homeScore = espnMatch.homeScore;
+              localMatch.awayScore = espnMatch.awayScore;
+              localMatch.status = 'completed';
+              localMatch.winner = espnMatch.homeScore > espnMatch.awayScore ? 'home' : 
+                                  espnMatch.awayScore > espnMatch.homeScore ? 'away' : 'draw';
+            }
+          }
+        }
+      }
+    }
+
+    // Calculate and render match-based statistics from matches.json
+    function renderMatchStats(data) {
+      const matches = data.matches || {};
+      
+      // Count completed matches, penalty shootouts, and penalties awarded per round
+      let r32Completed = 0, r32Total = 0;
+      let r16Completed = 0, r16Total = 0;
+      let qfCompleted = 0, qfTotal = 0;
+      let sfCompleted = 0, sfTotal = 0;
+      let finalCompleted = 0;
+      let penaltyShootouts = 0;
+      let penaltiesAwarded = 0;
+      let totalYellowCards = 0;
+      let totalRedCards = 0;
+      let totalGoals = 0;
+      let totalMatches = 0;
+      let teamGoals = {}; // Track goals by team
+
+      // Helper to count stats from match
+      function countMatchStats(m) {
+        if (m.status === 'completed') {
+          totalMatches++;
+          
+          // Count goals
+          if (m.homeScore !== null && m.awayScore !== null) {
+            const homeGoals = parseInt(m.homeScore) || 0;
+            const awayGoals = parseInt(m.awayScore) || 0;
+            totalGoals += homeGoals + awayGoals;
+            
+            // Track goals by team
+            if (m.homeTeam?.name) {
+              teamGoals[m.homeTeam.name] = (teamGoals[m.homeTeam.name] || 0) + homeGoals;
+            }
+            if (m.awayTeam?.name) {
+              teamGoals[m.awayTeam.name] = (teamGoals[m.awayTeam.name] || 0) + awayGoals;
+            }
+          }
+          
+          if (m.homePenalties !== undefined) penaltyShootouts++;
+          
+          // Count from discipline object (preferred)
+          if (m.discipline) {
+            totalYellowCards += m.discipline.yellowCards || 0;
+            totalRedCards += m.discipline.redCards || 0;
+            penaltiesAwarded += m.discipline.penalties || 0;
+          }
+          // Fallback: Count penalties from notes field (e.g., "Penalty", "2 Penalties")
+          else if (m.notes) {
+            const notes = m.notes.toLowerCase();
+            if (notes.includes('penalty') || notes.includes('pen')) {
+              const match = notes.match(/(\d+)\s*penalt/);
+              penaltiesAwarded += match ? parseInt(match[1]) : 1;
+            }
+          }
+        }
+      }
+
+      // R32
+      for (const m of (matches.r32 || [])) {
+        r32Total++;
+        if (m.status === 'completed') {
+          r32Completed++;
+          countMatchStats(m);
+        }
+      }
+
+      // R16
+      for (const m of (matches.r16 || [])) {
+        r16Total++;
+        if (m.status === 'completed') {
+          r16Completed++;
+          countMatchStats(m);
+        }
+      }
+
+      // QF
+      for (const m of (matches.qf || [])) {
+        qfTotal++;
+        if (m.status === 'completed') {
+          qfCompleted++;
+          countMatchStats(m);
+        }
+      }
+
+      // SF
+      for (const m of (matches.sf || [])) {
+        sfTotal++;
+        if (m.status === 'completed') {
+          sfCompleted++;
+          countMatchStats(m);
+        }
+      }
+
+      // Final
+      for (const m of (matches.final || [])) {
+        if (m.status === 'completed') {
+          finalCompleted++;
+          countMatchStats(m);
+        }
+      }
+
+      // Find top scoring team
+      let topScoringTeam = { name: '-', goals: 0 };
+      for (const [team, goals] of Object.entries(teamGoals)) {
+        if (goals > topScoringTeam.goals) {
+          topScoringTeam = { name: team, goals: goals };
+        }
+      }
+
+      // Calculate goals per match
+      const goalsPerMatch = totalMatches > 0 ? (totalGoals / totalMatches) : 0;
+
+      // Update Tournament Stats box
+      const r32El = document.getElementById('r32-progress');
+      if (r32El) r32El.textContent = `${r32Completed}/${r32Total}`;
+
+      const r16El = document.getElementById('r16-progress');
+      if (r16El) r16El.textContent = `${r16Completed}/${r16Total}`;
+
+      const shootoutsEl = document.getElementById('penalty-shootouts');
+      if (shootoutsEl) shootoutsEl.textContent = penaltyShootouts;
+
+      // Also update discipline summary shootouts
+      const disciplineShootoutsEl = document.getElementById('discipline-shootouts');
+      if (disciplineShootoutsEl) disciplineShootoutsEl.textContent = penaltyShootouts;
+
+      // Store calculated stats globally for renderDynamicTexts to use
+      window.matchStats = {
+        totalGoals: totalGoals,
+        goalsPerMatch: goalsPerMatch,
+        totalMatches: totalMatches,
+        topScoringTeam: topScoringTeam,
+        teamGoals: teamGoals,
+        penalties: penaltiesAwarded,
+        yellowCards: totalYellowCards,
+        redCards: totalRedCards,
+        shootouts: penaltyShootouts
+      };
+    }
+
+    // Render bracket dynamically from matches.json
+    function renderBracket(data) {
+      const container = document.getElementById('bracket-container');
+      if (!container) return;
+
+      const matches = data.matches;
+      
+      // Define bracket structure - which matches feed into which
+      // Left side: R32 matches 1-8 -> R16 matches 1-4 -> QF 1,3 -> SF 1 -> Final
+      // Right side: R32 matches 9-16 -> R16 matches 5-8 -> QF 2,4 -> SF 2 -> Final
+      
+      // Helper to build team HTML
+      function teamHtml(team, score, isWinner, isLoser, isTbd) {
+        let teamClass = 'team';
+        if (isWinner) teamClass += ' winner';
+        if (isLoser) teamClass += ' loser';
+        if (isTbd) teamClass += ' tbd';
+        
+        const name = team ? team.name : 'TBD';
+        const scoreDisplay = score !== null && score !== undefined ? score : '-';
+        
+        return `<div class="${teamClass}"><span class="team-name">${name}</span><span class="score">${scoreDisplay}</span></div>`;
+      }
+
+      // Helper to build match HTML
+      function matchHtml(match, showPenalties = true) {
+        if (!match) return '';
+        
+        let matchClass = 'match';
+        if (match.status === 'completed') matchClass += ' completed';
+        else if (match.status === 'live') matchClass += ' live';
+        else matchClass += ' upcoming';
+        
+        const hasPenalties = match.homePenalties !== undefined;
+        const hasAET = match.notes === 'AET';
+        
+        // Determine winner/loser
+        let homeWinner = false, awayWinner = false;
+        if (match.status === 'completed' && match.winner) {
+          homeWinner = match.winner === 'home';
+          awayWinner = match.winner === 'away';
+        }
+        
+        // Build score display
+        let homeScore = match.homeScore;
+        let awayScore = match.awayScore;
+        if (hasPenalties && showPenalties) {
+          homeScore = `${match.homeScore} (${match.homePenalties})`;
+          awayScore = `${match.awayScore} (${match.awayPenalties})`;
+        }
+        
+        // Format date
+        const dateObj = match.date ? new Date(match.date + 'T12:00:00') : null;
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const dateStr = dateObj ? `${months[dateObj.getMonth()]} ${dateObj.getDate()}` : '';
+        
+        // Build info line
+        let info = dateStr;
+        if (match.venue) {
+          // Shorten venue name
+          const venue = match.venue.split(',')[0];
+          info += ` • ${venue}`;
+        }
+        if (hasPenalties) info += ' (PKs)';
+        else if (hasAET) info += ' (AET)';
+        
+        const hasTbd = !match.homeTeam || !match.awayTeam;
+        
+        return `<div class="${matchClass}">
+          ${teamHtml(match.homeTeam, homeScore, homeWinner, awayWinner, hasTbd && !match.homeTeam)}
+          ${teamHtml(match.awayTeam, awayScore, awayWinner, homeWinner, hasTbd && !match.awayTeam)}
+          <div class="match-info">${info}</div>
+        </div>`;
+      }
+
+      // Build each round
+      function buildRound(title, matchList, isEmoji = false) {
+        const roundTitle = isEmoji ? title : title;
+        let html = `<div class="round"><div class="round-title">${roundTitle}</div>`;
+        for (const m of matchList) {
+          html += matchHtml(m);
+        }
+        html += '</div>';
+        return html;
+      }
+
+      // Get matches by ID prefix
+      const r32 = matches.r32 || [];
+      const r16 = matches.r16 || [];
+      const qf = matches.qf || [];
+      const sf = matches.sf || [];
+      const final = matches.final || [];
+
+      // Left side R32: matches 1-8 (indices 0-7)
+      const r32Left = r32.slice(0, 8);
+      // Right side R32: matches 9-16 (indices 8-15)
+      const r32Right = r32.slice(8, 16);
+      
+      // Left side R16: matches 1-4 (indices 0-3)
+      const r16Left = r16.slice(0, 4);
+      // Right side R16: matches 5-8 (indices 4-7)
+      const r16Right = r16.slice(4, 8);
+      
+      // QF: indices 0,2 left side, 1,3 right side
+      const qfLeft = [qf[0], qf[2]].filter(Boolean);
+      const qfRight = [qf[1], qf[3]].filter(Boolean);
+      
+      // SF: 0 left, 1 right
+      const sfLeft = sf[0] ? [sf[0]] : [];
+      const sfRight = sf[1] ? [sf[1]] : [];
+      
+      // Final
+      const finalMatch = final[0] ? [final[0]] : [];
+
+      // Build bracket HTML
+      let html = '';
+      
+      // Left side (in order: R32, R16, QF, SF)
+      html += buildRound('Round of 32', r32Left);
+      html += buildRound('Round of 16', r16Left);
+      html += buildRound('Quarterfinals', qfLeft);
+      html += buildRound('Semifinals', sfLeft);
+      
+      // Final in the middle
+      html += buildRound('🏆 Final', finalMatch, true);
+      
+      // Right side (in order: SF, QF, R16, R32)
+      html += buildRound('Semifinals', sfRight);
+      html += buildRound('Quarterfinals', qfRight);
+      html += buildRound('Round of 16', r16Right);
+      html += buildRound('Round of 32', r32Right);
+      
+      container.innerHTML = html;
+    }
+
+    // Run on page load
+    highlightTodayMatches();
+    loadMatchData();
+    loadStatsData();
+
+    // Load stats data and render tables
+    async function loadStatsData() {
+      // First try to fetch live data from ESPN
+      let liveData = null;
+      try {
+        liveData = await fetchESPNStats();
+      } catch (e) {
+        console.log('ESPN fetch failed, using local stats.json:', e.message);
+      }
+
+      // Load local stats.json as fallback/base
+      let localData = null;
+      try {
+        const response = await fetch('data/stats.json');
+        if (response.ok) {
+          localData = await response.json();
+        }
+      } catch (e) {
+        console.log('Local stats.json failed:', e.message);
+      }
+
+      // Merge live data with local data (live takes priority)
+      const data = localData || {};
+      if (liveData) {
+        if (liveData.goldenBoot && liveData.goldenBoot.length > 0) {
+          // Preserve club info from local data
+          for (const player of liveData.goldenBoot) {
+            const local = data.goldenBoot?.find(p => 
+              p.name.toLowerCase().includes(player.name.split(' ').pop().toLowerCase())
+            );
+            if (local?.club) player.club = local.club;
+          }
+          data.goldenBoot = liveData.goldenBoot;
+          console.log('Using LIVE Golden Boot data from ESPN');
+        }
+        if (liveData.assists && liveData.assists.length > 0) {
+          for (const player of liveData.assists) {
+            const local = data.assists?.find(p => 
+              p.name.toLowerCase().includes(player.name.split(' ').pop().toLowerCase())
+            );
+            if (local?.club) player.club = local.club;
+          }
+          data.assists = liveData.assists;
+          console.log('Using LIVE Assists data from ESPN');
+        }
+        if (liveData.yellowCards && liveData.yellowCards.length > 0) {
+          data.yellowCards = liveData.yellowCards;
+          console.log('Using LIVE Yellow Cards data from ESPN');
+        }
+        if (liveData.redCards && liveData.redCards.length > 0) {
+          // Merge with local red cards (local has more detail like minute/reason)
+          console.log('ESPN Red Cards available:', liveData.redCards.length);
+        }
+      }
+
+      if (!data.goldenBoot) {
+        console.error('No stats data available');
+        return;
+      }
+
+      console.log('Stats data loaded:', data);
+      globalStatsData = data;
+      renderGoldenBoot(data);
+      renderAssists(data);
+      // Star Players and Distance Covered removed - require manual updates
+      renderRedCardsCount(data);
+      renderYellowCards(data);
+      renderPenaltyCounts(data);
+      renderReferees(data);
+      renderDynamicTexts(data);
+      // Update last updated note if matches also loaded
+      if (globalMatchData) {
+        updateLastUpdatedNote(globalMatchData, globalStatsData);
+      }
+    }
+
+    // Update all dynamic text elements based on stats data
+    function renderDynamicTexts(data) {
+      // Use dynamically calculated player stats if available, else fall back to stats.json
+      const goldenBoot = window.dynamicGoldenBoot || data.goldenBoot || [];
+      const assists = window.dynamicAssists || data.assists || [];
+      const sorted = [...goldenBoot].sort((a, b) => b.goals - a.goals);
+      const top1 = sorted[0];
+      const top2 = sorted[1];
+      
+      const subtitleEl = document.getElementById('golden-boot-subtitle');
+      if (subtitleEl && top1 && top2) {
+        if (top1.goals === top2.goals) {
+          subtitleEl.textContent = `${top1.name.split(' ').pop()} & ${top2.name.split(' ').pop()} tied at ${top1.goals} goals - Golden Boot race heats up!`;
+        } else {
+          subtitleEl.textContent = `${top1.name.split(' ').pop()} leads with ${top1.goals} goals, ${top2.name.split(' ').pop()} chasing with ${top2.goals}`;
+        }
+      }
+
+      // Assists subtitle - find leader
+      const sortedAssists = [...assists].sort((a, b) => b.assists - a.assists);
+      const assistsSubtitleEl = document.getElementById('assists-subtitle');
+      if (assistsSubtitleEl && sortedAssists[0]) {
+        const leader = sortedAssists[0];
+        const PELE_RECORD = 6;
+        if (leader.assists >= PELE_RECORD) {
+          assistsSubtitleEl.textContent = `${leader.name} tied/broke Pelé's single-tournament assist record (${PELE_RECORD})!`;
+        } else {
+          assistsSubtitleEl.textContent = `${leader.name} leads with ${leader.assists} assists, chasing Pelé's record (${PELE_RECORD})`;
+        }
+      }
+
+      // Messi & Mbappe for career calculations - use dynamic data
+      const messi = goldenBoot.find(p => p.name.toLowerCase().includes('messi'));
+      const mbappe = goldenBoot.find(p => p.name.toLowerCase().includes('mbappe') || p.name.toLowerCase().includes('mbappé'));
+
+      // Messi career WC goals (from careerWCGoals config + this tournament)
+      const messiCareerEl = document.getElementById('messi-career-goals');
+      if (messiCareerEl && messi) {
+        const pre2026 = data.careerWCGoals?.Messi?.pre2026 || 13;
+        messiCareerEl.textContent = pre2026 + messi.goals;
+      }
+
+      // Ronaldo career WC goals (from careerWCGoals config + this tournament)
+      const ronaldo = goldenBoot.find(p => p.name.toLowerCase().includes('ronaldo'));
+      const ronaldoCareerEl = document.getElementById('ronaldo-career-goals');
+      if (ronaldoCareerEl && ronaldo) {
+        const pre2026 = data.careerWCGoals?.Ronaldo?.pre2026 || 9;
+        ronaldoCareerEl.textContent = pre2026 + ronaldo.goals;
+      }
+
+      // Tournament Facts - prioritize calculated from matches, fallback to stats.json
+      const tournament = data.tournament || {};
+      const matchStats = window.matchStats || {};
+      const groupStage = data.groupStage || { goals: 0, matches: 0, yellowCards: 0, redCards: 0, penalties: 0 };
+      
+      // Total Goals - group stage + knockout stage (calculated from matches.json)
+      const totalGoalsEl = document.getElementById('total-goals');
+      if (totalGoalsEl) {
+        const knockoutGoals = matchStats.totalGoals || 0;
+        const totalGoals = groupStage.goals + knockoutGoals;
+        totalGoalsEl.textContent = totalGoals;
+      }
+
+      // Goals Per Match - total goals / total matches
+      const goalsPerMatchEl = document.getElementById('goals-per-match');
+      if (goalsPerMatchEl) {
+        const knockoutGoals = matchStats.totalGoals || 0;
+        const knockoutMatches = matchStats.totalMatches || 0;
+        const totalGoals = groupStage.goals + knockoutGoals;
+        const totalMatches = groupStage.matches + knockoutMatches;
+        const gpm = totalMatches > 0 ? (totalGoals / totalMatches) : 0;
+        goalsPerMatchEl.textContent = gpm.toFixed(2);
+      }
+
+      // Top Scoring Team - combine group stage + knockout goals
+      const groupTeamGoals = groupStage.teamGoals || {};
+      const knockoutTeamGoals = matchStats.teamGoals || {};
+      
+      // Merge group stage and knockout team goals
+      const combinedTeamGoals = { ...groupTeamGoals };
+      for (const [team, goals] of Object.entries(knockoutTeamGoals)) {
+        combinedTeamGoals[team] = (combinedTeamGoals[team] || 0) + goals;
+      }
+      
+      // Find top scoring team from combined totals
+      let topTeam = { name: '-', goals: 0 };
+      for (const [team, goals] of Object.entries(combinedTeamGoals)) {
+        if (goals > topTeam.goals) {
+          topTeam = { name: team, goals: goals };
+        }
+      }
+      
+      if (topTeam && topTeam.name !== '-') {
+        const flagEl = document.getElementById('top-scoring-team-flag');
+        const labelEl = document.getElementById('top-scoring-team-label');
+        const flagMap = { 
+          'France': '🇫🇷', 'Argentina': '🇦🇷', 'Brazil': '🇧🇷', 'Germany': '🇩🇪', 
+          'Spain': '🇪🇸', 'England': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'Portugal': '🇵🇹', 'Morocco': '🇲🇦',
+          'USA': '🇺🇸', 'Mexico': '🇲🇽', 'Belgium': '🇧🇪', 'Netherlands': '🇳🇱',
+          'Norway': '🇳🇴', 'Switzerland': '🇨🇭', 'Colombia': '🇨🇴', 'Egypt': '🇪🇬'
+        };
+        if (flagEl) flagEl.textContent = flagMap[topTeam.name] || '🏆';
+        if (labelEl) labelEl.textContent = `Most Goals (${topTeam.name}: ${topTeam.goals})`;
+      }
+
+      // Historic Moment - dynamically build based on Messi's current total
+      const historicEl = document.getElementById('historic-moment');
+      if (historicEl && messi) {
+        const pre2026 = data.careerWCGoals?.Messi?.pre2026 || 13;
+        const klose = data.careerWCGoals?.Klose?.total || 16;
+        const messiTotal = pre2026 + messi.goals;
+        if (messiTotal > klose) {
+          historicEl.innerHTML = `🏅 <strong style="color: #f59e0b;">Historic Moment:</strong> Lionel Messi is the all-time World Cup scorer with ${messiTotal} goals, surpassing Miroslav Klose's record of ${klose}.`;
+        } else if (messiTotal === klose) {
+          historicEl.innerHTML = `🏅 <strong style="color: #f59e0b;">Watch:</strong> Messi tied Klose's all-time record of ${klose} World Cup goals!`;
+        } else {
+          historicEl.innerHTML = `🏅 <strong style="color: #f59e0b;">Chasing History:</strong> Messi has ${messiTotal} career WC goals, ${klose - messiTotal} away from Klose's record (${klose}).`;
+        }
+      }
+
+      // Discipline Summary - group stage + knockout (calculated from matches.json)
+      const knockoutReds = matchStats.redCards || 0;
+      const knockoutYellows = matchStats.yellowCards || 0;
+      const knockoutPenalties = matchStats.penalties || 0;
+      
+      const totalRedCards = (groupStage.redCards || 0) + knockoutReds;
+      const totalYellowCards = (groupStage.yellowCards || 0) + knockoutYellows;
+      const totalPenalties = (groupStage.penalties || 0) + knockoutPenalties;
+
+      const redCardsEl = document.getElementById('discipline-red-cards');
+      if (redCardsEl) {
+        redCardsEl.textContent = totalRedCards;
+      }
+
+      const yellowCardsEl = document.getElementById('discipline-yellow-cards');
+      if (yellowCardsEl) {
+        yellowCardsEl.textContent = totalYellowCards;
+      }
+
+      // Penalties awarded
+      const penaltiesEl = document.getElementById('discipline-penalties');
+      if (penaltiesEl) {
+        penaltiesEl.textContent = totalPenalties;
+      }
+
+      // Red card pace analysis
+      const paceEl = document.getElementById('red-card-pace');
+      if (paceEl && totalRedCards > 0) {
+        const WC_2006_REDS = 28; // Record
+        if (totalRedCards > WC_2006_REDS) {
+          paceEl.innerHTML = `⚠️ This tournament has broken the 2006 red card record (${WC_2006_REDS}) with ${totalRedCards} reds so far!`;
+        } else if (totalRedCards >= WC_2006_REDS - 5) {
+          paceEl.innerHTML = `⚠️ This tournament is on pace to break the 2006 red card record (${WC_2006_REDS}). Currently at ${totalRedCards} reds.`;
+        } else {
+          paceEl.innerHTML = `📊 ${totalRedCards} red cards so far. 2006 record: ${WC_2006_REDS}. Most reds have been for DOGSO.`;
+        }
+      }
+
+      // Render Golden Boot Storylines dynamically
+      renderStorylines(data);
+    }
+
+    // Generate storylines dynamically from stats data
+    function renderStorylines(data) {
+      const container = document.getElementById('storylines-list');
+      if (!container) return;
+
+      // Use dynamically calculated player stats
+      const goldenBoot = window.dynamicGoldenBoot || data.goldenBoot || [];
+      const assists = window.dynamicAssists || data.assists || [];
+      const tournament = data.tournament || {};
+      const sorted = [...goldenBoot].sort((a, b) => b.goals - a.goals);
+
+      const storylines = [];
+
+      // 1. Mbappé vs Messi
+      const messi = goldenBoot.find(p => p.name.toLowerCase().includes('messi'));
+      const mbappe = goldenBoot.find(p => p.name.toLowerCase().includes('mbappe') || p.name.toLowerCase().includes('mbappé'));
+      if (messi && mbappe) {
+        if (messi.goals === mbappe.goals) {
+          storylines.push(`<strong>Mbappé vs Messi:</strong> Both tied at ${messi.goals} goals! Messi in ${messi.played} matches, Mbappé in ${mbappe.played}.`);
+        } else if (messi.goals > mbappe.goals) {
+          storylines.push(`<strong>Mbappé vs Messi:</strong> Messi leads with ${messi.goals} goals, Mbappé has ${mbappe.goals}.`);
+        } else {
+          storylines.push(`<strong>Mbappé vs Messi:</strong> Mbappé leads with ${mbappe.goals} goals, Messi has ${messi.goals}.`);
+        }
+      }
+
+      // 2. Haaland watch
+      const haaland = goldenBoot.find(p => p.name.toLowerCase().includes('haaland'));
+      if (haaland) {
+        storylines.push(`<strong>Haaland's Run:</strong> Norway's striker has ${haaland.goals} goals in ${haaland.played} games.`);
+      }
+
+      // 3. Top scoring team
+      if (tournament.topScoringTeam) {
+        const team = tournament.topScoringTeam;
+        storylines.push(`<strong>${team.name}'s Firepower:</strong> ${team.goals} goals - most in the tournament.`);
+      }
+
+      // 4. Assist leader
+      const sortedAssists = [...assists].sort((a, b) => b.assists - a.assists);
+      if (sortedAssists[0]) {
+        const leader = sortedAssists[0];
+        storylines.push(`<strong>${leader.name.split(' ').pop()}'s Assists:</strong> Leads with ${leader.assists} assists, chasing Pelé's single-tournament record (6).`);
+      }
+
+      // 5. Kane watch
+      const kane = goldenBoot.find(p => p.name.toLowerCase().includes('kane'));
+      if (kane) {
+        storylines.push(`<strong>Kane Watch:</strong> England captain has ${kane.goals} goals in ${kane.played} matches.`);
+      }
+
+      // 6. Find eliminated scorers (players from eliminated teams with 3+ goals)
+      const eliminatedTeams = ['Germany', 'Netherlands']; // Teams known to be out
+      const eliminatedScorers = sorted.filter(p => 
+        eliminatedTeams.some(t => p.country.includes(t)) && p.goals >= 3
+      );
+      if (eliminatedScorers.length > 0) {
+        const scorerList = eliminatedScorers.map(p => `${p.country}'s ${p.name.split(' ').pop()} (${p.goals}G)`).join(' and ');
+        storylines.push(`<strong>Eliminated Scorers:</strong> ${scorerList} out despite strong scoring.`);
+      }
+
+      container.innerHTML = storylines.map(s => `<li>${s}</li>`).join('');
+    }
+
+    // Update the "Last updated" note from matches.json
+    function updateLastUpdatedNote(matchData, statsData) {
+      const noteEl = document.getElementById('update-note');
+      if (!noteEl) return;
+
+      // Get last updated date from matches.json
+      let lastUpdated = matchData?.lastUpdated || statsData?.lastUpdated;
+      let dateStr = 'Unknown';
+      if (lastUpdated) {
+        const date = new Date(lastUpdated);
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        dateStr = `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+      }
+
+      // Get tournament stage
+      const stage = matchData?.tournament?.stage || 'Knockout Stage';
+
+      // Find recent completed matches for headline
+      const recentResults = [];
+      if (matchData?.matches) {
+        const allMatches = [];
+        for (const [round, matches] of Object.entries(matchData.matches)) {
+          for (const m of matches) {
+            if (m.status === 'completed' && m.homeTeam && m.awayTeam) {
+              allMatches.push({ ...m, round });
+            }
+          }
+        }
+        // Sort by date descending, take last 2
+        allMatches.sort((a, b) => new Date(b.date) - new Date(a.date));
+        for (const m of allMatches.slice(0, 2)) {
+          const winner = m.winner === 'home' ? m.homeTeam.name : m.awayTeam.name;
+          const loser = m.winner === 'home' ? m.awayTeam.name : m.homeTeam.name;
+          const score = `${m.homeScore}-${m.awayScore}`;
+          recentResults.push(`${winner} ${score} ${loser}`);
+        }
+      }
+
+      let note = `Last updated: ${dateStr} - ${stage}`;
+      if (recentResults.length > 0) {
+        note += ` | Recent: ${recentResults.join(', ')}`;
+      }
+      noteEl.textContent = note;
+    }
+
+    // Fetch live stats from ESPN API using scoreboard endpoint
+    // The /leaders endpoint doesn't work for soccer, but scoreboard contains team leaders
+    async function fetchESPNStats() {
+      const ESPN_TO_NAME = {
+        'United States': 'USA',
+        "Côte d'Ivoire": 'Ivory Coast',
+        "Cote d'Ivoire": 'Ivory Coast',
+        'Bosnia-Herzegovina': 'Bosnia',
+        'Bosnia and Herzegovina': 'Bosnia',
+        'Congo DR': 'DR Congo',
+        'Cabo Verde': 'Cape Verde',
+        'Korea Republic': 'South Korea'
+      };
+
+      const result = { goldenBoot: [], assists: [], yellowCards: [], redCards: [], matchScores: [] };
+
+      // Fetch from scoreboard API - this actually works!
+      // Each match contains team leaders with their tournament totals
+      try {
+        const response = await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard');
+        if (response.ok) {
+          const data = await response.json();
+          console.log('ESPN Scoreboard data loaded:', data.events?.length || 0, 'matches');
+          
+          const playerGoals = {};  // Track goals by player name
+          const playerAssists = {}; // Track assists by player name
+          
+          // Process each match event
+          for (const event of (data.events || [])) {
+            const competition = event.competitions?.[0];
+            if (!competition) continue;
+            
+            // Get match score for live updates
+            const matchInfo = {
+              id: event.id,
+              name: event.name,
+              status: event.status?.type?.description,
+              date: event.date
+            };
+            
+            // Process each team's leaders in this match
+            for (const competitor of (competition.competitors || [])) {
+              const teamName = competitor.team?.displayName || competitor.team?.name || 'Unknown';
+              const teamAbbr = competitor.team?.abbreviation || '';
+              const mappedTeam = ESPN_TO_NAME[teamName] || teamName;
+              
+              // Extract team leaders (goals, assists)
+              for (const leaderCat of (competitor.leaders || [])) {
+                const catName = (leaderCat.name || leaderCat.displayName || '').toLowerCase();
+                
+                for (const leader of (leaderCat.leaders || [])) {
+                  const athlete = leader.athlete;
+                  if (!athlete) continue;
+                  
+                  const playerName = athlete.displayName || athlete.fullName;
+                  const goals = parseFloat(leader.value) || 0;
+                  
+                  if (catName.includes('goal')) {
+                    // Tournament total goals - take the highest value seen for this player
+                    if (!playerGoals[playerName] || goals > playerGoals[playerName].goals) {
+                      playerGoals[playerName] = {
+                        name: playerName,
+                        country: mappedTeam,
+                        countryCode: teamAbbr,
+                        flag: teamAbbr,
+                        club: athlete.team?.shortDisplayName || '',
+                        goals: goals,
+                        assists: 0,
+                        played: 0
+                      };
+                    }
+                  }
+                  
+                  if (catName.includes('assist')) {
+                    const assists = parseFloat(leader.value) || 0;
+                    if (!playerAssists[playerName] || assists > playerAssists[playerName].assists) {
+                      playerAssists[playerName] = {
+                        name: playerName,
+                        country: mappedTeam,
+                        countryCode: teamAbbr,
+                        flag: teamAbbr,
+                        club: athlete.team?.shortDisplayName || '',
+                        goals: 0,
+                        assists: assists,
+                        played: 0
+                      };
+                    }
+                  }
+                }
+              }
+              
+              // Also track match scores
+              matchInfo[competitor.homeAway] = {
+                team: mappedTeam,
+                code: teamAbbr,
+                score: parseInt(competitor.score) || 0
+              };
+            }
+            
+            if (matchInfo.home && matchInfo.away) {
+              result.matchScores.push(matchInfo);
+            }
+          }
+          
+          // Convert to arrays
+          result.goldenBoot = Object.values(playerGoals).filter(p => p.goals > 0);
+          result.assists = Object.values(playerAssists).filter(p => p.assists > 0);
+          
+          // Merge assists into goldenBoot where player exists
+          for (const assist of result.assists) {
+            const existing = result.goldenBoot.find(p => p.name === assist.name);
+            if (existing) {
+              existing.assists = assist.assists;
+            }
+          }
+          
+          // Merge goals into assists where player exists  
+          for (const scorer of result.goldenBoot) {
+            const existing = result.assists.find(p => p.name === scorer.name);
+            if (existing) {
+              existing.goals = scorer.goals;
+            }
+          }
+          
+          console.log('ESPN Golden Boot candidates:', result.goldenBoot.length);
+          console.log('ESPN Assist leaders:', result.assists.length);
+        }
+      } catch (e) {
+        console.log('ESPN scoreboard fetch failed:', e.message);
+      }
+
+      return result;
+    }
+
+    function getRankClass(rank) {
+      if (rank === 1) return 'gold';
+      if (rank === 2) return 'silver';
+      if (rank === 3) return 'bronze';
+      return '';
+    }
+
+    function renderGoldenBoot(data) {
       const container = document.getElementById('golden-boot-table');
       if (!container) return;
+
+      // Use ESPN data if available (already has cumulative totals), else fall back to stats.json
+      let goldenBoot = data.goldenBoot || [];
       
-      const scorers = Object.values(DATA.scorers)
-        .filter(s => s.goals > 0)
-        .sort((a, b) => b.goals - a.goals || b.assists - a.assists)
-        .slice(0, 15);
-      
-      if (scorers.length === 0) {
-        container.innerHTML = '<p style="color: #888;">No goals scored yet.</p>';
-        return;
+      // If ESPN data wasn't fetched or is empty, calculate from groupStage.playerStats + knockout scorers
+      if (goldenBoot.length === 0) {
+        const playerStats = {};
+        const groupPlayerStats = data.groupStage?.playerStats || {};
+        
+        // Initialize with group stage stats
+        for (const [name, stats] of Object.entries(groupPlayerStats)) {
+          playerStats[name] = {
+            name: name,
+            country: stats.country,
+            countryCode: stats.countryCode,
+            flag: stats.flag,
+            club: stats.club,
+            goals: stats.goals || 0,
+            assists: stats.assists || 0,
+            played: stats.played || 3
+          };
+        }
+
+        // Add knockout stage stats from matches.json scorers
+        if (globalMatchData?.matches) {
+          for (const [round, matchList] of Object.entries(globalMatchData.matches)) {
+            for (const m of matchList) {
+              if (m.status === 'completed' && m.scorers) {
+                for (const scorer of m.scorers) {
+                  const name = scorer.name;
+                  if (!playerStats[name]) {
+                    playerStats[name] = {
+                      name: name,
+                      country: scorer.team,
+                      countryCode: scorer.team,
+                      flag: scorer.team,
+                      club: '',
+                      goals: 0,
+                      assists: 0,
+                      played: 0
+                    };
+                  }
+                  playerStats[name].goals += scorer.goals || 0;
+                  playerStats[name].assists += scorer.assists || 0;
+                  if (scorer.goals > 0 || scorer.assists > 0) {
+                    playerStats[name].played++;
+                  }
+                }
+              }
+            }
+          }
+        }
+        
+        goldenBoot = Object.values(playerStats).filter(p => p.goals > 0);
       }
-      
-      // Calculate dynamic ranks
-      let rank = 1, lastGoals = -1;
-      scorers.forEach((s, i) => {
-        if (s.goals !== lastGoals) { rank = i + 1; lastGoals = s.goals; }
-        s.rank = rank;
-      });
-      
-      let html = '<table class="player-table"><thead><tr>';
-      html += '<th class="rank">#</th><th>Player</th><th>Team</th><th style="text-align:center;">Matches</th><th style="text-align:center;">Goals</th><th style="text-align:center;">Assists</th>';
-      html += '</tr></thead><tbody>';
-      
-      for (const s of scorers) {
-        const rankCls = getRankClass(s.rank);
-        const goalCls = s.goals >= 4 ? 'stat-highlight' : '';
+
+      // Sort by goals (desc), then assists (desc) as tiebreaker
+      const sorted = [...goldenBoot].sort((a, b) => {
+        if (b.goals !== a.goals) return b.goals - a.goals;
+        return b.assists - a.assists;
+      }).slice(0, 15);
+
+      // Calculate dynamic ranks (same goals = same rank)
+      let currentRank = 1;
+      let lastGoals = -1;
+      for (let i = 0; i < sorted.length; i++) {
+        if (sorted[i].goals !== lastGoals) {
+          currentRank = i + 1;
+          lastGoals = sorted[i].goals;
+        }
+        sorted[i].dynamicRank = currentRank;
+      }
+
+      let html = `<table class="player-table">
+        <thead><tr>
+          <th class="rank">#</th><th>Player</th><th>Country</th><th>Club</th>
+          <th style="text-align:center;">Pld</th><th style="text-align:center;">Goals</th><th style="text-align:center;">Assists</th>
+        </tr></thead><tbody>`;
+
+      for (const p of sorted) {
+        const rankClass = getRankClass(p.dynamicRank);
+        const goalClass = p.goals >= 4 ? 'stat-highlight' : '';
         html += `<tr>
-          <td class="rank ${rankCls}">${s.rank}</td>
-          <td>${s.name}</td>
-          <td>${getFlag(s.team)} ${s.team}</td>
-          <td style="text-align:center;">${s.matches.size}</td>
-          <td class="${goalCls}" style="text-align:center;">${s.goals}</td>
-          <td style="text-align:center;">${s.assists}</td>
+          <td class="rank ${rankClass}">${p.dynamicRank}</td>
+          <td class="player-name">${p.name}</td>
+          <td>${p.country}</td><td class="player-club">${p.club || ''}</td>
+          <td style="text-align:center;">${p.played || '-'}</td>
+          <td class="${goalClass}" style="text-align:center;">${p.goals}</td>
+          <td style="text-align:center;">${p.assists || 0}</td>
         </tr>`;
       }
       html += '</tbody></table>';
       container.innerHTML = html;
-      
-      // Update subtitle
-      const subtitle = document.getElementById('golden-boot-subtitle');
-      if (subtitle && scorers.length >= 2) {
-        const top = scorers[0];
-        const second = scorers[1];
-        if (top.goals === second.goals) {
-          subtitle.textContent = `${top.name} and ${second.name} tied at ${top.goals} goals!`;
-        } else {
-          subtitle.textContent = `${top.name} leads with ${top.goals} goals, ${second.name} chasing with ${second.goals}`;
-        }
-      }
+
+      // Store for other functions to use
+      window.dynamicGoldenBoot = sorted;
     }
 
-    // ===== RENDER ASSISTS =====
-    function renderAssists() {
+    function renderAssists(data) {
       const container = document.getElementById('assists-table');
       if (!container) return;
+
+      // Use ESPN data if available (already has cumulative totals), else fall back to stats.json
+      let assists = data.assists || [];
       
-      const assisters = Object.values(DATA.scorers)
-        .filter(s => s.assists > 0)
-        .sort((a, b) => b.assists - a.assists || b.goals - a.goals)
-        .slice(0, 10);
+      // If ESPN data wasn't fetched or is empty, calculate from groupStage.playerStats + knockout scorers
+      if (assists.length === 0) {
+        const playerStats = {};
+        const groupPlayerStats = data.groupStage?.playerStats || {};
+        
+        // Initialize with group stage stats
+        for (const [name, stats] of Object.entries(groupPlayerStats)) {
+          if (stats.assists > 0 || stats.goals > 0) {
+            playerStats[name] = {
+              name: name,
+              country: stats.country,
+              countryCode: stats.countryCode,
+              flag: stats.flag,
+              club: stats.club,
+              goals: stats.goals || 0,
+              assists: stats.assists || 0,
+              played: stats.played || 3
+            };
+          }
+        }
+
+        // Add knockout stage stats from matches.json scorers
+        if (globalMatchData?.matches) {
+          for (const [round, matchList] of Object.entries(globalMatchData.matches)) {
+            for (const m of matchList) {
+              if (m.status === 'completed' && m.scorers) {
+                for (const scorer of m.scorers) {
+                  const name = scorer.name;
+                  if (!playerStats[name]) {
+                    playerStats[name] = {
+                      name: name,
+                      country: scorer.team,
+                      countryCode: scorer.team,
+                      flag: scorer.team,
+                      club: '',
+                      goals: 0,
+                      assists: 0,
+                      played: 0
+                    };
+                  }
+                  playerStats[name].goals += scorer.goals || 0;
+                  playerStats[name].assists += scorer.assists || 0;
+                  if (scorer.goals > 0 || scorer.assists > 0) {
+                    playerStats[name].played++;
+                  }
+                }
+              }
+            }
+          }
+        }
+        
+        assists = Object.values(playerStats).filter(p => p.assists > 0);
+      }
+
+      // Sort by assists (desc), then goals (desc) as tiebreaker
+      const sorted = [...assists].sort((a, b) => {
+        if (b.assists !== a.assists) return b.assists - a.assists;
+        return b.goals - a.goals;
+      }).slice(0, 10);
+
+      // Calculate dynamic ranks
+      let currentRank = 1;
+      let lastAssists = -1;
+      for (let i = 0; i < sorted.length; i++) {
+        if (sorted[i].assists !== lastAssists) {
+          currentRank = i + 1;
+          lastAssists = sorted[i].assists;
+        }
+        sorted[i].dynamicRank = currentRank;
+      }
+
+      let html = `<table class="player-table">
+        <thead><tr>
+          <th class="rank">#</th><th>Player</th><th>Country</th><th>Club</th>
+          <th style="text-align:center;">Pld</th><th style="text-align:center;">Assists</th><th style="text-align:center;">Goals</th>
+        </tr></thead><tbody>`;
+
+      for (const p of sorted) {
+        const rankClass = getRankClass(p.dynamicRank);
+        const assistClass = p.assists >= 3 ? 'stat-highlight' : '';
+        html += `<tr>
+          <td class="rank ${rankClass}">${p.dynamicRank}</td>
+          <td class="player-name">${p.name}</td>
+          <td>${p.country}</td><td class="player-club">${p.club || ''}</td>
+          <td style="text-align:center;">${p.played || '-'}</td>
+          <td class="${assistClass}" style="text-align:center;">${p.assists}</td>
+          <td style="text-align:center;">${p.goals || 0}</td>
+        </tr>`;
+      }
+      html += '</tbody></table>';
+      container.innerHTML = html;
+
+      // Store for other functions
+      window.dynamicAssists = sorted;
+    }
+
+    // Star Players and Distance functions removed - they require manual data updates
+    // All stats now come from ESPN API or are calculated from match results
+
+    function renderRedCardsCount(data) {
+      // Red cards count is calculated from groupStage + knockout discipline data
+      // Display is now handled by renderDynamicTexts which updates #red-cards-total
+      const container = document.getElementById('red-cards-total');
+      if (!container) return;
       
-      if (assisters.length === 0) {
-        container.innerHTML = '<p style="color: #888;">No assists recorded yet.</p>';
-        return;
+      // Calculate from group stage + knockout matches
+      const groupStage = data.groupStage || {};
+      const groupReds = groupStage.redCards || 0;
+      
+      let knockoutReds = 0;
+      if (globalMatchData?.matches) {
+        for (const [round, matchList] of Object.entries(globalMatchData.matches)) {
+          for (const m of matchList) {
+            if (m.status === 'completed' && m.discipline?.redCards) {
+              knockoutReds += m.discipline.redCards;
+            }
+          }
+        }
       }
       
-      let rank = 1, lastAssists = -1;
-      assisters.forEach((s, i) => {
-        if (s.assists !== lastAssists) { rank = i + 1; lastAssists = s.assists; }
-        s.rank = rank;
-      });
+      container.textContent = groupReds + knockoutReds;
+    }
+
+    function renderPenaltyCounts(data) {
+      // Update penalties total and shootouts total
+      const penaltiesEl = document.getElementById('penalties-total');
+      const shootoutsEl = document.getElementById('shootouts-total');
       
-      let html = '<table class="player-table"><thead><tr>';
-      html += '<th class="rank">#</th><th>Player</th><th>Team</th><th style="text-align:center;">Assists</th><th style="text-align:center;">Goals</th>';
-      html += '</tr></thead><tbody>';
+      const groupStage = data.groupStage || {};
+      const groupPenalties = groupStage.penalties || 0;
       
-      for (const s of assisters) {
+      let knockoutPenalties = 0;
+      let shootouts = 0;
+      
+      if (globalMatchData?.matches) {
+        for (const [round, matchList] of Object.entries(globalMatchData.matches)) {
+          for (const m of matchList) {
+            if (m.status === 'completed') {
+              if (m.discipline?.penalties) {
+                knockoutPenalties += m.discipline.penalties;
+              }
+              if (m.homePenalties !== undefined) {
+                shootouts++;
+              }
+            }
+          }
+        }
+      }
+      
+      if (penaltiesEl) penaltiesEl.textContent = groupPenalties + knockoutPenalties;
+      if (shootoutsEl) shootoutsEl.textContent = shootouts;
+    }
+
+    function renderYellowCards(data) {
+      const container = document.getElementById('yellow-cards-table');
+      if (!container) return;
+
+      // Start with group stage yellow cards per team
+      const groupStage = data.groupStage || {};
+      const groupTeamYellows = groupStage.teamYellowCards || {};
+      
+      // Initialize with group stage data (all teams played 3 group matches)
+      let teamYellowCards = {};
+      for (const [team, yellows] of Object.entries(groupTeamYellows)) {
+        teamYellowCards[team] = {
+          team: team,
+          groupYellows: yellows,
+          knockoutYellows: 0,
+          played: 3  // Group stage = 3 matches
+        };
+      }
+
+      // Add knockout yellow cards from matches.json
+      if (globalMatchData?.matches) {
+        const matches = globalMatchData.matches;
+        
+        for (const [round, matchList] of Object.entries(matches)) {
+          for (const m of matchList) {
+            if (m.status === 'completed' && m.discipline) {
+              const totalYellows = m.discipline.yellowCards || 0;
+              // Split yellows evenly between teams (approximation)
+              // In reality we'd need per-team data, but this gives a reasonable estimate
+              const yellowsPerTeam = Math.floor(totalYellows / 2);
+              const remainder = totalYellows % 2;
+              
+              if (m.homeTeam?.name) {
+                if (!teamYellowCards[m.homeTeam.name]) {
+                  teamYellowCards[m.homeTeam.name] = { team: m.homeTeam.name, groupYellows: 0, knockoutYellows: 0, played: 3 };
+                }
+                teamYellowCards[m.homeTeam.name].knockoutYellows += yellowsPerTeam + remainder;
+                teamYellowCards[m.homeTeam.name].played++;
+              }
+              if (m.awayTeam?.name) {
+                if (!teamYellowCards[m.awayTeam.name]) {
+                  teamYellowCards[m.awayTeam.name] = { team: m.awayTeam.name, groupYellows: 0, knockoutYellows: 0, played: 3 };
+                }
+                teamYellowCards[m.awayTeam.name].knockoutYellows += yellowsPerTeam;
+                teamYellowCards[m.awayTeam.name].played++;
+              }
+            }
+          }
+        }
+      }
+
+      // Convert to array with total cards
+      let teams = Object.values(teamYellowCards).map(t => ({
+        team: t.team,
+        played: t.played,
+        cards: t.groupYellows + t.knockoutYellows
+      }));
+
+      // Sort by cards (desc) and calculate dynamic ranks
+      teams.sort((a, b) => b.cards - a.cards);
+      
+      // Take top 10 teams
+      teams = teams.slice(0, 10);
+      
+      let currentRank = 1;
+      let lastCards = -1;
+      for (let i = 0; i < teams.length; i++) {
+        if (teams[i].cards !== lastCards) {
+          currentRank = i + 1;
+          lastCards = teams[i].cards;
+        }
+        teams[i].dynamicRank = currentRank;
+      }
+
+      let html = `<table class="player-table">
+        <thead><tr><th>#</th><th>Team</th><th>Pld</th><th>Cards</th></tr></thead><tbody>`;
+
+      for (const t of teams) {
+        const cardClass = t.cards >= 6 ? 'stat-highlight' : '';
         html += `<tr>
-          <td class="rank ${getRankClass(s.rank)}">${s.rank}</td>
-          <td>${s.name}</td>
-          <td>${getFlag(s.team)} ${s.team}</td>
-          <td style="text-align:center;">${s.assists}</td>
-          <td style="text-align:center;">${s.goals}</td>
+          <td class="rank">${t.dynamicRank}</td>
+          <td class="player-name">${t.team}</td>
+          <td>${t.played || '-'}</td>
+          <td class="${cardClass}">${t.cards}</td>
         </tr>`;
       }
       html += '</tbody></table>';
       container.innerHTML = html;
     }
 
-    // ===== RENDER DISCIPLINE =====
-    function renderDiscipline() {
-      const completed = DATA.matches.filter(m => m.status === 'completed');
-      const totalYellow = completed.reduce((sum, m) => sum + m.yellowCards, 0);
-      const totalRed = completed.reduce((sum, m) => sum + m.redCards, 0);
-      const totalPens = completed.reduce((sum, m) => sum + m.penalties, 0);
-      const shootouts = completed.filter(m => m.hasPK).length;
+    // renderPenalties removed - now using renderPenaltyCounts which shows totals only
+
+    function renderReferees(data) {
+      const container = document.getElementById('referees-table');
+      if (!container) return;
+
+      // Calculate referee stats from knockout matches only (dynamically)
+      let refereeStats = {};
       
-      document.getElementById('disc-yellow').textContent = totalYellow;
-      document.getElementById('disc-red').textContent = totalRed;
-      document.getElementById('disc-penalties').textContent = totalPens;
-      document.getElementById('disc-shootouts').textContent = shootouts;
-      
-      // Yellow cards by team
-      const yellowContainer = document.getElementById('yellow-cards-table');
-      if (yellowContainer) {
-        const teams = Object.values(DATA.teamStats).sort((a, b) => b.yellows - a.yellows).slice(0, 10);
-        
-        if (teams.length === 0) {
-          yellowContainer.innerHTML = '<p style="color: #888;">No data yet.</p>';
-        } else {
-          let html = '<table class="player-table"><thead><tr><th>Team</th><th style="text-align:center;">Matches</th><th style="text-align:center;">🟨</th></tr></thead><tbody>';
-          for (const t of teams) {
-            html += `<tr><td>${getFlag(t.name)} ${t.name}</td><td style="text-align:center;">${t.matches}</td><td style="text-align:center;">${t.yellows}</td></tr>`;
+      if (globalMatchData?.matches) {
+        for (const [round, matchList] of Object.entries(globalMatchData.matches)) {
+          for (const m of matchList) {
+            if (m.status === 'completed' && m.referee?.name) {
+              const name = m.referee.name;
+              if (!refereeStats[name]) {
+                refereeStats[name] = {
+                  name: name,
+                  country: m.referee.country || 'Unknown',
+                  flag: m.referee.flag || '',
+                  matches: 0,
+                  yellows: 0,
+                  reds: 0,
+                  penalties: 0
+                };
+              }
+              refereeStats[name].matches++;
+              if (m.discipline) {
+                refereeStats[name].yellows += m.discipline.yellowCards || 0;
+                refereeStats[name].reds += m.discipline.redCards || 0;
+                refereeStats[name].penalties += m.discipline.penalties || 0;
+              }
+            }
           }
-          html += '</tbody></table>';
-          yellowContainer.innerHTML = html;
         }
       }
       
-      // Red cards - list matches with reds
-      const redContainer = document.getElementById('red-cards-table');
-      if (redContainer) {
-        const redsMatches = completed.filter(m => m.redCards > 0);
-        
-        if (redsMatches.length === 0) {
-          redContainer.innerHTML = '<p style="color: #888;">No red cards issued yet.</p>';
-        } else {
-          let html = '<table class="player-table"><thead><tr><th>Match</th><th style="text-align:center;">🟥</th></tr></thead><tbody>';
-          for (const m of redsMatches) {
-            html += `<tr><td>${m.homeTeam} vs ${m.awayTeam}</td><td style="text-align:center;">${m.redCards}</td></tr>`;
-          }
-          html += '</tbody></table>';
-          redContainer.innerHTML = html;
-        }
+      // Convert to array and sort by matches (desc)
+      let refs = Object.values(refereeStats);
+      refs.sort((a, b) => {
+        if (b.matches !== a.matches) return b.matches - a.matches;
+        return b.yellows - a.yellows;  // Secondary sort by yellows
+      });
+      
+      if (refs.length === 0) {
+        container.innerHTML = '<p style="color: #888;">No referee data available yet</p>';
+        return;
       }
+      
+      let html = `<table class="player-table">
+        <thead><tr>
+          <th>Referee</th><th>Country</th><th style="text-align:center;">Matches</th>
+          <th style="text-align:center;">🟨</th><th style="text-align:center;">🟥</th><th style="text-align:center;">Avg 🟨</th>
+        </tr></thead><tbody>`;
+
+      for (const r of refs) {
+        const avgYellows = r.matches > 0 ? (r.yellows / r.matches).toFixed(1) : '-';
+        html += `<tr>
+          <td class="player-name">${r.name}</td>
+          <td>${r.country}</td>
+          <td style="text-align:center;">${r.matches}</td>
+          <td style="text-align:center;">${r.yellows}</td>
+          <td style="text-align:center;">${r.reds}</td>
+          <td style="text-align:center;">${avgYellows}</td>
+        </tr>`;
+      }
+      html += '</tbody></table>';
+      container.innerHTML = html;
     }
 
-    // ===== INITIALIZE =====
-    fetchESPNData();
   </script>
 </body>
 </html>
