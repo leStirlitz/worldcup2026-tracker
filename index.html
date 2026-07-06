@@ -118,7 +118,7 @@
       border: 1px solid #4a5568;
     }
     .match.completed { border-color: #22c55e; }
-    .match.live { border-color: #ef4444; animation: pulse 2s infinite; }
+    .match.live { border-color: #b45309; animation: pulse 2s infinite; }
     .match.upcoming { border-color: #4a5568; opacity: 0.8; }
     .match.today { 
       border-color: #f59e0b; 
@@ -133,7 +133,7 @@
       50% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.6); }
     }
     
-    @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); } 50% { box-shadow: 0 0 0 8px rgba(239,68,68,0); } }
+    @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(180,83,9,0.4); } 50% { box-shadow: 0 0 0 8px rgba(180,83,9,0); } }
     
     .team {
       display: flex;
@@ -780,7 +780,8 @@
           const matchDate = match[1] + ' ' + parseInt(match[2]);
           if (matchDate === todayStr) {
             const matchEl = info.closest('.match');
-            if (matchEl && !matchEl.classList.contains('completed')) {
+            // Don't override completed or live matches
+            if (matchEl && !matchEl.classList.contains('completed') && !matchEl.classList.contains('live')) {
               matchEl.classList.remove('upcoming');
               matchEl.classList.add('today');
             }
@@ -1084,7 +1085,16 @@
       const teamMapping = localData.espnTeamMapping || {};
       
       for (const espnMatch of espnMatches) {
-        if (espnMatch.status !== 'STATUS_FINAL') continue; // Only update completed matches
+        // Process both completed AND live matches
+        const isLive = espnMatch.status === 'STATUS_IN_PROGRESS' || 
+                       espnMatch.status === 'STATUS_HALFTIME' ||
+                       espnMatch.status === 'STATUS_FIRST_HALF' ||
+                       espnMatch.status === 'STATUS_SECOND_HALF';
+        const isCompleted = espnMatch.status === 'STATUS_FINAL' || espnMatch.status === 'STATUS_FULL_TIME';
+        
+        console.log('ESPN Match:', espnMatch.name, '| Status:', espnMatch.status, '| isLive:', isLive, '| Score:', espnMatch.homeScore + '-' + espnMatch.awayScore);
+        
+        if (!isLive && !isCompleted) continue; // Skip scheduled matches
         
         // Try to find matching local match by team codes
         for (const [round, matchList] of Object.entries(localData.matches)) {
@@ -1103,13 +1113,20 @@
             const awayMatches = espnAwayCode === localAwayCode ||
                               teamMapping[espnMatch.awayTeam] === localMatch.awayTeam.name;
             
-            if (homeMatches && awayMatches && localMatch.status !== 'completed') {
-              console.log(`ESPN Update: ${localMatch.homeTeam.name} vs ${localMatch.awayTeam.name} = ${espnMatch.homeScore}-${espnMatch.awayScore}`);
+            if (homeMatches && awayMatches) {
+              // Update scores
               localMatch.homeScore = espnMatch.homeScore;
               localMatch.awayScore = espnMatch.awayScore;
-              localMatch.status = 'completed';
-              localMatch.winner = espnMatch.homeScore > espnMatch.awayScore ? 'home' : 
-                                  espnMatch.awayScore > espnMatch.homeScore ? 'away' : 'draw';
+              
+              if (isLive) {
+                console.log(`ESPN LIVE: ${localMatch.homeTeam.name} vs ${localMatch.awayTeam.name} = ${espnMatch.homeScore}-${espnMatch.awayScore}`);
+                localMatch.status = 'live';
+              } else if (isCompleted && localMatch.status !== 'completed') {
+                console.log(`ESPN Update: ${localMatch.homeTeam.name} vs ${localMatch.awayTeam.name} = ${espnMatch.homeScore}-${espnMatch.awayScore}`);
+                localMatch.status = 'completed';
+                localMatch.winner = espnMatch.homeScore > espnMatch.awayScore ? 'home' : 
+                                    espnMatch.awayScore > espnMatch.homeScore ? 'away' : 'draw';
+              }
             }
           }
         }
@@ -1652,7 +1669,7 @@
       const mbappe = goldenBoot.find(p => p.name.toLowerCase().includes('mbappe') || p.name.toLowerCase().includes('mbappé'));
       if (messi && mbappe) {
         if (messi.goals === mbappe.goals) {
-          storylines.push(`<strong>Mbappé vs Messi:</strong> Both tied at ${messi.goals} goals! Messi in ${messi.played} matches, Mbappé in ${mbappe.played}.`);
+          storylines.push(`<strong>Mbappé vs Messi:</strong> Both tied at ${messi.goals} goals - the Golden Boot race is on!`);
         } else if (messi.goals > mbappe.goals) {
           storylines.push(`<strong>Mbappé vs Messi:</strong> Messi leads with ${messi.goals} goals, Mbappé has ${mbappe.goals}.`);
         } else {
@@ -1663,7 +1680,7 @@
       // 2. Haaland watch
       const haaland = goldenBoot.find(p => p.name.toLowerCase().includes('haaland'));
       if (haaland) {
-        storylines.push(`<strong>Haaland's Run:</strong> Norway's striker has ${haaland.goals} goals in ${haaland.played} games.`);
+        storylines.push(`<strong>Haaland's Run:</strong> Norway's striker has ${haaland.goals} goals in the tournament.`);
       }
 
       // 3. Top scoring team
@@ -1682,7 +1699,7 @@
       // 5. Kane watch
       const kane = goldenBoot.find(p => p.name.toLowerCase().includes('kane'));
       if (kane) {
-        storylines.push(`<strong>Kane Watch:</strong> England captain has ${kane.goals} goals in ${kane.played} matches.`);
+        storylines.push(`<strong>Kane Watch:</strong> England captain has ${kane.goals} goals in the tournament.`);
       }
 
       // 6. Find eliminated scorers (players from eliminated teams with 3+ goals)
@@ -1810,7 +1827,7 @@
                         club: athlete.team?.shortDisplayName || '',
                         goals: value,
                         assists: 0,
-                        played: 0
+                        played: null  // ESPN doesn't provide actual appearances
                       };
                     }
                   }
@@ -1825,7 +1842,7 @@
                         club: athlete.team?.shortDisplayName || '',
                         goals: 0,
                         assists: value,
-                        played: 0
+                        played: null  // ESPN doesn't provide actual appearances
                       };
                     }
                   }
@@ -1889,60 +1906,81 @@
       const container = document.getElementById('golden-boot-table');
       if (!container) return;
 
-      // Use ESPN data if available (already has cumulative totals), else fall back to stats.json
-      let goldenBoot = data.goldenBoot || [];
+      // Build comprehensive Golden Boot by merging all sources
+      const playerStats = {};
       
-      // If ESPN data wasn't fetched or is empty, calculate from groupStage.playerStats + knockout scorers
-      if (goldenBoot.length === 0) {
-        const playerStats = {};
-        const groupPlayerStats = data.groupStage?.playerStats || {};
-        
-        // Initialize with group stage stats
-        for (const [name, stats] of Object.entries(groupPlayerStats)) {
-          playerStats[name] = {
-            name: name,
-            country: stats.country,
-            countryCode: stats.countryCode,
-            flag: stats.flag,
-            club: stats.club,
-            goals: stats.goals || 0,
-            assists: stats.assists || 0,
-            played: stats.played || 3
-          };
-        }
+      // 1. Start with group stage stats (most complete for all players)
+      const groupPlayerStats = data.groupStage?.playerStats || {};
+      for (const [name, stats] of Object.entries(groupPlayerStats)) {
+        playerStats[name] = {
+          name: name,
+          country: stats.country,
+          countryCode: stats.countryCode,
+          flag: stats.flag,
+          club: stats.club,
+          goals: stats.goals || 0,
+          assists: stats.assists || 0,
+          played: stats.played || 3  // group stage = 3 matches
+        };
+      }
 
-        // Add knockout stage stats from matches.json scorers
-        if (globalMatchData?.matches) {
-          for (const [round, matchList] of Object.entries(globalMatchData.matches)) {
-            for (const m of matchList) {
-              if (m.status === 'completed' && m.scorers) {
-                for (const scorer of m.scorers) {
-                  const name = scorer.name;
-                  if (!playerStats[name]) {
-                    playerStats[name] = {
-                      name: name,
-                      country: scorer.team,
-                      countryCode: scorer.team,
-                      flag: scorer.team,
-                      club: '',
-                      goals: 0,
-                      assists: 0,
-                      played: 0
-                    };
-                  }
-                  playerStats[name].goals += scorer.goals || 0;
-                  playerStats[name].assists += scorer.assists || 0;
-                  if (scorer.goals > 0 || scorer.assists > 0) {
-                    playerStats[name].played++;
-                  }
+      // 2. Add knockout stage scorers from matches.json
+      if (globalMatchData?.matches) {
+        for (const [round, matchList] of Object.entries(globalMatchData.matches)) {
+          for (const m of matchList) {
+            if (m.status === 'completed' && m.scorers) {
+              for (const scorer of m.scorers) {
+                const name = scorer.name;
+                if (!playerStats[name]) {
+                  // New player not in group stage - create entry
+                  playerStats[name] = {
+                    name: name,
+                    country: scorer.team,
+                    countryCode: scorer.team,
+                    flag: scorer.team,
+                    club: '',
+                    goals: 0,
+                    assists: 0,
+                    played: 0
+                  };
+                }
+                // Add knockout goals/assists to group stage totals
+                playerStats[name].goals += scorer.goals || 0;
+                playerStats[name].assists += scorer.assists || 0;
+                if (scorer.goals > 0 || scorer.assists > 0) {
+                  playerStats[name].played = (playerStats[name].played || 0) + 1;
                 }
               }
             }
           }
         }
-        
-        goldenBoot = Object.values(playerStats).filter(p => p.goals > 0);
       }
+      
+      // 3. Override with ESPN data if available (more accurate tournament totals)
+      // ESPN's competitor.leaders has authoritative totals but only for team leaders
+      const espnGoldenBoot = data.goldenBoot || [];
+      for (const player of espnGoldenBoot) {
+        if (playerStats[player.name]) {
+          // ESPN has this player - use ESPN's total (more accurate)
+          playerStats[player.name].goals = player.goals;
+          playerStats[player.name].assists = player.assists || playerStats[player.name].assists;
+          // Preserve local club info
+        } else {
+          // ESPN player not in our local data - add them
+          playerStats[player.name] = {
+            name: player.name,
+            country: player.country,
+            countryCode: player.countryCode,
+            flag: player.flag,
+            club: player.club || '',
+            goals: player.goals || 0,
+            assists: player.assists || 0,
+            played: null
+          };
+        }
+      }
+      
+      let goldenBoot = Object.values(playerStats).filter(p => p.goals > 0);
 
       // Sort by goals (desc), then assists (desc) as tiebreaker
       const sorted = [...goldenBoot].sort((a, b) => {
