@@ -1759,13 +1759,12 @@
 
       const result = { goldenBoot: [], assists: [], yellowCards: [], redCards: [], matchScores: [] };
 
-      // Fetch from scoreboard API - this actually works!
-      // Each match contains team leaders with their tournament totals
+      // Fetch FULL tournament data with date range to get all match details
       try {
-        const response = await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard');
+        const response = await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=20260611-20260719&limit=200');
         if (response.ok) {
           const data = await response.json();
-          console.log('ESPN Scoreboard data loaded:', data.events?.length || 0, 'matches');
+          console.log('ESPN Full Tournament data loaded:', data.events?.length || 0, 'matches');
           
           const playerGoals = {};  // Track goals by player name
           const playerAssists = {}; // Track assists by player name
@@ -1783,63 +1782,67 @@
               date: event.date
             };
             
-            // Process each team's leaders in this match
+            // Build team ID to name mapping for this match
+            const teamIdToName = {};
             for (const competitor of (competition.competitors || [])) {
               const teamName = competitor.team?.displayName || competitor.team?.name || 'Unknown';
               const teamAbbr = competitor.team?.abbreviation || '';
               const mappedTeam = ESPN_TO_NAME[teamName] || teamName;
               
-              // Extract team leaders (goals, assists)
-              for (const leaderCat of (competitor.leaders || [])) {
-                const catName = (leaderCat.name || leaderCat.displayName || '').toLowerCase();
-                
-                for (const leader of (leaderCat.leaders || [])) {
-                  const athlete = leader.athlete;
-                  if (!athlete) continue;
-                  
-                  const playerName = athlete.displayName || athlete.fullName;
-                  const goals = parseFloat(leader.value) || 0;
-                  
-                  if (catName.includes('goal')) {
-                    // Tournament total goals - take the highest value seen for this player
-                    if (!playerGoals[playerName] || goals > playerGoals[playerName].goals) {
-                      playerGoals[playerName] = {
-                        name: playerName,
-                        country: mappedTeam,
-                        countryCode: teamAbbr,
-                        flag: teamAbbr,
-                        club: athlete.team?.shortDisplayName || '',
-                        goals: goals,
-                        assists: 0,
-                        played: 0
-                      };
-                    }
-                  }
-                  
-                  if (catName.includes('assist')) {
-                    const assists = parseFloat(leader.value) || 0;
-                    if (!playerAssists[playerName] || assists > playerAssists[playerName].assists) {
-                      playerAssists[playerName] = {
-                        name: playerName,
-                        country: mappedTeam,
-                        countryCode: teamAbbr,
-                        flag: teamAbbr,
-                        club: athlete.team?.shortDisplayName || '',
-                        goals: 0,
-                        assists: assists,
-                        played: 0
-                      };
-                    }
-                  }
-                }
+              if (competitor.team?.id) {
+                teamIdToName[competitor.team.id] = mappedTeam;
               }
               
-              // Also track match scores
+              // Track match scores
               matchInfo[competitor.homeAway] = {
                 team: mappedTeam,
                 code: teamAbbr,
                 score: parseInt(competitor.score) || 0
               };
+            }
+            
+            // Extract goalscorers from competition.details (the accurate source!)
+            const details = competition.details || [];
+            for (const detail of details) {
+              const type = (detail.type?.text || '').toLowerCase();
+              
+              // Process goals
+              if (detail.scoringPlay && type.includes('goal')) {
+                const player = detail.participants?.[0]?.athlete?.displayName || 'Unknown';
+                const teamId = detail.team?.id;
+                const teamName = teamIdToName[teamId] || detail.team?.displayName || 'Unknown';
+                const isPenalty = detail.penaltyKick || type.includes('penalty');
+                const isOwnGoal = detail.ownGoal || type.includes('own goal');
+                
+                // Don't count own goals for the scorer
+                if (!isOwnGoal && player !== 'Unknown') {
+                  if (!playerGoals[player]) {
+                    playerGoals[player] = {
+                      name: player,
+                      country: teamName,
+                      goals: 0,
+                      penalties: 0,
+                      assists: 0
+                    };
+                  }
+                  playerGoals[player].goals++;
+                  if (isPenalty) playerGoals[player].penalties++;
+                }
+                
+                // Track assists (second participant in goal event)
+                const assister = detail.participants?.[1]?.athlete?.displayName;
+                if (assister && !isOwnGoal) {
+                  if (!playerAssists[assister]) {
+                    playerAssists[assister] = {
+                      name: assister,
+                      country: teamName,
+                      goals: 0,
+                      assists: 0
+                    };
+                  }
+                  playerAssists[assister].assists++;
+                }
+              }
             }
             
             if (matchInfo.home && matchInfo.away) {
@@ -1867,7 +1870,10 @@
             }
           }
           
-          console.log('ESPN Golden Boot candidates:', result.goldenBoot.length);
+          // Log top scorers for verification
+          const top5 = [...result.goldenBoot].sort((a,b) => b.goals - a.goals).slice(0,5);
+          console.log('ESPN Golden Boot (from details):', result.goldenBoot.length, 'scorers');
+          console.log('Top 5:', top5.map(p => `${p.name}: ${p.goals}`).join(', '));
           console.log('ESPN Assist leaders:', result.assists.length);
         }
       } catch (e) {
