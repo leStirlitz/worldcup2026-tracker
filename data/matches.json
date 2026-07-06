@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-06T02:31:17.376Z",
+  "lastUpdated": "2026-07-06T06:54:01.813Z",
   "tournament": {
     "name": "FIFA World Cup 2026",
     "stage": "Round of 16",
@@ -599,8 +599,8 @@
         },
         "homeScore": 2,
         "awayScore": 3,
-        "status": "live",
-        "winner": null
+        "status": "completed",
+        "winner": "away"
       },
       {
         "id": "r16_5",
