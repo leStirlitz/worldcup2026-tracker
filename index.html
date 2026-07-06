@@ -1759,9 +1759,9 @@
 
       const result = { goldenBoot: [], assists: [], yellowCards: [], redCards: [], matchScores: [] };
 
-      // Fetch scoreboard - use the basic endpoint (no date range) for upcoming matches with leaders
+      // Fetch full tournament with date range - leaders array contains tournament totals
       try {
-        const response = await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard');
+        const response = await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=20260611-20260719&limit=200');
         if (response.ok) {
           const data = await response.json();
           console.log('ESPN Scoreboard data loaded:', data.events?.length || 0, 'matches');
