@@ -11,10 +11,10 @@
     "playerStats": {
       "Lionel Messi": { "country": "Argentina", "countryCode": "ARG", "flag": "AR", "club": "Inter Miami", "goals": 5, "assists": 1, "played": 3 },
       "Kylian Mbappé": { "country": "France", "countryCode": "FRA", "flag": "FR", "club": "Real Madrid", "goals": 4, "assists": 2, "played": 3 },
-      "Erling Haaland": { "country": "Norway", "countryCode": "NOR", "flag": "NO", "club": "Man City", "goals": 5, "assists": 1, "played": 3 },
+      "Erling Haaland": { "country": "Norway", "countryCode": "NOR", "flag": "NO", "club": "Man City", "goals": 3, "assists": 0, "played": 3 },
       "Harry Kane": { "country": "England", "countryCode": "ENG", "flag": "ENG", "club": "Bayern Munich", "goals": 4, "assists": 0, "played": 3 },
       "Ousmane Dembélé": { "country": "France", "countryCode": "FRA", "flag": "FR", "club": "PSG", "goals": 3, "assists": 1, "played": 3 },
-      "Vinícius Júnior": { "country": "Brazil", "countryCode": "BRA", "flag": "BR", "club": "Real Madrid", "goals": 3, "assists": 1, "played": 3 },
+      "Vinícius Júnior": { "country": "Brazil", "countryCode": "BRA", "flag": "BR", "club": "Real Madrid", "goals": 2, "assists": 1, "played": 3 },
       "Ismaïla Sarr": { "country": "Senegal", "countryCode": "SEN", "flag": "SN", "club": "Crystal Palace", "goals": 2, "assists": 0, "played": 3 },
       "Mikel Oyarzabal": { "country": "Spain", "countryCode": "ESP", "flag": "ES", "club": "Real Sociedad", "goals": 2, "assists": 1, "played": 3 },
       "Deniz Undav": { "country": "Germany", "countryCode": "GER", "flag": "DE", "club": "Stuttgart", "goals": 2, "assists": 2, "played": 3 },
