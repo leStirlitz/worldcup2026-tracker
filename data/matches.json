@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-07T02:26:45.815Z",
+  "lastUpdated": "2026-07-07T17:35:49.658Z",
   "tournament": {
     "name": "FIFA World Cup 2026",
     "stage": "Round of 16",
@@ -996,9 +996,9 @@
           "name": "Egypt",
           "flag": "🇪🇬"
         },
-        "homeScore": null,
-        "awayScore": null,
-        "status": "scheduled",
+        "homeScore": 0,
+        "awayScore": 2,
+        "status": "live",
         "winner": null
       },
       {
