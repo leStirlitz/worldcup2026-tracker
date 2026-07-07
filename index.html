@@ -1279,19 +1279,23 @@
         }
       }
       
-      // Priority 2: Recently completed match (today)
+      // Priority 2: Most recently completed match (by date, descending)
       if (!matchToShow) {
-        for (const m of espnMatches) {
-          if (m.status === 'STATUS_FINAL' || m.status === 'STATUS_FULL_TIME') {
-            matchToShow = m;
-            matchToShow.isLive = false;
-            break;
-          }
+        const completedMatches = espnMatches.filter(m => 
+          m.status === 'STATUS_FINAL' || m.status === 'STATUS_FULL_TIME'
+        );
+        // Sort by date descending (most recent first)
+        completedMatches.sort((a, b) => new Date(b.date) - new Date(a.date));
+        console.log('Completed matches sorted:', completedMatches.map(m => m.name + ' @ ' + m.date));
+        if (completedMatches.length > 0) {
+          matchToShow = completedMatches[0];
+          matchToShow.isLive = false;
+          console.log('Selected match for panel:', matchToShow.name);
         }
       }
       
-      // Priority 3: Use last shown match if still relevant
-      if (!matchToShow && lastLiveMatchData) {
+      // Priority 3: Fallback to cached data only if ESPN returned nothing
+      if (!matchToShow && lastLiveMatchData && espnMatches.length === 0) {
         matchToShow = lastLiveMatchData;
       }
       
