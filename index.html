@@ -1033,8 +1033,8 @@
         }
       }
 
-      // Sort by date
-      completedMatches.sort((a, b) => new Date(a.date) - new Date(b.date));
+      // Sort by date (descending - most recent first)
+      completedMatches.sort((a, b) => new Date(b.date) - new Date(a.date));
 
       let html = `<table style="width: 100%; border-collapse: collapse;">
         <thead>
@@ -1203,15 +1203,21 @@
     async function fetchESPNScoreboard() {
       const matches = [];
       
-      // Try fetching current scoreboard (today's and recent matches)
+      // First: Fetch FULL tournament data with date range to get all completed matches
       try {
-        const response = await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard');
-        if (response.ok) {
-          const data = await response.json();
-          if (data.events) {
-            for (const event of data.events) {
+        const fullResponse = await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=20260611-20260719&limit=200');
+        if (fullResponse.ok) {
+          const fullData = await fullResponse.json();
+          if (fullData.events) {
+            for (const event of fullData.events) {
               const competition = event.competitions?.[0];
               if (!competition) continue;
+              
+              // Only process knockout matches (type 13801=R32, 13800=R16, etc.)
+              const seasonType = event.season?.type || 0;
+              const isKnockout = seasonType === 13801 || seasonType === 13800 || 
+                               seasonType === 13799 || seasonType === 13798 || seasonType === 13803;
+              if (!isKnockout) continue;
               
               const homeTeam = competition.competitors?.find(c => c.homeAway === 'home');
               const awayTeam = competition.competitors?.find(c => c.homeAway === 'away');
@@ -1237,17 +1243,99 @@
                 homeTeam: homeTeam?.team?.displayName,
                 homeCode: homeTeam?.team?.abbreviation,
                 homeScore: parseInt(homeTeam?.score) || 0,
+                homePenalties: homeTeam?.shootoutScore,
                 homeLogo: homeTeam?.team?.logo,
                 homeStats: homeStats,
                 awayTeam: awayTeam?.team?.displayName,
                 awayCode: awayTeam?.team?.abbreviation,
                 awayScore: parseInt(awayTeam?.score) || 0,
+                awayPenalties: awayTeam?.shootoutScore,
                 awayLogo: awayTeam?.team?.logo,
                 awayStats: awayStats,
                 venue: competition.venue?.fullName + (competition.venue?.address?.city ? ', ' + competition.venue.address.city : ''),
                 details: competition.details || [],
                 notes: competition.notes || []
               });
+            }
+          }
+          console.log('ESPN Full Tournament: Found', matches.length, 'knockout matches');
+        }
+      } catch (e) {
+        console.log('ESPN full tournament fetch error:', e.message);
+      }
+      
+      // Second: Fetch today's scoreboard for live stats (has detailed statistics)
+      try {
+        const response = await fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.events) {
+            for (const event of data.events) {
+              const competition = event.competitions?.[0];
+              if (!competition) continue;
+              
+              const homeTeam = competition.competitors?.find(c => c.homeAway === 'home');
+              const awayTeam = competition.competitors?.find(c => c.homeAway === 'away');
+              
+              // Extract statistics for both teams (only available in today's endpoint)
+              const homeStats = {};
+              const awayStats = {};
+              for (const stat of (homeTeam?.statistics || [])) {
+                homeStats[stat.name] = stat.displayValue;
+              }
+              for (const stat of (awayTeam?.statistics || [])) {
+                awayStats[stat.name] = stat.displayValue;
+              }
+              
+              // Check if this match is already in our list
+              const existingIndex = matches.findIndex(m => m.id === event.id);
+              const matchData = {
+                id: event.id,
+                name: event.name,
+                date: event.date,
+                status: competition.status?.type?.name,
+                statusDetail: competition.status?.type?.shortDetail || competition.status?.type?.detail,
+                displayClock: competition.status?.displayClock,
+                period: competition.status?.period,
+                homeTeam: homeTeam?.team?.displayName,
+                homeCode: homeTeam?.team?.abbreviation,
+                homeScore: parseInt(homeTeam?.score) || 0,
+                homePenalties: homeTeam?.shootoutScore,
+                homeLogo: homeTeam?.team?.logo,
+                homeStats: homeStats,
+                awayTeam: awayTeam?.team?.displayName,
+                awayCode: awayTeam?.team?.abbreviation,
+                awayScore: parseInt(awayTeam?.score) || 0,
+                awayPenalties: awayTeam?.shootoutScore,
+                awayLogo: awayTeam?.team?.logo,
+                awayStats: awayStats,
+                venue: competition.venue?.fullName + (competition.venue?.address?.city ? ', ' + competition.venue.address.city : ''),
+                details: competition.details || [],
+                notes: competition.notes || []
+              };
+              
+              if (existingIndex >= 0) {
+                // Only merge detailed stats from today's endpoint if the match is live or has better data
+                // Don't overwrite completed match data with stale STATUS_SCHEDULED
+                const existing = matches[existingIndex];
+                const existingIsCompleted = existing.status === 'STATUS_FINAL' || 
+                                           existing.status === 'STATUS_FULL_TIME' ||
+                                           existing.status === 'STATUS_FINAL_PEN' ||
+                                           existing.status === 'STATUS_FINAL_AET';
+                const newIsScheduled = matchData.status === 'STATUS_SCHEDULED';
+                
+                if (existingIsCompleted && newIsScheduled) {
+                  // Don't overwrite completed match with stale scheduled data - only merge stats
+                  console.log(`Keeping completed data for ${existing.name}, merging stats only`);
+                  matches[existingIndex].homeStats = { ...existing.homeStats, ...matchData.homeStats };
+                  matches[existingIndex].awayStats = { ...existing.awayStats, ...matchData.awayStats };
+                } else {
+                  // Today's data is newer (live or updated) - use it
+                  matches[existingIndex] = matchData;
+                }
+              } else {
+                matches.push(matchData);
+              }
             }
           }
         }
@@ -1373,16 +1461,30 @@
         { key: 'foulsCommitted', label: 'Fouls' }
       ];
       
+      // Check if any stats are available (not all zeros)
+      const hasStats = Object.keys(homeStats).length > 0 && 
+                       Object.values(homeStats).some(v => v && v !== '0' && v !== '0%');
+      
       let statsHtml = '';
-      for (const stat of statsToShow) {
-        const homeVal = homeStats[stat.key] || '0';
-        const awayVal = awayStats[stat.key] || '0';
-        statsHtml += `
-          <div class="live-stat-row">
-            <div class="live-stat-home">${homeVal}${stat.suffix || ''}</div>
-            <div class="live-stat-label">${stat.label}</div>
-            <div class="live-stat-away">${awayVal}${stat.suffix || ''}</div>
-          </div>`;
+      if (hasStats) {
+        for (const stat of statsToShow) {
+          const homeVal = homeStats[stat.key] || '0';
+          const awayVal = awayStats[stat.key] || '0';
+          statsHtml += `
+            <div class="live-stat-row">
+              <div class="live-stat-home">${homeVal}${stat.suffix || ''}</div>
+              <div class="live-stat-label">${stat.label}</div>
+              <div class="live-stat-away">${awayVal}${stat.suffix || ''}</div>
+            </div>`;
+        }
+      } else {
+        // No detailed stats available - show message for completed matches
+        if (matchToShow.status === 'STATUS_FINAL' || matchToShow.status === 'STATUS_FULL_TIME' ||
+            matchToShow.status === 'STATUS_FINAL_PEN' || matchToShow.status === 'STATUS_FINAL_AET') {
+          statsHtml = '<div style="text-align: center; color: #888; font-size: 0.85rem; padding: 1rem;">Match statistics not available from ESPN for this match</div>';
+        } else {
+          statsHtml = '<div style="text-align: center; color: #888; font-size: 0.85rem; padding: 1rem;">Statistics will appear when the match starts</div>';
+        }
       }
       statsGrid.innerHTML = statsHtml;
     }
@@ -1397,9 +1499,13 @@
                        espnMatch.status === 'STATUS_HALFTIME' ||
                        espnMatch.status === 'STATUS_FIRST_HALF' ||
                        espnMatch.status === 'STATUS_SECOND_HALF';
-        const isCompleted = espnMatch.status === 'STATUS_FINAL' || espnMatch.status === 'STATUS_FULL_TIME';
+        const isCompleted = espnMatch.status === 'STATUS_FINAL' || 
+                           espnMatch.status === 'STATUS_FULL_TIME' ||
+                           espnMatch.status === 'STATUS_FINAL_PEN' ||
+                           espnMatch.status === 'STATUS_FINAL_AET';
         
-        console.log('ESPN Match:', espnMatch.name, '| Status:', espnMatch.status, '| isLive:', isLive, '| Score:', espnMatch.homeScore + '-' + espnMatch.awayScore);
+        console.log('ESPN Match:', espnMatch.name, '| Status:', espnMatch.status, '| isLive:', isLive, '| Score:', espnMatch.homeScore + '-' + espnMatch.awayScore, 
+          espnMatch.homePenalties ? `(PKs: ${espnMatch.homePenalties}-${espnMatch.awayPenalties})` : '');
         
         if (!isLive && !isCompleted) continue; // Skip scheduled matches
         
@@ -1425,16 +1531,100 @@
               localMatch.homeScore = espnMatch.homeScore;
               localMatch.awayScore = espnMatch.awayScore;
               
+              // Update penalty shootout scores if present
+              if (espnMatch.homePenalties !== undefined) {
+                localMatch.homePenalties = espnMatch.homePenalties;
+                localMatch.awayPenalties = espnMatch.awayPenalties;
+              }
+              
               if (isLive) {
                 console.log(`ESPN LIVE: ${localMatch.homeTeam.name} vs ${localMatch.awayTeam.name} = ${espnMatch.homeScore}-${espnMatch.awayScore}`);
                 localMatch.status = 'live';
               } else if (isCompleted && localMatch.status !== 'completed') {
-                console.log(`ESPN Update: ${localMatch.homeTeam.name} vs ${localMatch.awayTeam.name} = ${espnMatch.homeScore}-${espnMatch.awayScore}`);
+                console.log(`ESPN Update: ${localMatch.homeTeam.name} vs ${localMatch.awayTeam.name} = ${espnMatch.homeScore}-${espnMatch.awayScore}`, 
+                  espnMatch.homePenalties !== undefined ? `(PKs: ${espnMatch.homePenalties}-${espnMatch.awayPenalties})` : '');
                 localMatch.status = 'completed';
-                localMatch.winner = espnMatch.homeScore > espnMatch.awayScore ? 'home' : 
-                                    espnMatch.awayScore > espnMatch.homeScore ? 'away' : 'draw';
+                // Determine winner - for penalty shootouts, use penalty score
+                if (espnMatch.homePenalties !== undefined && espnMatch.awayPenalties !== undefined) {
+                  localMatch.winner = espnMatch.homePenalties > espnMatch.awayPenalties ? 'home' : 'away';
+                  console.log(`  -> Winner by PKs: ${localMatch.winner === 'home' ? localMatch.homeTeam.name : localMatch.awayTeam.name}`);
+                } else {
+                  localMatch.winner = espnMatch.homeScore > espnMatch.awayScore ? 'home' : 
+                                      espnMatch.awayScore > espnMatch.homeScore ? 'away' : 'draw';
+                }
               }
             }
+          }
+        }
+      }
+      
+      // After merging scores, propagate winners to next rounds
+      propagateWinners(localData);
+    }
+    
+    // Propagate winners from completed matches to next round
+    function propagateWinners(data) {
+      const matches = data.matches;
+      if (!matches) return;
+      
+      // Define bracket progression mapping
+      // R16 winners go to QF matches
+      // r16_1 winner -> qf_1 home, r16_2 winner -> qf_1 away
+      // r16_3 winner -> qf_2 home, r16_4 winner -> qf_2 away
+      // r16_5 winner -> qf_3 home, r16_6 winner -> qf_3 away
+      // r16_7 winner -> qf_4 home, r16_8 winner -> qf_4 away
+      
+      const progressionMap = {
+        // R16 to QF
+        'r16_1': { target: 'qf_1', slot: 'home' },
+        'r16_2': { target: 'qf_1', slot: 'away' },
+        'r16_3': { target: 'qf_2', slot: 'home' },
+        'r16_4': { target: 'qf_2', slot: 'away' },
+        'r16_5': { target: 'qf_3', slot: 'home' },
+        'r16_6': { target: 'qf_3', slot: 'away' },
+        'r16_7': { target: 'qf_4', slot: 'home' },
+        'r16_8': { target: 'qf_4', slot: 'away' },
+        // QF to SF
+        'qf_1': { target: 'sf_1', slot: 'home' },
+        'qf_2': { target: 'sf_1', slot: 'away' },
+        'qf_3': { target: 'sf_2', slot: 'home' },
+        'qf_4': { target: 'sf_2', slot: 'away' },
+        // SF to Final
+        'sf_1': { target: 'final', slot: 'home' },
+        'sf_2': { target: 'final', slot: 'away' }
+      };
+      
+      // Helper to find match by ID
+      function findMatch(matchId) {
+        for (const [round, matchList] of Object.entries(matches)) {
+          const match = matchList.find(m => m.id === matchId);
+          if (match) return match;
+        }
+        return null;
+      }
+      
+      // Process each progression
+      for (const [sourceId, prog] of Object.entries(progressionMap)) {
+        const sourceMatch = findMatch(sourceId);
+        if (!sourceMatch || sourceMatch.status !== 'completed' || !sourceMatch.winner) continue;
+        
+        const targetMatch = findMatch(prog.target);
+        if (!targetMatch) continue;
+        
+        // Get the winning team
+        const winningTeam = sourceMatch.winner === 'home' ? sourceMatch.homeTeam : sourceMatch.awayTeam;
+        if (!winningTeam) continue;
+        
+        // Set the team in the target match
+        if (prog.slot === 'home') {
+          if (!targetMatch.homeTeam || targetMatch.homeTeam.code !== winningTeam.code) {
+            targetMatch.homeTeam = { ...winningTeam };
+            console.log(`Bracket: ${winningTeam.name} advances to ${prog.target} (home)`);
+          }
+        } else {
+          if (!targetMatch.awayTeam || targetMatch.awayTeam.code !== winningTeam.code) {
+            targetMatch.awayTeam = { ...winningTeam };
+            console.log(`Bracket: ${winningTeam.name} advances to ${prog.target} (away)`);
           }
         }
       }
@@ -1562,9 +1752,12 @@
       const shootoutsEl = document.getElementById('penalty-shootouts');
       if (shootoutsEl) shootoutsEl.textContent = penaltyShootouts;
 
-      // Also update discipline summary shootouts
+      // Also update discipline summary shootouts AND penalty kicks panel shootouts
       const disciplineShootoutsEl = document.getElementById('discipline-shootouts');
       if (disciplineShootoutsEl) disciplineShootoutsEl.textContent = penaltyShootouts;
+      
+      const shootoutsTotalEl = document.getElementById('shootouts-total');
+      if (shootoutsTotalEl) shootoutsTotalEl.textContent = penaltyShootouts;
 
       // Store calculated stats globally for renderDynamicTexts to use
       window.matchStats = {
@@ -1744,6 +1937,11 @@
       // Merge live data with local data (live takes priority)
       const data = localData || {};
       if (liveData) {
+        // Pass through the knockout goals from details (critical for accurate goal counts)
+        if (liveData.knockoutGoalsFromDetails) {
+          data.knockoutGoalsFromDetails = liveData.knockoutGoalsFromDetails;
+          console.log('ESPN knockout goals from details passed through:', Object.keys(liveData.knockoutGoalsFromDetails).length, 'players');
+        }
         if (liveData.goldenBoot && liveData.goldenBoot.length > 0) {
           // Preserve club info from local data
           for (const player of liveData.goldenBoot) {
@@ -2090,8 +2288,9 @@
           const data = await response.json();
           console.log('ESPN Scoreboard data loaded:', data.events?.length || 0, 'matches');
           
-          const playerGoals = {};  // Track goals by player name
-          const playerAssists = {}; // Track assists by player name
+          const playerGoals = {};  // Track goals by player name from leaders
+          const playerAssists = {}; // Track assists by player name from leaders
+          const knockoutGoals = {}; // Track knockout goals from match details (more accurate)
           
           // Process each match event
           for (const event of (data.events || [])) {
@@ -2106,7 +2305,16 @@
               date: event.date
             };
             
-            // Process each team's leaders - this contains TOURNAMENT TOTALS!
+            // Build team lookup for details processing
+            const teamLookup = {};
+            for (const competitor of (competition.competitors || [])) {
+              teamLookup[competitor.team?.id] = {
+                name: ESPN_TO_NAME[competitor.team?.displayName] || competitor.team?.displayName || 'Unknown',
+                abbr: competitor.team?.abbreviation || ''
+              };
+            }
+            
+            // Process each team's leaders - this contains TOURNAMENT TOTALS (only on scheduled matches)
             for (const competitor of (competition.competitors || [])) {
               const teamName = competitor.team?.displayName || competitor.team?.name || 'Unknown';
               const teamAbbr = competitor.team?.abbreviation || '';
@@ -2164,10 +2372,61 @@
               };
             }
             
+            // Count knockout goals from competition.details (match events)
+            // This is more accurate than leaders array which may not be updated yet
+            const seasonType = event.season?.type || 0;
+            const seasonSlug = event.season?.slug || '';
+            const eventName = (event.name || '').toLowerCase();
+            // Knockout = R32 (13801), R16 (13800), QF (13799), SF (13798), Final (13803)
+            // Group stage is 13802, so we can't use >= comparison
+            // Also check event name for round indicators (fallback when season.type is wrong)
+            const isKnockoutByType = seasonType === 13801 || seasonType === 13800 || 
+                             seasonType === 13799 || seasonType === 13798 || seasonType === 13803;
+            const isKnockoutBySlug = seasonSlug.includes('round-of') || 
+                             seasonSlug.includes('quarterfinal') ||
+                             seasonSlug.includes('semifinal') ||
+                             (seasonSlug === 'final' && !seasonSlug.includes('semifinal'));
+            // Check event name for knockout patterns (e.g., "Round of 32", "Round of 16", "Quarterfinal")
+            const isKnockoutByName = eventName.includes('round of') ||
+                             eventName.includes('quarterfinal') ||
+                             eventName.includes('semifinal') ||
+                             (eventName.includes('final') && !eventName.includes('semifinal') && !eventName.includes('group'));
+            const isKnockout = isKnockoutByType || isKnockoutBySlug || isKnockoutByName;
+            const matchStatus = competition.status?.type?.name;
+            const isCompletedOrLive = matchStatus === 'STATUS_FULL_TIME' || matchStatus === 'STATUS_FINAL' ||
+                                      matchStatus === 'STATUS_FINAL_AET' || matchStatus === 'STATUS_FINAL_PEN' ||
+                                      matchStatus === 'STATUS_FIRST_HALF' || matchStatus === 'STATUS_SECOND_HALF' || 
+                                      matchStatus === 'STATUS_HALFTIME' || matchStatus === 'STATUS_IN_PROGRESS';
+            
+            if (isKnockout && isCompletedOrLive) {
+              console.log('Processing knockout:', event.name, '| Type:', seasonType, '| Status:', matchStatus, '| Details:', competition.details?.length || 0);
+              for (const detail of (competition.details || [])) {
+                if (detail.scoringPlay && detail.athletesInvolved?.length > 0 && !detail.ownGoal && !detail.shootout) {
+                  const scorer = detail.athletesInvolved[0];
+                  const playerName = scorer.displayName || scorer.fullName;
+                  const teamInfo = teamLookup[detail.team?.id] || { name: 'Unknown', abbr: '' };
+                  
+                  if (!knockoutGoals[playerName]) {
+                    knockoutGoals[playerName] = {
+                      name: playerName,
+                      country: teamInfo.name,
+                      countryCode: teamInfo.abbr,
+                      goals: 0
+                    };
+                  }
+                  knockoutGoals[playerName].goals += 1;
+                }
+              }
+            }
+            
             if (matchInfo.home && matchInfo.away) {
               result.matchScores.push(matchInfo);
             }
           }
+          
+          // Store knockout goals from details for accurate counting
+          result.knockoutGoalsFromDetails = knockoutGoals;
+          console.log('ESPN knockout goals from details:', knockoutGoals);
           
           // Convert to arrays
           result.goldenBoot = Object.values(playerGoals).filter(p => p.goals > 0);
@@ -2287,7 +2546,52 @@
         }
       }
       
+      // 4. Use ESPN knockout goals from details (most accurate for recently completed matches)
+      // This catches goals that aren't yet reflected in leaders array
+      const knockoutGoals = data.knockoutGoalsFromDetails || {};
+      console.log('Knockout goals from ESPN details:', Object.keys(knockoutGoals).length, 'players');
+      console.log('Knockout goals detail:', JSON.stringify(knockoutGoals));
+      for (const [playerName, goalData] of Object.entries(knockoutGoals)) {
+        const groupGoals = groupPlayerStats[playerName]?.goals || 0;
+        const totalFromDetails = groupGoals + goalData.goals;
+        
+        if (playerStats[playerName]) {
+          // Use the higher of: ESPN leaders total OR (group stage + knockout details)
+          if (totalFromDetails > playerStats[playerName].goals) {
+            console.log(`Updating ${playerName}: ${playerStats[playerName].goals} -> ${totalFromDetails} (group: ${groupGoals} + knockout details: ${goalData.goals})`);
+            playerStats[playerName].goals = totalFromDetails;
+          }
+          // Also update played count if knockout goals detected
+          // Each knockout match a player scored in = +1 to their group stage played (3)
+          // ESPN details give total knockout goals but not matches, so estimate:
+          // At minimum, player was in 1 match if they have knockout goals
+          const groupPlayed = groupPlayerStats[playerName]?.played || 3;
+          const knockoutMatches = Math.max(1, Math.ceil(goalData.goals / 2)); // rough estimate
+          const estimatedPlayed = groupPlayed + knockoutMatches;
+          if (estimatedPlayed > playerStats[playerName].played) {
+            playerStats[playerName].played = estimatedPlayed;
+          }
+        } else {
+          // New player from knockout only
+          playerStats[playerName] = {
+            name: playerName,
+            country: goalData.country,
+            countryCode: goalData.countryCode,
+            flag: goalData.countryCode,
+            club: '',
+            goals: goalData.goals,
+            assists: 0,
+            played: null
+          };
+        }
+      }
+      
       let goldenBoot = Object.values(playerStats).filter(p => p.goals > 0);
+      
+      // Debug: Log Messi's final stats
+      if (playerStats['Lionel Messi']) {
+        console.log('MESSI FINAL STATS:', JSON.stringify(playerStats['Lionel Messi']));
+      }
 
       // Sort by goals (desc), then assists (desc) as tiebreaker
       const sorted = [...goldenBoot].sort((a, b) => {
@@ -2472,7 +2776,13 @@
       let knockoutPenalties = 0;
       let shootouts = 0;
       
-      if (globalMatchData?.matches) {
+      // Use window.matchStats if available (calculated in renderMatchStats with ESPN data)
+      if (window.matchStats) {
+        knockoutPenalties = (window.matchStats.penalties || 0) - groupPenalties;
+        if (knockoutPenalties < 0) knockoutPenalties = window.matchStats.penalties || 0;
+        shootouts = window.matchStats.shootouts || 0;
+      } else if (globalMatchData?.matches) {
+        // Fallback to direct calculation
         for (const [round, matchList] of Object.entries(globalMatchData.matches)) {
           for (const m of matchList) {
             if (m.status === 'completed') {
