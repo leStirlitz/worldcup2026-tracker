@@ -1160,7 +1160,8 @@
     // Load match data and render tables
     async function loadMatchData() {
       try {
-        const response = await fetch('data/matches.json');
+        // Add cache-busting timestamp to ensure fresh data
+        const response = await fetch('data/matches.json?t=' + Date.now());
         const data = await response.json();
         
         // Try to fetch live match data from ESPN scoreboard
@@ -1380,7 +1381,8 @@
       // Priority 2: Most recently completed match (by date, descending)
       if (!matchToShow) {
         const completedMatches = espnMatches.filter(m => 
-          m.status === 'STATUS_FINAL' || m.status === 'STATUS_FULL_TIME'
+          m.status === 'STATUS_FINAL' || m.status === 'STATUS_FULL_TIME' ||
+          m.status === 'STATUS_FINAL_AET' || m.status === 'STATUS_FINAL_PEN'
         );
         // Sort by date descending (most recent first)
         completedMatches.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -1500,18 +1502,8 @@
     }
 
     // Merge ESPN live data into local matches.json structure
+    // IMPORTANT: Only updates LIVE matches from ESPN, preserves completed match data from local
     function mergeESPNMatchData(localData, espnMatches) {
-      const teamMapping = localData.espnTeamMapping || {};
-      
-      // First pass: Build a map of ESPN matches by round
-      const espnByRound = {
-        r32: [],  // 13801
-        r16: [],  // 13800
-        qf: [],   // 13799
-        sf: [],   // 13798
-        final: [] // 13803
-      };
-      
       // Map ESPN season types to our round names
       const seasonTypeToRound = {
         13801: 'r32',
@@ -1521,138 +1513,69 @@
         13803: 'final'
       };
       
-      // Country code to flag emoji mapping
-      const codeToFlag = {
-        'ARG': '🇦🇷', 'AUS': '🇦🇺', 'AUT': '🇦🇹', 'BEL': '🇧🇪', 'BIH': '🇧🇦',
-        'BRA': '🇧🇷', 'CAN': '🇨🇦', 'COL': '🇨🇴', 'CIV': '🇨🇮', 'CRO': '🇭🇷',
-        'COD': '🇨🇩', 'CPV': '🇨🇻', 'ECU': '🇪🇨', 'EGY': '🇪🇬', 'ENG': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
-        'ESP': '🇪🇸', 'FRA': '🇫🇷', 'GER': '🇩🇪', 'GHA': '🇬🇭', 'JPN': '🇯🇵',
-        'MAR': '🇲🇦', 'MEX': '🇲🇽', 'NED': '🇳🇱', 'NOR': '🇳🇴', 'PAR': '🇵🇾',
-        'POR': '🇵🇹', 'RSA': '🇿🇦', 'SEN': '🇸🇳', 'SUI': '🇨🇭', 'SWE': '🇸🇪',
-        'USA': '🇺🇸', 'ALG': '🇩🇿'
-      };
-      
+      // Group ESPN matches by round
+      const espnByRound = { r32: [], r16: [], qf: [], sf: [], final: [] };
       for (const espnMatch of espnMatches) {
-        const seasonType = espnMatch.seasonType || 0;
-        const roundName = seasonTypeToRound[seasonType];
+        const roundName = seasonTypeToRound[espnMatch.seasonType];
         if (roundName) {
           espnByRound[roundName].push(espnMatch);
         }
       }
       
-      // Sort ESPN matches by date within each round
-      for (const round of Object.keys(espnByRound)) {
-        espnByRound[round].sort((a, b) => new Date(a.date) - new Date(b.date));
-      }
-      
-      // Second pass: Update or create matches in local data
+      // For each round, match ESPN data to local matches by team codes
       for (const [roundName, espnRoundMatches] of Object.entries(espnByRound)) {
-        if (!localData.matches[roundName]) {
-          localData.matches[roundName] = [];
-        }
+        const localRound = localData.matches[roundName];
+        if (!localRound) continue;
         
         for (const espnMatch of espnRoundMatches) {
-          const isLive = espnMatch.status === 'STATUS_IN_PROGRESS' || 
-                         espnMatch.status === 'STATUS_HALFTIME' ||
-                         espnMatch.status === 'STATUS_FIRST_HALF' ||
-                         espnMatch.status === 'STATUS_SECOND_HALF';
-          const isCompleted = espnMatch.status === 'STATUS_FINAL' || 
-                             espnMatch.status === 'STATUS_FULL_TIME' ||
-                             espnMatch.status === 'STATUS_FINAL_PEN' ||
-                             espnMatch.status === 'STATUS_FINAL_AET';
-          const isScheduled = espnMatch.status === 'STATUS_SCHEDULED';
+          // Skip if ESPN has placeholder teams
+          if (!espnMatch.homeCode || !espnMatch.awayCode) continue;
+          if (espnMatch.homeCode.includes(' ') || espnMatch.awayCode.includes(' ')) continue;
           
-          // Try to find existing local match by team codes first (most reliable)
+          // Find matching local match by team codes (both must match)
           let localMatch = null;
-          for (const lm of localData.matches[roundName]) {
-            if (lm.homeTeam && lm.awayTeam &&
-                lm.homeTeam.code === espnMatch.homeCode && 
-                lm.awayTeam.code === espnMatch.awayCode) {
+          let flipped = false;
+          
+          for (const lm of localRound) {
+            if (!lm.homeTeam?.code || !lm.awayTeam?.code) continue;
+            
+            // Same order
+            if (lm.homeTeam.code === espnMatch.homeCode && lm.awayTeam.code === espnMatch.awayCode) {
               localMatch = lm;
+              flipped = false;
+              break;
+            }
+            // Flipped order
+            if (lm.homeTeam.code === espnMatch.awayCode && lm.awayTeam.code === espnMatch.homeCode) {
+              localMatch = lm;
+              flipped = true;
               break;
             }
           }
           
-          // If not found by teams, try by ESPN ID
-          if (!localMatch) {
-            localMatch = localData.matches[roundName].find(m => m.espnId === espnMatch.id);
+          if (!localMatch) continue;
+          
+          // CRITICAL: Skip if local match already has completed status with scores
+          // This preserves manually verified data from matches.json
+          if (localMatch.status === 'completed' && localMatch.homeScore !== undefined) {
+            console.log(`Keeping local data for ${localMatch.id}: ${localMatch.homeTeam.name} ${localMatch.homeScore}-${localMatch.awayScore} ${localMatch.awayTeam.name}`);
+            continue;
           }
           
-          // If not found, try to find an empty slot (match without teams)
-          if (!localMatch) {
-            localMatch = localData.matches[roundName].find(m => !m.homeTeam || !m.awayTeam);
-          }
+          // Only update LIVE matches from ESPN
+          const isLive = ['STATUS_IN_PROGRESS', 'STATUS_HALFTIME', 'STATUS_FIRST_HALF', 'STATUS_SECOND_HALF'].includes(espnMatch.status);
           
-          // Create new match if doesn't exist and round has room
-          if (!localMatch) {
-            const nextIndex = localData.matches[roundName].length + 1;
-            const matchId = roundName === 'final' ? 'final' : `${roundName}_${nextIndex}`;
-            localMatch = { id: matchId };
-            localData.matches[roundName].push(localMatch);
-          }
-          
-          // Store ESPN ID for future matching
-          localMatch.espnId = espnMatch.id;
-          
-          // Check if ESPN has placeholder teams (like "Quarterfinal 2 Winner", "QFW3", etc.)
-          const isPlaceholderHome = !espnMatch.homeCode || espnMatch.homeCode.startsWith('QF') || 
-                                    espnMatch.homeCode.startsWith('SF') || espnMatch.homeCode === 'QW4';
-          const isPlaceholderAway = !espnMatch.awayCode || espnMatch.awayCode.startsWith('QF') || 
-                                    espnMatch.awayCode.startsWith('SF') || espnMatch.awayCode === 'QW4';
-          
-          // Only update teams from ESPN if they're real teams (not placeholders)
-          if (!isPlaceholderHome) {
-            localMatch.homeTeam = {
-              code: espnMatch.homeCode,
-              name: espnMatch.homeTeam,
-              flag: codeToFlag[espnMatch.homeCode] || '🏳️'
-            };
-          }
-          if (!isPlaceholderAway) {
-            localMatch.awayTeam = {
-              code: espnMatch.awayCode,
-              name: espnMatch.awayTeam,
-              flag: codeToFlag[espnMatch.awayCode] || '🏳️'
-            };
-          }
-          
-          // Update date/venue
-          localMatch.date = espnMatch.date?.split('T')[0];
-          localMatch.venue = espnMatch.venue;
-          
-          // Update scores for live/completed matches
-          if (isLive || isCompleted) {
-            localMatch.homeScore = espnMatch.homeScore;
-            localMatch.awayScore = espnMatch.awayScore;
-            
-            if (espnMatch.homePenalties !== undefined) {
-              localMatch.homePenalties = espnMatch.homePenalties;
-              localMatch.awayPenalties = espnMatch.awayPenalties;
-            }
-          }
-          
-          // Update status
           if (isLive) {
+            // Apply scores (flip if needed)
+            localMatch.homeScore = flipped ? espnMatch.awayScore : espnMatch.homeScore;
+            localMatch.awayScore = flipped ? espnMatch.homeScore : espnMatch.awayScore;
             localMatch.status = 'live';
-            console.log(`ESPN LIVE: ${localMatch.homeTeam.name} vs ${localMatch.awayTeam.name} = ${espnMatch.homeScore}-${espnMatch.awayScore}`);
-          } else if (isCompleted) {
-            localMatch.status = 'completed';
-            // Determine winner
-            if (espnMatch.homePenalties !== undefined && espnMatch.awayPenalties !== undefined) {
-              localMatch.winner = espnMatch.homePenalties > espnMatch.awayPenalties ? 'home' : 'away';
-            } else {
-              localMatch.winner = espnMatch.homeScore > espnMatch.awayScore ? 'home' : 
-                                  espnMatch.awayScore > espnMatch.homeScore ? 'away' : 'draw';
-            }
-            console.log(`ESPN Complete: ${localMatch.homeTeam.name} vs ${localMatch.awayTeam.name} = ${espnMatch.homeScore}-${espnMatch.awayScore}`, 
-              localMatch.homePenalties ? `(PKs: ${localMatch.homePenalties}-${localMatch.awayPenalties})` : '');
-          } else if (isScheduled && localMatch.status !== 'completed') {
-            localMatch.status = 'scheduled';
+            console.log(`LIVE: ${localMatch.id}: ${localMatch.homeTeam.name} ${localMatch.homeScore}-${localMatch.awayScore} ${localMatch.awayTeam.name}`);
           }
         }
       }
       
-      // Propagate winners to next rounds (for matches ESPN hasn't populated yet)
+      // Propagate winners to next rounds
       propagateWinners(localData);
     }
     
@@ -1705,11 +1628,16 @@
         const targetMatch = findMatch(prog.target);
         if (!targetMatch) continue;
         
+        // CRITICAL: Never overwrite a completed match!
+        if (targetMatch.status === 'completed') {
+          continue;
+        }
+        
         // Get the winning team
         const winningTeam = sourceMatch.winner === 'home' ? sourceMatch.homeTeam : sourceMatch.awayTeam;
         if (!winningTeam) continue;
         
-        // Set the team in the target match
+        // Set the team in the target match (only if not already set correctly)
         if (prog.slot === 'home') {
           if (!targetMatch.homeTeam || targetMatch.homeTeam.code !== winningTeam.code) {
             targetMatch.homeTeam = { ...winningTeam };
