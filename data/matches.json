@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-10T12:00:00+02:00",
+  "lastUpdated": "2026-07-14T20:16:00.390Z",
   "tournament": {
     "name": "FIFA World Cup 2026",
     "stage": "Quarterfinals",
@@ -13,16 +13,37 @@
         "date": "2026-06-28",
         "time": "21:00",
         "venue": "Vancouver",
-        "homeTeam": { "code": "CAN", "name": "Canada", "flag": "🇨🇦" },
-        "awayTeam": { "code": "RSA", "name": "South Africa", "flag": "🇿🇦" },
+        "homeTeam": {
+          "code": "CAN",
+          "name": "Canada",
+          "flag": "🇨🇦"
+        },
+        "awayTeam": {
+          "code": "RSA",
+          "name": "South Africa",
+          "flag": "🇿🇦"
+        },
         "homeScore": 1,
         "awayScore": 0,
         "status": "completed",
         "winner": "home",
-        "referee": { "name": "Slavko Vinčić", "country": "Slovenia", "flag": "SI" },
-        "discipline": { "yellowCards": 3, "redCards": 0, "penalties": 0 },
+        "referee": {
+          "name": "Slavko Vinčić",
+          "country": "Slovenia",
+          "flag": "SI"
+        },
+        "discipline": {
+          "yellowCards": 3,
+          "redCards": 0,
+          "penalties": 0
+        },
         "scorers": [
-          { "name": "Jonathan David", "team": "CAN", "goals": 1, "assists": 0 }
+          {
+            "name": "Jonathan David",
+            "team": "CAN",
+            "goals": 1,
+            "assists": 0
+          }
         ]
       },
       {
@@ -30,8 +51,16 @@
         "date": "2026-06-29",
         "time": "18:00",
         "venue": "Guadalajara",
-        "homeTeam": { "code": "NED", "name": "Netherlands", "flag": "🇳🇱" },
-        "awayTeam": { "code": "MAR", "name": "Morocco", "flag": "🇲🇦" },
+        "homeTeam": {
+          "code": "NED",
+          "name": "Netherlands",
+          "flag": "🇳🇱"
+        },
+        "awayTeam": {
+          "code": "MAR",
+          "name": "Morocco",
+          "flag": "🇲🇦"
+        },
         "homeScore": 1,
         "awayScore": 1,
         "homePenalties": 2,
@@ -39,11 +68,29 @@
         "status": "completed",
         "winner": "away",
         "notes": "PKs",
-        "referee": { "name": "Jesús Valenzuela", "country": "Venezuela", "flag": "VE" },
-        "discipline": { "yellowCards": 4, "redCards": 0, "penalties": 0 },
+        "referee": {
+          "name": "Jesús Valenzuela",
+          "country": "Venezuela",
+          "flag": "VE"
+        },
+        "discipline": {
+          "yellowCards": 4,
+          "redCards": 0,
+          "penalties": 0
+        },
         "scorers": [
-          { "name": "Cody Gakpo", "team": "NED", "goals": 1, "assists": 0 },
-          { "name": "Youssef En-Nesyri", "team": "MAR", "goals": 1, "assists": 0 }
+          {
+            "name": "Cody Gakpo",
+            "team": "NED",
+            "goals": 1,
+            "assists": 0
+          },
+          {
+            "name": "Youssef En-Nesyri",
+            "team": "MAR",
+            "goals": 1,
+            "assists": 0
+          }
         ]
       },
       {
@@ -51,8 +98,16 @@
         "date": "2026-06-29",
         "time": "21:00",
         "venue": "Foxborough",
-        "homeTeam": { "code": "GER", "name": "Germany", "flag": "🇩🇪" },
-        "awayTeam": { "code": "PAR", "name": "Paraguay", "flag": "🇵🇾" },
+        "homeTeam": {
+          "code": "GER",
+          "name": "Germany",
+          "flag": "🇩🇪"
+        },
+        "awayTeam": {
+          "code": "PAR",
+          "name": "Paraguay",
+          "flag": "🇵🇾"
+        },
         "homeScore": 1,
         "awayScore": 1,
         "homePenalties": 3,
@@ -60,11 +115,29 @@
         "status": "completed",
         "winner": "away",
         "notes": "PKs",
-        "referee": { "name": "Clément Turpin", "country": "France", "flag": "FR" },
-        "discipline": { "yellowCards": 5, "redCards": 0, "penalties": 0 },
+        "referee": {
+          "name": "Clément Turpin",
+          "country": "France",
+          "flag": "FR"
+        },
+        "discipline": {
+          "yellowCards": 5,
+          "redCards": 0,
+          "penalties": 0
+        },
         "scorers": [
-          { "name": "Deniz Undav", "team": "GER", "goals": 1, "assists": 0 },
-          { "name": "Miguel Almirón", "team": "PAR", "goals": 1, "assists": 0 }
+          {
+            "name": "Deniz Undav",
+            "team": "GER",
+            "goals": 1,
+            "assists": 0
+          },
+          {
+            "name": "Miguel Almirón",
+            "team": "PAR",
+            "goals": 1,
+            "assists": 0
+          }
         ]
       },
       {
@@ -72,17 +145,43 @@
         "date": "2026-06-30",
         "time": "18:00",
         "venue": "East Rutherford",
-        "homeTeam": { "code": "FRA", "name": "France", "flag": "🇫🇷" },
-        "awayTeam": { "code": "SWE", "name": "Sweden", "flag": "🇸🇪" },
+        "homeTeam": {
+          "code": "FRA",
+          "name": "France",
+          "flag": "🇫🇷"
+        },
+        "awayTeam": {
+          "code": "SWE",
+          "name": "Sweden",
+          "flag": "🇸🇪"
+        },
         "homeScore": 3,
         "awayScore": 0,
         "status": "completed",
         "winner": "home",
-        "referee": { "name": "Ismail Elfath", "country": "USA", "flag": "US" },
-        "discipline": { "yellowCards": 2, "redCards": 0, "penalties": 1 },
+        "referee": {
+          "name": "Ismail Elfath",
+          "country": "USA",
+          "flag": "US"
+        },
+        "discipline": {
+          "yellowCards": 2,
+          "redCards": 0,
+          "penalties": 1
+        },
         "scorers": [
-          { "name": "Kylian Mbappé", "team": "FRA", "goals": 2, "assists": 0 },
-          { "name": "Ousmane Dembélé", "team": "FRA", "goals": 1, "assists": 1 }
+          {
+            "name": "Kylian Mbappé",
+            "team": "FRA",
+            "goals": 2,
+            "assists": 0
+          },
+          {
+            "name": "Ousmane Dembélé",
+            "team": "FRA",
+            "goals": 1,
+            "assists": 1
+          }
         ]
       },
       {
@@ -90,18 +189,49 @@
         "date": "2026-06-29",
         "time": "00:00",
         "venue": "Houston",
-        "homeTeam": { "code": "BRA", "name": "Brazil", "flag": "🇧🇷" },
-        "awayTeam": { "code": "JPN", "name": "Japan", "flag": "🇯🇵" },
+        "homeTeam": {
+          "code": "BRA",
+          "name": "Brazil",
+          "flag": "🇧🇷"
+        },
+        "awayTeam": {
+          "code": "JPN",
+          "name": "Japan",
+          "flag": "🇯🇵"
+        },
         "homeScore": 2,
         "awayScore": 1,
         "status": "completed",
         "winner": "home",
-        "referee": { "name": "Ma Ning", "country": "China", "flag": "CN" },
-        "discipline": { "yellowCards": 4, "redCards": 0, "penalties": 1 },
+        "referee": {
+          "name": "Ma Ning",
+          "country": "China",
+          "flag": "CN"
+        },
+        "discipline": {
+          "yellowCards": 4,
+          "redCards": 0,
+          "penalties": 1
+        },
         "scorers": [
-          { "name": "Vinícius Júnior", "team": "BRA", "goals": 1, "assists": 0 },
-          { "name": "Rodrygo", "team": "BRA", "goals": 1, "assists": 0 },
-          { "name": "Takefusa Kubo", "team": "JPN", "goals": 1, "assists": 0 }
+          {
+            "name": "Vinícius Júnior",
+            "team": "BRA",
+            "goals": 1,
+            "assists": 0
+          },
+          {
+            "name": "Rodrygo",
+            "team": "BRA",
+            "goals": 1,
+            "assists": 0
+          },
+          {
+            "name": "Takefusa Kubo",
+            "team": "JPN",
+            "goals": 1,
+            "assists": 0
+          }
         ]
       },
       {
@@ -109,17 +239,43 @@
         "date": "2026-06-30",
         "time": "21:00",
         "venue": "Arlington",
-        "homeTeam": { "code": "NOR", "name": "Norway", "flag": "🇳🇴" },
-        "awayTeam": { "code": "CIV", "name": "Ivory Coast", "flag": "🇨🇮" },
+        "homeTeam": {
+          "code": "NOR",
+          "name": "Norway",
+          "flag": "🇳🇴"
+        },
+        "awayTeam": {
+          "code": "CIV",
+          "name": "Ivory Coast",
+          "flag": "🇨🇮"
+        },
         "homeScore": 2,
         "awayScore": 1,
         "status": "completed",
         "winner": "home",
-        "referee": { "name": "Facundo Tello", "country": "Argentina", "flag": "AR" },
-        "discipline": { "yellowCards": 3, "redCards": 0, "penalties": 0 },
+        "referee": {
+          "name": "Facundo Tello",
+          "country": "Argentina",
+          "flag": "AR"
+        },
+        "discipline": {
+          "yellowCards": 3,
+          "redCards": 0,
+          "penalties": 0
+        },
         "scorers": [
-          { "name": "Erling Haaland", "team": "NOR", "goals": 2, "assists": 0 },
-          { "name": "Sébastien Haller", "team": "CIV", "goals": 1, "assists": 0 }
+          {
+            "name": "Erling Haaland",
+            "team": "NOR",
+            "goals": 2,
+            "assists": 0
+          },
+          {
+            "name": "Sébastien Haller",
+            "team": "CIV",
+            "goals": 1,
+            "assists": 0
+          }
         ]
       },
       {
@@ -127,17 +283,43 @@
         "date": "2026-06-30",
         "time": "00:00",
         "venue": "Mexico City",
-        "homeTeam": { "code": "MEX", "name": "Mexico", "flag": "🇲🇽" },
-        "awayTeam": { "code": "ECU", "name": "Ecuador", "flag": "🇪🇨" },
+        "homeTeam": {
+          "code": "MEX",
+          "name": "Mexico",
+          "flag": "🇲🇽"
+        },
+        "awayTeam": {
+          "code": "ECU",
+          "name": "Ecuador",
+          "flag": "🇪🇨"
+        },
         "homeScore": 2,
         "awayScore": 0,
         "status": "completed",
         "winner": "home",
-        "referee": { "name": "Anthony Taylor", "country": "England", "flag": "ENG" },
-        "discipline": { "yellowCards": 4, "redCards": 0, "penalties": 0 },
+        "referee": {
+          "name": "Anthony Taylor",
+          "country": "England",
+          "flag": "ENG"
+        },
+        "discipline": {
+          "yellowCards": 4,
+          "redCards": 0,
+          "penalties": 0
+        },
         "scorers": [
-          { "name": "Julián Quiñones", "team": "MEX", "goals": 1, "assists": 0 },
-          { "name": "Santiago Giménez", "team": "MEX", "goals": 1, "assists": 0 }
+          {
+            "name": "Julián Quiñones",
+            "team": "MEX",
+            "goals": 1,
+            "assists": 0
+          },
+          {
+            "name": "Santiago Giménez",
+            "team": "MEX",
+            "goals": 1,
+            "assists": 0
+          }
         ]
       },
       {
@@ -145,18 +327,49 @@
         "date": "2026-07-01",
         "time": "21:00",
         "venue": "Atlanta",
-        "homeTeam": { "code": "ENG", "name": "England", "flag": "ENG" },
-        "awayTeam": { "code": "COD", "name": "DR Congo", "flag": "🇨🇩" },
+        "homeTeam": {
+          "code": "ENG",
+          "name": "England",
+          "flag": "ENG"
+        },
+        "awayTeam": {
+          "code": "COD",
+          "name": "DR Congo",
+          "flag": "🇨🇩"
+        },
         "homeScore": 2,
         "awayScore": 1,
         "status": "completed",
         "winner": "home",
-        "referee": { "name": "Jesús Valenzuela", "country": "Venezuela", "flag": "VE" },
-        "discipline": { "yellowCards": 3, "redCards": 0, "penalties": 1 },
+        "referee": {
+          "name": "Jesús Valenzuela",
+          "country": "Venezuela",
+          "flag": "VE"
+        },
+        "discipline": {
+          "yellowCards": 3,
+          "redCards": 0,
+          "penalties": 1
+        },
         "scorers": [
-          { "name": "Harry Kane", "team": "ENG", "goals": 1, "assists": 0 },
-          { "name": "Bukayo Saka", "team": "ENG", "goals": 1, "assists": 0 },
-          { "name": "Cédric Bakambu", "team": "COD", "goals": 1, "assists": 0 }
+          {
+            "name": "Harry Kane",
+            "team": "ENG",
+            "goals": 1,
+            "assists": 0
+          },
+          {
+            "name": "Bukayo Saka",
+            "team": "ENG",
+            "goals": 1,
+            "assists": 0
+          },
+          {
+            "name": "Cédric Bakambu",
+            "team": "COD",
+            "goals": 1,
+            "assists": 0
+          }
         ]
       },
       {
@@ -164,18 +377,49 @@
         "date": "2026-07-02",
         "time": "18:00",
         "venue": "Toronto",
-        "homeTeam": { "code": "POR", "name": "Portugal", "flag": "🇵🇹" },
-        "awayTeam": { "code": "CRO", "name": "Croatia", "flag": "🇭🇷" },
+        "homeTeam": {
+          "code": "POR",
+          "name": "Portugal",
+          "flag": "🇵🇹"
+        },
+        "awayTeam": {
+          "code": "CRO",
+          "name": "Croatia",
+          "flag": "🇭🇷"
+        },
         "homeScore": 2,
         "awayScore": 1,
         "status": "completed",
         "winner": "home",
-        "referee": { "name": "Daniel Siebert", "country": "Germany", "flag": "DE" },
-        "discipline": { "yellowCards": 2, "redCards": 0, "penalties": 0 },
+        "referee": {
+          "name": "Daniel Siebert",
+          "country": "Germany",
+          "flag": "DE"
+        },
+        "discipline": {
+          "yellowCards": 2,
+          "redCards": 0,
+          "penalties": 0
+        },
         "scorers": [
-          { "name": "Cristiano Ronaldo", "team": "POR", "goals": 1, "assists": 0 },
-          { "name": "Rafael Leão", "team": "POR", "goals": 1, "assists": 0 },
-          { "name": "Luka Modrić", "team": "CRO", "goals": 1, "assists": 0 }
+          {
+            "name": "Cristiano Ronaldo",
+            "team": "POR",
+            "goals": 1,
+            "assists": 0
+          },
+          {
+            "name": "Rafael Leão",
+            "team": "POR",
+            "goals": 1,
+            "assists": 0
+          },
+          {
+            "name": "Luka Modrić",
+            "team": "CRO",
+            "goals": 1,
+            "assists": 0
+          }
         ]
       },
       {
@@ -183,17 +427,43 @@
         "date": "2026-07-02",
         "time": "21:00",
         "venue": "Inglewood",
-        "homeTeam": { "code": "ESP", "name": "Spain", "flag": "🇪🇸" },
-        "awayTeam": { "code": "AUT", "name": "Austria", "flag": "🇦🇹" },
+        "homeTeam": {
+          "code": "ESP",
+          "name": "Spain",
+          "flag": "🇪🇸"
+        },
+        "awayTeam": {
+          "code": "AUT",
+          "name": "Austria",
+          "flag": "🇦🇹"
+        },
         "homeScore": 3,
         "awayScore": 0,
         "status": "completed",
         "winner": "home",
-        "referee": { "name": "Slavko Vinčić", "country": "Slovenia", "flag": "SI" },
-        "discipline": { "yellowCards": 3, "redCards": 0, "penalties": 1 },
+        "referee": {
+          "name": "Slavko Vinčić",
+          "country": "Slovenia",
+          "flag": "SI"
+        },
+        "discipline": {
+          "yellowCards": 3,
+          "redCards": 0,
+          "penalties": 1
+        },
         "scorers": [
-          { "name": "Mikel Oyarzabal", "team": "ESP", "goals": 2, "assists": 0 },
-          { "name": "Lamine Yamal", "team": "ESP", "goals": 1, "assists": 1 }
+          {
+            "name": "Mikel Oyarzabal",
+            "team": "ESP",
+            "goals": 2,
+            "assists": 0
+          },
+          {
+            "name": "Lamine Yamal",
+            "team": "ESP",
+            "goals": 1,
+            "assists": 1
+          }
         ]
       },
       {
@@ -201,17 +471,43 @@
         "date": "2026-07-01",
         "time": "00:00",
         "venue": "Santa Clara",
-        "homeTeam": { "code": "USA", "name": "USA", "flag": "🇺🇸" },
-        "awayTeam": { "code": "BIH", "name": "Bosnia", "flag": "🇧🇦" },
+        "homeTeam": {
+          "code": "USA",
+          "name": "USA",
+          "flag": "🇺🇸"
+        },
+        "awayTeam": {
+          "code": "BIH",
+          "name": "Bosnia",
+          "flag": "🇧🇦"
+        },
         "homeScore": 2,
         "awayScore": 0,
         "status": "completed",
         "winner": "home",
-        "referee": { "name": "Clément Turpin", "country": "France", "flag": "FR" },
-        "discipline": { "yellowCards": 4, "redCards": 1, "penalties": 0 },
+        "referee": {
+          "name": "Clément Turpin",
+          "country": "France",
+          "flag": "FR"
+        },
+        "discipline": {
+          "yellowCards": 4,
+          "redCards": 1,
+          "penalties": 0
+        },
         "scorers": [
-          { "name": "Folarin Balogun", "team": "USA", "goals": 1, "assists": 0 },
-          { "name": "Christian Pulisic", "team": "USA", "goals": 1, "assists": 0 }
+          {
+            "name": "Folarin Balogun",
+            "team": "USA",
+            "goals": 1,
+            "assists": 0
+          },
+          {
+            "name": "Christian Pulisic",
+            "team": "USA",
+            "goals": 1,
+            "assists": 0
+          }
         ]
       },
       {
@@ -219,19 +515,50 @@
         "date": "2026-07-01",
         "time": "03:00",
         "venue": "Seattle",
-        "homeTeam": { "code": "BEL", "name": "Belgium", "flag": "🇧🇪" },
-        "awayTeam": { "code": "SEN", "name": "Senegal", "flag": "🇸🇳" },
+        "homeTeam": {
+          "code": "BEL",
+          "name": "Belgium",
+          "flag": "🇧🇪"
+        },
+        "awayTeam": {
+          "code": "SEN",
+          "name": "Senegal",
+          "flag": "🇸🇳"
+        },
         "homeScore": 3,
         "awayScore": 2,
         "status": "completed",
         "winner": "home",
         "notes": "AET",
-        "referee": { "name": "Ma Ning", "country": "China", "flag": "CN" },
-        "discipline": { "yellowCards": 5, "redCards": 0, "penalties": 1 },
+        "referee": {
+          "name": "Ma Ning",
+          "country": "China",
+          "flag": "CN"
+        },
+        "discipline": {
+          "yellowCards": 5,
+          "redCards": 0,
+          "penalties": 1
+        },
         "scorers": [
-          { "name": "Romelu Lukaku", "team": "BEL", "goals": 2, "assists": 0 },
-          { "name": "Kevin De Bruyne", "team": "BEL", "goals": 1, "assists": 1 },
-          { "name": "Ismaïla Sarr", "team": "SEN", "goals": 2, "assists": 0 }
+          {
+            "name": "Romelu Lukaku",
+            "team": "BEL",
+            "goals": 2,
+            "assists": 0
+          },
+          {
+            "name": "Kevin De Bruyne",
+            "team": "BEL",
+            "goals": 1,
+            "assists": 1
+          },
+          {
+            "name": "Ismaïla Sarr",
+            "team": "SEN",
+            "goals": 2,
+            "assists": 0
+          }
         ]
       },
       {
@@ -239,8 +566,16 @@
         "date": "2026-07-03",
         "time": "20:00",
         "venue": "Arlington",
-        "homeTeam": { "code": "AUS", "name": "Australia", "flag": "🇦🇺" },
-        "awayTeam": { "code": "EGY", "name": "Egypt", "flag": "🇪🇬" },
+        "homeTeam": {
+          "code": "AUS",
+          "name": "Australia",
+          "flag": "🇦🇺"
+        },
+        "awayTeam": {
+          "code": "EGY",
+          "name": "Egypt",
+          "flag": "🇪🇬"
+        },
         "homeScore": 1,
         "awayScore": 1,
         "homePenalties": 3,
@@ -248,11 +583,29 @@
         "status": "completed",
         "winner": "away",
         "notes": "PKs",
-        "referee": { "name": "Wilton Sampaio", "country": "Brazil", "flag": "BR" },
-        "discipline": { "yellowCards": 4, "redCards": 0, "penalties": 0 },
+        "referee": {
+          "name": "Wilton Sampaio",
+          "country": "Brazil",
+          "flag": "BR"
+        },
+        "discipline": {
+          "yellowCards": 4,
+          "redCards": 0,
+          "penalties": 0
+        },
         "scorers": [
-          { "name": "Mitchell Duke", "team": "AUS", "goals": 1, "assists": 0 },
-          { "name": "Mohamed Salah", "team": "EGY", "goals": 1, "assists": 0 }
+          {
+            "name": "Mitchell Duke",
+            "team": "AUS",
+            "goals": 1,
+            "assists": 0
+          },
+          {
+            "name": "Mohamed Salah",
+            "team": "EGY",
+            "goals": 1,
+            "assists": 0
+          }
         ]
       },
       {
@@ -260,20 +613,56 @@
         "date": "2026-07-04",
         "time": "00:00",
         "venue": "Miami",
-        "homeTeam": { "code": "ARG", "name": "Argentina", "flag": "🇦🇷" },
-        "awayTeam": { "code": "CPV", "name": "Cape Verde", "flag": "🇨🇻" },
+        "homeTeam": {
+          "code": "ARG",
+          "name": "Argentina",
+          "flag": "🇦🇷"
+        },
+        "awayTeam": {
+          "code": "CPV",
+          "name": "Cape Verde",
+          "flag": "🇨🇻"
+        },
         "homeScore": 3,
         "awayScore": 2,
         "status": "completed",
         "winner": "home",
         "notes": "AET",
-        "referee": { "name": "Ismail Elfath", "country": "USA", "flag": "US" },
-        "discipline": { "yellowCards": 5, "redCards": 0, "penalties": 0 },
+        "referee": {
+          "name": "Ismail Elfath",
+          "country": "USA",
+          "flag": "US"
+        },
+        "discipline": {
+          "yellowCards": 5,
+          "redCards": 0,
+          "penalties": 0
+        },
         "scorers": [
-          { "name": "Lionel Messi", "team": "ARG", "goals": 2, "assists": 0 },
-          { "name": "Julián Álvarez", "team": "ARG", "goals": 1, "assists": 1 },
-          { "name": "Garry Rodrigues", "team": "CPV", "goals": 1, "assists": 0 },
-          { "name": "Ryan Mendes", "team": "CPV", "goals": 1, "assists": 0 }
+          {
+            "name": "Lionel Messi",
+            "team": "ARG",
+            "goals": 2,
+            "assists": 0
+          },
+          {
+            "name": "Julián Álvarez",
+            "team": "ARG",
+            "goals": 1,
+            "assists": 1
+          },
+          {
+            "name": "Garry Rodrigues",
+            "team": "CPV",
+            "goals": 1,
+            "assists": 0
+          },
+          {
+            "name": "Ryan Mendes",
+            "team": "CPV",
+            "goals": 1,
+            "assists": 0
+          }
         ]
       },
       {
@@ -281,17 +670,43 @@
         "date": "2026-07-02",
         "time": "00:00",
         "venue": "Vancouver",
-        "homeTeam": { "code": "SUI", "name": "Switzerland", "flag": "🇨🇭" },
-        "awayTeam": { "code": "ALG", "name": "Algeria", "flag": "🇩🇿" },
+        "homeTeam": {
+          "code": "SUI",
+          "name": "Switzerland",
+          "flag": "🇨🇭"
+        },
+        "awayTeam": {
+          "code": "ALG",
+          "name": "Algeria",
+          "flag": "🇩🇿"
+        },
         "homeScore": 2,
         "awayScore": 0,
         "status": "completed",
         "winner": "home",
-        "referee": { "name": "Facundo Tello", "country": "Argentina", "flag": "AR" },
-        "discipline": { "yellowCards": 3, "redCards": 0, "penalties": 0 },
+        "referee": {
+          "name": "Facundo Tello",
+          "country": "Argentina",
+          "flag": "AR"
+        },
+        "discipline": {
+          "yellowCards": 3,
+          "redCards": 0,
+          "penalties": 0
+        },
         "scorers": [
-          { "name": "Johan Manzambi", "team": "SUI", "goals": 1, "assists": 0 },
-          { "name": "Breel Embolo", "team": "SUI", "goals": 1, "assists": 0 }
+          {
+            "name": "Johan Manzambi",
+            "team": "SUI",
+            "goals": 1,
+            "assists": 0
+          },
+          {
+            "name": "Breel Embolo",
+            "team": "SUI",
+            "goals": 1,
+            "assists": 0
+          }
         ]
       },
       {
@@ -299,16 +714,37 @@
         "date": "2026-07-04",
         "time": "03:30",
         "venue": "Kansas City",
-        "homeTeam": { "code": "COL", "name": "Colombia", "flag": "🇨🇴" },
-        "awayTeam": { "code": "GHA", "name": "Ghana", "flag": "🇬🇭" },
+        "homeTeam": {
+          "code": "COL",
+          "name": "Colombia",
+          "flag": "🇨🇴"
+        },
+        "awayTeam": {
+          "code": "GHA",
+          "name": "Ghana",
+          "flag": "🇬🇭"
+        },
         "homeScore": 1,
         "awayScore": 0,
         "status": "completed",
         "winner": "home",
-        "referee": { "name": "Daniel Siebert", "country": "Germany", "flag": "DE" },
-        "discipline": { "yellowCards": 2, "redCards": 0, "penalties": 0 },
+        "referee": {
+          "name": "Daniel Siebert",
+          "country": "Germany",
+          "flag": "DE"
+        },
+        "discipline": {
+          "yellowCards": 2,
+          "redCards": 0,
+          "penalties": 0
+        },
         "scorers": [
-          { "name": "Luis Díaz", "team": "COL", "goals": 1, "assists": 0 }
+          {
+            "name": "Luis Díaz",
+            "team": "COL",
+            "goals": 1,
+            "assists": 0
+          }
         ]
       }
     ],
@@ -318,18 +754,49 @@
         "date": "2026-07-04",
         "time": "18:00",
         "venue": "Houston",
-        "homeTeam": { "code": "CAN", "name": "Canada", "flag": "🇨🇦" },
-        "awayTeam": { "code": "MAR", "name": "Morocco", "flag": "🇲🇦" },
+        "homeTeam": {
+          "code": "CAN",
+          "name": "Canada",
+          "flag": "🇨🇦"
+        },
+        "awayTeam": {
+          "code": "MAR",
+          "name": "Morocco",
+          "flag": "🇲🇦"
+        },
         "homeScore": 0,
         "awayScore": 3,
         "status": "completed",
         "winner": "away",
-        "referee": { "name": "Anthony Taylor", "country": "England", "flag": "ENG" },
-        "discipline": { "yellowCards": 3, "redCards": 0, "penalties": 0 },
+        "referee": {
+          "name": "Anthony Taylor",
+          "country": "England",
+          "flag": "ENG"
+        },
+        "discipline": {
+          "yellowCards": 3,
+          "redCards": 0,
+          "penalties": 0
+        },
         "scorers": [
-          { "name": "Hakim Ziyech", "team": "MAR", "goals": 1, "assists": 1 },
-          { "name": "Youssef En-Nesyri", "team": "MAR", "goals": 1, "assists": 0 },
-          { "name": "Achraf Hakimi", "team": "MAR", "goals": 1, "assists": 0 }
+          {
+            "name": "Hakim Ziyech",
+            "team": "MAR",
+            "goals": 1,
+            "assists": 1
+          },
+          {
+            "name": "Youssef En-Nesyri",
+            "team": "MAR",
+            "goals": 1,
+            "assists": 0
+          },
+          {
+            "name": "Achraf Hakimi",
+            "team": "MAR",
+            "goals": 1,
+            "assists": 0
+          }
         ]
       },
       {
@@ -337,17 +804,39 @@
         "date": "2026-07-04",
         "time": "21:00",
         "venue": "Philadelphia",
-        "homeTeam": { "code": "PAR", "name": "Paraguay", "flag": "🇵🇾" },
-        "awayTeam": { "code": "FRA", "name": "France", "flag": "🇫🇷" },
+        "homeTeam": {
+          "code": "PAR",
+          "name": "Paraguay",
+          "flag": "🇵🇾"
+        },
+        "awayTeam": {
+          "code": "FRA",
+          "name": "France",
+          "flag": "🇫🇷"
+        },
         "homeScore": 0,
         "awayScore": 1,
         "status": "completed",
         "winner": "away",
         "notes": "Penalty",
-        "referee": { "name": "Ma Ning", "country": "China", "flag": "CN" },
-        "discipline": { "yellowCards": 5, "redCards": 0, "penalties": 1 },
+        "referee": {
+          "name": "Ma Ning",
+          "country": "China",
+          "flag": "CN"
+        },
+        "discipline": {
+          "yellowCards": 5,
+          "redCards": 0,
+          "penalties": 1
+        },
         "scorers": [
-          { "name": "Kylian Mbappé", "team": "FRA", "goals": 1, "assists": 0, "penalty": true }
+          {
+            "name": "Kylian Mbappé",
+            "team": "FRA",
+            "goals": 1,
+            "assists": 0,
+            "penalty": true
+          }
         ]
       },
       {
@@ -355,17 +844,43 @@
         "date": "2026-07-05",
         "time": "22:00",
         "venue": "East Rutherford",
-        "homeTeam": { "code": "BRA", "name": "Brazil", "flag": "🇧🇷" },
-        "awayTeam": { "code": "NOR", "name": "Norway", "flag": "🇳🇴" },
+        "homeTeam": {
+          "code": "BRA",
+          "name": "Brazil",
+          "flag": "🇧🇷"
+        },
+        "awayTeam": {
+          "code": "NOR",
+          "name": "Norway",
+          "flag": "🇳🇴"
+        },
         "homeScore": 1,
         "awayScore": 2,
         "status": "completed",
         "winner": "away",
-        "referee": { "name": "Szymon Marciniak", "country": "Poland", "flag": "PL" },
-        "discipline": { "yellowCards": 3, "redCards": 0, "penalties": 0 },
+        "referee": {
+          "name": "Szymon Marciniak",
+          "country": "Poland",
+          "flag": "PL"
+        },
+        "discipline": {
+          "yellowCards": 3,
+          "redCards": 0,
+          "penalties": 0
+        },
         "scorers": [
-          { "name": "Erling Haaland", "team": "NOR", "goals": 2, "assists": 0 },
-          { "name": "Vinícius Júnior", "team": "BRA", "goals": 1, "assists": 0 }
+          {
+            "name": "Erling Haaland",
+            "team": "NOR",
+            "goals": 2,
+            "assists": 0
+          },
+          {
+            "name": "Vinícius Júnior",
+            "team": "BRA",
+            "goals": 1,
+            "assists": 0
+          }
         ]
       },
       {
@@ -373,19 +888,57 @@
         "date": "2026-07-06",
         "time": "02:00",
         "venue": "Mexico City",
-        "homeTeam": { "code": "MEX", "name": "Mexico", "flag": "🇲🇽" },
-        "awayTeam": { "code": "ENG", "name": "England", "flag": "ENG" },
+        "homeTeam": {
+          "code": "MEX",
+          "name": "Mexico",
+          "flag": "🇲🇽"
+        },
+        "awayTeam": {
+          "code": "ENG",
+          "name": "England",
+          "flag": "ENG"
+        },
         "homeScore": 2,
         "awayScore": 3,
         "status": "completed",
         "winner": "away",
-        "referee": { "name": "Alireza Faghani", "country": "Iran", "flag": "IR" },
-        "discipline": { "yellowCards": 4, "redCards": 1, "penalties": 2 },
+        "referee": {
+          "name": "Alireza Faghani",
+          "country": "Iran",
+          "flag": "IR"
+        },
+        "discipline": {
+          "yellowCards": 4,
+          "redCards": 1,
+          "penalties": 2
+        },
         "scorers": [
-          { "name": "Jude Bellingham", "team": "ENG", "goals": 2, "assists": 0 },
-          { "name": "Harry Kane", "team": "ENG", "goals": 1, "assists": 1, "penalty": true },
-          { "name": "Julián Quiñones", "team": "MEX", "goals": 1, "assists": 0 },
-          { "name": "Raúl Jiménez", "team": "MEX", "goals": 1, "assists": 0, "penalty": true }
+          {
+            "name": "Jude Bellingham",
+            "team": "ENG",
+            "goals": 2,
+            "assists": 0
+          },
+          {
+            "name": "Harry Kane",
+            "team": "ENG",
+            "goals": 1,
+            "assists": 1,
+            "penalty": true
+          },
+          {
+            "name": "Julián Quiñones",
+            "team": "MEX",
+            "goals": 1,
+            "assists": 0
+          },
+          {
+            "name": "Raúl Jiménez",
+            "team": "MEX",
+            "goals": 1,
+            "assists": 0,
+            "penalty": true
+          }
         ]
       },
       {
@@ -393,8 +946,16 @@
         "date": "2026-07-06",
         "time": "21:00",
         "venue": "Arlington",
-        "homeTeam": { "code": "POR", "name": "Portugal", "flag": "🇵🇹" },
-        "awayTeam": { "code": "ESP", "name": "Spain", "flag": "🇪🇸" },
+        "homeTeam": {
+          "code": "POR",
+          "name": "Portugal",
+          "flag": "🇵🇹"
+        },
+        "awayTeam": {
+          "code": "ESP",
+          "name": "Spain",
+          "flag": "🇪🇸"
+        },
         "homeScore": 0,
         "awayScore": 1,
         "status": "completed",
@@ -405,8 +966,16 @@
         "date": "2026-07-07",
         "time": "02:00",
         "venue": "Seattle",
-        "homeTeam": { "code": "USA", "name": "USA", "flag": "🇺🇸" },
-        "awayTeam": { "code": "BEL", "name": "Belgium", "flag": "🇧🇪" },
+        "homeTeam": {
+          "code": "USA",
+          "name": "USA",
+          "flag": "🇺🇸"
+        },
+        "awayTeam": {
+          "code": "BEL",
+          "name": "Belgium",
+          "flag": "🇧🇪"
+        },
         "homeScore": 1,
         "awayScore": 4,
         "status": "completed",
@@ -417,8 +986,16 @@
         "date": "2026-07-07",
         "time": "18:00",
         "venue": "Atlanta",
-        "homeTeam": { "code": "ARG", "name": "Argentina", "flag": "🇦🇷" },
-        "awayTeam": { "code": "EGY", "name": "Egypt", "flag": "🇪🇬" },
+        "homeTeam": {
+          "code": "ARG",
+          "name": "Argentina",
+          "flag": "🇦🇷"
+        },
+        "awayTeam": {
+          "code": "EGY",
+          "name": "Egypt",
+          "flag": "🇪🇬"
+        },
         "homeScore": 3,
         "awayScore": 2,
         "status": "completed",
@@ -429,8 +1006,16 @@
         "date": "2026-07-07",
         "time": "22:00",
         "venue": "Vancouver",
-        "homeTeam": { "code": "SUI", "name": "Switzerland", "flag": "🇨🇭" },
-        "awayTeam": { "code": "COL", "name": "Colombia", "flag": "🇨🇴" },
+        "homeTeam": {
+          "code": "SUI",
+          "name": "Switzerland",
+          "flag": "🇨🇭"
+        },
+        "awayTeam": {
+          "code": "COL",
+          "name": "Colombia",
+          "flag": "🇨🇴"
+        },
         "homeScore": 0,
         "awayScore": 0,
         "homePenalties": 4,
@@ -441,49 +1026,81 @@
       }
     ],
     "qf": [
-      { 
-        "id": "qf_1", 
-        "date": "2026-07-09", 
-        "time": "22:00", 
+      {
+        "id": "qf_1",
+        "date": "2026-07-09",
+        "time": "22:00",
         "venue": "Gillette Stadium, Foxborough, MA",
-        "homeTeam": { "code": "FRA", "name": "France", "flag": "🇫🇷" },
-        "awayTeam": { "code": "MAR", "name": "Morocco", "flag": "🇲🇦" },
+        "homeTeam": {
+          "code": "FRA",
+          "name": "France",
+          "flag": "🇫🇷"
+        },
+        "awayTeam": {
+          "code": "MAR",
+          "name": "Morocco",
+          "flag": "🇲🇦"
+        },
         "homeScore": 2,
         "awayScore": 0,
         "status": "completed",
         "winner": "home"
       },
-      { 
-        "id": "qf_2", 
-        "date": "2026-07-10", 
-        "time": "21:00", 
+      {
+        "id": "qf_2",
+        "date": "2026-07-10",
+        "time": "21:00",
         "venue": "SoFi Stadium, Inglewood, CA",
-        "homeTeam": { "code": "ESP", "name": "Spain", "flag": "🇪🇸" },
-        "awayTeam": { "code": "BEL", "name": "Belgium", "flag": "🇧🇪" },
+        "homeTeam": {
+          "code": "ESP",
+          "name": "Spain",
+          "flag": "🇪🇸"
+        },
+        "awayTeam": {
+          "code": "BEL",
+          "name": "Belgium",
+          "flag": "🇧🇪"
+        },
         "homeScore": 2,
         "awayScore": 1,
         "status": "completed",
         "winner": "home"
       },
-      { 
-        "id": "qf_3", 
-        "date": "2026-07-11", 
-        "time": "21:00", 
+      {
+        "id": "qf_3",
+        "date": "2026-07-11",
+        "time": "21:00",
         "venue": "Hard Rock Stadium, Miami Gardens, FL",
-        "homeTeam": { "code": "NOR", "name": "Norway", "flag": "🇳🇴" },
-        "awayTeam": { "code": "ENG", "name": "England", "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
+        "homeTeam": {
+          "code": "NOR",
+          "name": "Norway",
+          "flag": "🇳🇴"
+        },
+        "awayTeam": {
+          "code": "ENG",
+          "name": "England",
+          "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿"
+        },
         "homeScore": 1,
         "awayScore": 2,
         "status": "completed",
         "winner": "away"
       },
-      { 
-        "id": "qf_4", 
-        "date": "2026-07-12", 
-        "time": "21:00", 
+      {
+        "id": "qf_4",
+        "date": "2026-07-12",
+        "time": "21:00",
         "venue": "GEHA Field at Arrowhead Stadium, Kansas City, MO",
-        "homeTeam": { "code": "ARG", "name": "Argentina", "flag": "🇦🇷" },
-        "awayTeam": { "code": "SUI", "name": "Switzerland", "flag": "🇨🇭" },
+        "homeTeam": {
+          "code": "ARG",
+          "name": "Argentina",
+          "flag": "🇦🇷"
+        },
+        "awayTeam": {
+          "code": "SUI",
+          "name": "Switzerland",
+          "flag": "🇨🇭"
+        },
         "homeScore": 3,
         "awayScore": 1,
         "status": "completed",
@@ -492,27 +1109,51 @@
       }
     ],
     "sf": [
-      { 
-        "id": "sf_1", 
-        "date": "2026-07-14", 
-        "time": "21:00", 
+      {
+        "id": "sf_1",
+        "date": "2026-07-14",
+        "time": "21:00",
         "venue": "AT&T Stadium, Arlington, TX",
-        "homeTeam": { "code": "FRA", "name": "France", "flag": "🇫🇷" },
-        "awayTeam": { "code": "ESP", "name": "Spain", "flag": "🇪🇸" },
-        "status": "scheduled"
+        "homeTeam": {
+          "code": "FRA",
+          "name": "France",
+          "flag": "🇫🇷"
+        },
+        "awayTeam": {
+          "code": "ESP",
+          "name": "Spain",
+          "flag": "🇪🇸"
+        },
+        "status": "live",
+        "homeScore": 0,
+        "awayScore": 1
       },
-      { 
-        "id": "sf_2", 
-        "date": "2026-07-15", 
-        "time": "21:00", 
+      {
+        "id": "sf_2",
+        "date": "2026-07-15",
+        "time": "21:00",
         "venue": "Mercedes-Benz Stadium, Atlanta, GA",
-        "homeTeam": { "code": "ENG", "name": "England", "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
-        "awayTeam": { "code": "ARG", "name": "Argentina", "flag": "🇦🇷" },
+        "homeTeam": {
+          "code": "ENG",
+          "name": "England",
+          "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿"
+        },
+        "awayTeam": {
+          "code": "ARG",
+          "name": "Argentina",
+          "flag": "🇦🇷"
+        },
         "status": "scheduled"
       }
     ],
     "final": [
-      { "id": "final", "date": "2026-07-19", "time": "21:00", "venue": "East Rutherford, NJ", "status": "pending" }
+      {
+        "id": "final",
+        "date": "2026-07-19",
+        "time": "21:00",
+        "venue": "East Rutherford, NJ",
+        "status": "pending"
+      }
     ]
   },
   "espnTeamMapping": {
