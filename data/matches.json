@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-14T20:16:00.390Z",
+  "lastUpdated": "2026-07-14T21:26:29.080Z",
   "tournament": {
     "name": "FIFA World Cup 2026",
     "stage": "Quarterfinals",
@@ -1124,9 +1124,10 @@
           "name": "Spain",
           "flag": "🇪🇸"
         },
-        "status": "live",
+        "status": "completed",
         "homeScore": 0,
-        "awayScore": 1
+        "awayScore": 2,
+        "winner": "away"
       },
       {
         "id": "sf_2",
