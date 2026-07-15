@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-14T21:26:29.080Z",
+  "lastUpdated": "2026-07-15T19:25:33.007Z",
   "tournament": {
     "name": "FIFA World Cup 2026",
     "stage": "Quarterfinals",
@@ -1144,7 +1144,9 @@
           "name": "Argentina",
           "flag": "🇦🇷"
         },
-        "status": "scheduled"
+        "status": "live",
+        "homeScore": 0,
+        "awayScore": 0
       }
     ],
     "final": [
